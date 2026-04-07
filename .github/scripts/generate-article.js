@@ -13,29 +13,36 @@ const KEYWORDS = [
   "καθοδήγηση ζωής"
 ];
 
-async function getTrendingTopic() {
-  const response = await fetch('https://google.serper.dev/search', {
-    method: 'POST',
-    headers: {
-      'X-API-KEY': process.env.SERPER_API_KEY,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      q: "αυτοβελτίωση ψυχολογία τάσεις 2026 Ελλάδα",
-      gl: "gr",
-      hl: "el",
-      num: 5
-    })
-  });
-  const data = await response.json();
-  const results = data.organic?.map(r => r.title).join(', ') || '';
-  return results;
+function getDateString() {
+  const today = new Date();
+  const months = ["Ιανουαρίου","Φεβρουαρίου","Μαρτίου","Απριλίου","Μαΐου","Ιουνίου","Ιουλίου","Αυγούστου","Σεπτεμβρίου","Οκτωβρίου","Νοεμβρίου","Δεκεμβρίου"];
+  return `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
 }
 
-async function generateArticle(trendingContext) {
-  // Επέλεξε random keyword από τη λίστα
-  const keyword = KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
-  
+async function getTrendingTopic() {
+  try {
+    const response = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': process.env.SERPER_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        q: "αυτοβελτίωση ψυχολογία τάσεις 2026 Ελλάδα",
+        gl: "gr",
+        hl: "el",
+        num: 5
+      })
+    });
+    const data = await response.json();
+    const results = data.organic?.map(r => r.title).join(', ') || '';
+    return results;
+  } catch (e) {
+    return "αυτοβελτίωση, ψυχολογία, εσωτερική αλλαγή";
+  }
+}
+
+async function generateArticle(trendingContext, keyword, dateStr) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -51,6 +58,7 @@ async function generateArticle(trendingContext) {
         content: `Είσαι ο content assistant του Προκόπη Κούκη, founder του WithinSuccess.
 
 TRENDING CONTEXT: ${trendingContext}
+ΣΗΜΕΡΙΝΗ ΗΜΕΡΟΜΗΝΙΑ: ${dateStr}
 
 Γράψε ένα άρθρο για το blog withinsuccess.gr με primary keyword: "${keyword}"
 
@@ -58,7 +66,7 @@ BRAND VOICE:
 - Target: Γυναίκες 25-35 που νιώθουν stuck
 - Tone: Direct, minimal, χωρίς motivational clichés
 - Ποτέ "πειθαρχία" ή "συνέπεια" - πάντα "ταυτότητα" και "εσωτερική ιστορία"
-- Χρησιμοποίησε παύλες - όχι em dashes —
+- Χρησιμοποίησε παύλες - όχι em dashes
 - Μικρές προτάσεις. Καθαρές.
 
 ΔΟΜΗ:
@@ -81,7 +89,7 @@ HTML RULES:
   "title": "Τίτλος άρθρου",
   "excerpt": "1-2 προτάσεις excerpt.",
   "category": "UPPERCASE ΧΩΡΙΣ ΤΟΝΟΥΣ",
-  "date": "7 Απριλίου 2026",
+  "date": "${dateStr}",
   "readTime": 5,
   "keywords": ["primary keyword", "secondary1", "secondary2"],
   "content": "<p>HTML content...</p>"
@@ -92,25 +100,28 @@ HTML RULES:
 
   const data = await response.json();
   const text = data.content[0].text.trim();
-  
-  // Parse JSON
   const article = JSON.parse(text);
   return article;
 }
 
 async function main() {
+  const dateStr = getDateString();
+  const keyword = KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
+
+  console.log('Date:', dateStr);
+  console.log('Keyword:', keyword);
+
   console.log('Getting trending topics...');
   const trending = await getTrendingTopic();
   console.log('Trending:', trending);
 
   console.log('Generating article...');
-  const newArticle = await generateArticle(trending);
+  const newArticle = await generateArticle(trending, keyword, dateStr);
   console.log('Article generated:', newArticle.title);
+  console.log('Slug:', newArticle.slug);
 
-  // Διάβασε το υπάρχον articles.ts
   const currentFile = fs.readFileSync('src/app/insights/articles.ts', 'utf8');
-  
-  // Βρες το array και πρόσθεσε το νέο άρθρο
+
   const articleEntry = `  {
     slug: "${newArticle.slug}",
     title: "${newArticle.title}",
@@ -122,7 +133,6 @@ async function main() {
     content: \`${newArticle.content}\`
   }`;
 
-  // Αντικατέστησε το ]; στο τέλος
   const updatedFile = currentFile.replace(
     /\];\s*$/,
     `,\n${articleEntry}\n];`
