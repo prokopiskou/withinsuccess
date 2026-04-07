@@ -63,7 +63,7 @@ TRENDING CONTEXT: ${trendingContext}
 Γράψε ένα άρθρο για το blog withinsuccess.gr με primary keyword: "${keyword}"
 
 BRAND VOICE:
-- Target: Γυναίκες 25-35 που νιώθουν stuck
+- Target: Άνθρωποι 25-35 που νιώθουν stuck - γράφεις σε αρσενικό γένος (ο αναγνώστης, ο χρήστης)
 - Tone: Direct, minimal, χωρίς motivational clichés
 - Ποτέ "πειθαρχία" ή "συνέπεια" - πάντα "ταυτότητα" και "εσωτερική ιστορία"
 - Χρησιμοποίησε παύλες - όχι em dashes
@@ -108,7 +108,19 @@ HTML RULES:
 
 async function main() {
   const dateStr = getDateString();
-  const keyword = KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
+ // Βρες keywords που έχουν ήδη χρησιμοποιηθεί
+const usedKeywords = [];
+const matches = currentFile.match(/"keywords":\s*\[([^\]]+)\]/g) || [];
+matches.forEach(m => {
+  const kws = m.match(/"([^"]+)"/g) || [];
+  kws.forEach(k => usedKeywords.push(k.replace(/"/g, '')));
+});
+
+// Επέλεξε keyword που δεν έχει χρησιμοποιηθεί
+const availableKeywords = KEYWORDS.filter(k => !usedKeywords.includes(k));
+const keyword = availableKeywords.length > 0 
+  ? availableKeywords[Math.floor(Math.random() * availableKeywords.length)]
+  : KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
 
   console.log('Date:', dateStr);
   console.log('Keyword:', keyword);
