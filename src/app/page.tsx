@@ -1,6 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
+const SEMINAR1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar1.mp4";
+const SEMINAR2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar2.mp4";
+const TESTIMONIAL1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial1.MP4";
+const TESTIMONIAL2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial2.MP4";
+
 const reviews = [
   {
     text: "Όλα ξεκίνησαν πριν 3 χρόνια που έπαθα την πρώτη κρίση πανικού. Σταδιακά άρχισα να μην μπορώ να διαχειριστώ καμία κατάσταση. Μετά από κάθε συνεδρία άρχισα να νιώθω δυνατή όπως παλιά. Σήμερα αισθάνομαι δυνατή, ήρεμη και μπορώ να σταθώ στα πόδια μου.",
@@ -102,10 +107,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">WithinSuccess</span>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
-            <a href="#" className="hover:text-black transition-colors">Home</a>
-            <a href="#" className="hover:text-black transition-colors">About</a>
-            <a href="#" className="hover:text-black transition-colors">Work with me</a>
-            <a href="#" className="hover:text-black transition-colors">Insights</a>
+            <a href="/about" className="hover:text-black transition-colors">About</a>
+            <a href="/work" className="hover:text-black transition-colors">Work with me</a>
+            <a href="/insights" className="hover:text-black transition-colors">Insights</a>
           </div>
           <a href="/assessment" className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
             Ξεκίνα εδώ →
@@ -232,10 +236,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src="/seminar1.mp4" className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src="/seminar2.mp4" className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
           </div>
         </div>
@@ -245,17 +249,17 @@ export default function Home() {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">Αυτοι το εζησαν</p>
+            <p className="text-sm font-medium tracking-widests text-gray-400 uppercase mb-3">Αυτοι το εζησαν</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Πραγματικές ιστορίες.
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8 mb-16">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src="/testimonial1.mp4" className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src="/testimonial2.mp4" className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
           </div>
 
@@ -312,19 +316,19 @@ export default function Home() {
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική μεταμόρφωση — όχι γενικές συμβουλές.</p>
-              <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Ξεκίνα →</a>
+              <a href="/work#coaching" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Ξεκίνα →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-black text-white rounded-2xl">
               <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">Seminars</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Live Εμπειρίες</h3>
               <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις — εμπειρίες που μένουν.</p>
-              <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Δες τα seminars →</a>
+              <a href="/work#seminars" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Δες τα seminars →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30-Day Programs</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή — με εργαλεία, δομή και καθοδήγηση.</p>
-              <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
+              <a href="/30days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
             </div>
           </div>
         </div>
@@ -343,7 +347,7 @@ export default function Home() {
           <a href="/assessment" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
             Κάνε το assessment →
           </a>
-          <p className="text-xs text-gray-400 mt-4">6.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>
+          <p className="text-xs text-gray-400 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>
         </div>
       </section>
 
