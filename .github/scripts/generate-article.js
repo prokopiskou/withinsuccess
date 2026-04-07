@@ -99,7 +99,9 @@ HTML RULES:
   });
 
   const data = await response.json();
-  const text = data.content[0].text.trim();
+  let text = data.content[0].text.trim();
+  // Αφαίρεσε markdown backticks αν υπάρχουν
+  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
   const article = JSON.parse(text);
   return article;
 }
