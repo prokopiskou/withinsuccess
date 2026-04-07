@@ -1,0 +1,44 @@
+name: Auto Article Generator
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Κάθε Δευτέρα 08:00 Ελλάδα (06:00 UTC)
+  workflow_dispatch:      # Και χειροκίνητα αν θέλεις
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate Article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+        run: node .github/scripts/generate-article.js
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: "Add auto-generated article"
+          title: "📝 Νέο άρθρο - Review needed"
+          body: |
+            Αυτόματα δημιουργημένο άρθρο βάσει trending topics.
+            
+            **Πριν κάνεις merge:**
+            - Διάβασε το άρθρο
+            - Έλεγξε το content
+            - Αν είσαι OK, πάτα **Merge**
+            
+            Μετά το merge το Vercel κάνει αυτόματα deploy.
+          branch: "auto-article"
+          delete-branch: true
