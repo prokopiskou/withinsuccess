@@ -236,10 +236,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
             </div>
           </div>
         </div>
@@ -249,17 +249,17 @@ export default function Home() {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widests text-gray-400 uppercase mb-3">Αυτοι το εζησαν</p>
+            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">Αυτοι το εζησαν</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Πραγματικές ιστορίες.
             </h2>
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8 mb-16">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
             </div>
           </div>
 
