@@ -6,67 +6,19 @@ const SEMINAR2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/semina
 const TESTIMONIAL1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial1.MP4";
 const TESTIMONIAL2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial2.MP4";
 
+const GOLD = '#C9A96E';
+
 const reviews = [
-  {
-    text: "Όλα ξεκίνησαν πριν 3 χρόνια που έπαθα την πρώτη κρίση πανικού. Σταδιακά άρχισα να μην μπορώ να διαχειριστώ καμία κατάσταση. Μετά από κάθε συνεδρία άρχισα να νιώθω δυνατή όπως παλιά. Σήμερα αισθάνομαι δυνατή, ήρεμη και μπορώ να σταθώ στα πόδια μου.",
-    name: "Ανθούλα Ευαγγελίδη",
-    sub: "Google Review · Local Guide",
-    color: "#4285F4",
-  },
-  {
-    text: "Είμαι ευγνώμων με τη συνεργασία μας. Συνιστώ ανεπιφύλακτα το πρόγραμμα των 30 ημερών. Είχα κρίσεις πανικού και αγχώδη διαταραχή και ακολουθώντας το πρόγραμμα κατάφερα να επανέλθω. Οι συνεδρίες με βοήθησαν να συνειδητοποιήσω τι μου δημιουργούσε το άγχος.",
-    name: "Litsa Kafousi",
-    sub: "Google Review",
-    color: "#34A853",
-  },
-  {
-    text: "Είναι ο άνθρωπος που θα εμπιστεύομαι κάθε φορά όταν θα νιώθω ότι θέλω καθοδήγηση. Κάθε συνεδρία ήτανε πολύτιμη για εμένα.",
-    name: "Anjeza Lushaj",
-    sub: "Google Review",
-    color: "#EA4335",
-  },
-  {
-    text: "Ο Προκόπης με βοήθησε πραγματικά σε μια δύσκολη περίοδο. Είναι άνθρωπος που ακούει, καταλαβαίνει και σε στηρίζει με ουσιαστικό τρόπο. Ειλικρινής, υποστηρικτικός και ανθρώπινος.",
-    name: "Alexandros Neofytos",
-    sub: "Google Review",
-    color: "#FBBC05",
-  },
-  {
-    text: "Μέσα σε 3 μήνες με τη βοήθεια του Προκόπη και σίγουρα με προσωπική σκληρή δουλειά άλλαξα συνήθειες και μοτίβα που με πήγαιναν πίσω στη ζωή μου επί χρόνια. Με την καθοδήγησή του δεν έχεις να χάσεις τίποτα παρά μόνο να κερδίσεις.",
-    name: "Λεάνα Μπάκι",
-    sub: "Google Review",
-    color: "#4285F4",
-  },
-  {
-    text: "Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Κάθε φορά θέτουμε στόχους και πραγματικά βλέπω εξέλιξη. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!",
-    name: "Αναστασία Λεωνιδοπούλου",
-    sub: "Google Review · Local Guide",
-    color: "#34A853",
-  },
-  {
-    text: "Δεν είναι απλώς coach, είναι άνθρωπος που σε βλέπει, σε ακούει και σε βοηθά να θυμηθείς ποιος πραγματικά είσαι. Κάθε συζήτηση μαζί του αφήνει καθαρότητα, ηρεμία και πίστη ότι μπορείς να αλλάξεις ό,τι σε βαραίνει.",
-    name: "Alexandra Skouria",
-    sub: "Google Review · Local Guide",
-    color: "#EA4335",
-  },
-  {
-    text: "Εύστοχος, βαθιά ενημερωμένος και ικανός καθοδηγητής στο σωστό τρόπο σκέψης. Άψογος ακροατής που σε βοηθά να ξεδιπλώνεις πτυχές του χαρακτήρα σου και της ζωής σου με άνεση. Κάθε συνάντηση μαζί του είναι μοναδική.",
-    name: "N V",
-    sub: "Google Review",
-    color: "#FBBC05",
-  },
-  {
-    text: "Με τον Προκόπη ξεκινήσαμε συνεδρίες με σκοπό ουσιαστικά να ξαναβρώ τον εαυτό μου. Ήταν το καλύτερο δώρο που έκανα στον εαυτό μου. Κατάφερα να νικήσω φόβους και να γίνω πιο δραστήριος και χαρούμενος. Ο Προκόπης θα σου δώσει όλα τα εφόδια για να φτάσεις στον στόχο σου.",
-    name: "Nikos D",
-    sub: "Google Review",
-    color: "#4285F4",
-  },
-  {
-    text: "Πραγματικά εξαιρετική εμπειρία. Αυτό το πρόγραμμα σε βοηθάει να χτίσεις συνήθειες βήμα βήμα και με μέθοδο, προκειμένου να επιτύχεις πράγματα που προηγουμένως φάνταζαν αρκετά δύσκολα. Αυτό το πρόγραμμα μπορεί πραγματικά να σε αλλάξει.",
-    name: "Νίκος Ολύμπιος",
-    sub: "Google Review",
-    color: "#34A853",
-  },
+  { text: "Όλα ξεκίνησαν πριν 3 χρόνια που έπαθα την πρώτη κρίση πανικού. Σταδιακά άρχισα να μην μπορώ να διαχειριστώ καμία κατάσταση. Μετά από κάθε συνεδρία άρχισα να νιώθω δυνατή όπως παλιά. Σήμερα αισθάνομαι δυνατή, ήρεμη και μπορώ να σταθώ στα πόδια μου.", name: "Ανθούλα Ευαγγελίδη", sub: "Google Review · Local Guide", color: "#4285F4" },
+  { text: "Είμαι ευγνώμων με τη συνεργασία μας. Συνιστώ ανεπιφύλακτα το πρόγραμμα των 30 ημερών. Είχα κρίσεις πανικού και αγχώδη διαταραχή και ακολουθώντας το πρόγραμμα κατάφερα να επανέλθω. Οι συνεδρίες με βοήθησαν να συνειδητοποιήσω τι μου δημιουργούσε το άγχος.", name: "Litsa Kafousi", sub: "Google Review", color: "#34A853" },
+  { text: "Είναι ο άνθρωπος που θα εμπιστεύομαι κάθε φορά όταν θα νιώθω ότι θέλω καθοδήγηση. Κάθε συνεδρία ήτανε πολύτιμη για εμένα.", name: "Anjeza Lushaj", sub: "Google Review", color: "#EA4335" },
+  { text: "Ο Προκόπης με βοήθησε πραγματικά σε μια δύσκολη περίοδο. Είναι άνθρωπος που ακούει, καταλαβαίνει και σε στηρίζει με ουσιαστικό τρόπο. Ειλικρινής, υποστηρικτικός και ανθρώπινος.", name: "Alexandros Neofytos", sub: "Google Review", color: "#FBBC05" },
+  { text: "Μέσα σε 3 μήνες με τη βοήθεια του Προκόπη και σίγουρα με προσωπική σκληρή δουλειά άλλαξα συνήθειες και μοτίβα που με πήγαιναν πίσω στη ζωή μου επί χρόνια. Με την καθοδήγησή του δεν έχεις να χάσεις τίποτα παρά μόνο να κερδίσεις.", name: "Λεάνα Μπάκι", sub: "Google Review", color: "#4285F4" },
+  { text: "Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Κάθε φορά θέτουμε στόχους και πραγματικά βλέπω εξέλιξη. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!", name: "Αναστασία Λεωνιδοπούλου", sub: "Google Review · Local Guide", color: "#34A853" },
+  { text: "Δεν είναι απλώς coach, είναι άνθρωπος που σε βλέπει, σε ακούει και σε βοηθά να θυμηθείς ποιος πραγματικά είσαι. Κάθε συζήτηση μαζί του αφήνει καθαρότητα, ηρεμία και πίστη ότι μπορείς να αλλάξεις ό,τι σε βαραίνει.", name: "Alexandra Skouria", sub: "Google Review · Local Guide", color: "#EA4335" },
+  { text: "Εύστοχος, βαθιά ενημερωμένος και ικανός καθοδηγητής στο σωστό τρόπο σκέψης. Άψογος ακροατής που σε βοηθά να ξεδιπλώνεις πτυχές του χαρακτήρα σου και της ζωής σου με άνεση. Κάθε συνάντηση μαζί του είναι μοναδική.", name: "N V", sub: "Google Review", color: "#FBBC05" },
+  { text: "Με τον Προκόπη ξεκινήσαμε συνεδρίες με σκοπό ουσιαστικά να ξαναβρώ τον εαυτό μου. Ήταν το καλύτερο δώρο που έκανα στον εαυτό μου. Κατάφερα να νικήσω φόβους και να γίνω πιο δραστήριος και χαρούμενος. Ο Προκόπης θα σου δώσει όλα τα εφόδια για να φτάσεις στον στόχο σου.", name: "Nikos D", sub: "Google Review", color: "#4285F4" },
+  { text: "Πραγματικά εξαιρετική εμπειρία. Αυτό το πρόγραμμα σε βοηθάει να χτίσεις συνήθειες βήμα βήμα και με μέθοδο, προκειμένου να επιτύχεις πράγματα που προηγουμένως φάνταζαν αρκετά δύσκολα. Αυτό το πρόγραμμα μπορεί πραγματικά να σε αλλάξει.", name: "Νίκος Ολύμπιος", sub: "Google Review", color: "#34A853" },
 ];
 
 export default function Home() {
@@ -128,7 +80,7 @@ export default function Home() {
             <p className="text-lg text-gray-500 leading-relaxed">
               Δεν είσαι χαμένος. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
-            <a href="/assessment" className="self-start bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+            <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
               Ξεκίνα εδώ →
             </a>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
@@ -263,7 +215,6 @@ export default function Home() {
               <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
           </div>
-
           <div className="hidden md:grid md:grid-cols-3 gap-8">
             {visible.map((review, i) => (
               <div key={i} className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
@@ -277,7 +228,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-
           <div className="md:hidden" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
               <div className="flex gap-1 text-yellow-400 text-sm">★★★★★</div>
@@ -290,7 +240,6 @@ export default function Home() {
             </div>
             <p className="text-center text-xs text-gray-300 mt-3">← σύρε για περισσότερα →</p>
           </div>
-
           <div className="flex items-center justify-center gap-4 mt-8">
             <button onClick={prev} className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
             <div className="flex gap-2">
@@ -345,7 +294,7 @@ export default function Home() {
           <p className="text-lg text-gray-500 mb-8">
             Κάνε το Within Assessment - δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
           </p>
-          <a href="/assessment" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+          <a href="/assessment" className="inline-block text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
             Κάνε το assessment →
           </a>
           <p className="text-xs text-gray-400 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>

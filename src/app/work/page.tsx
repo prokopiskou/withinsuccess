@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+const GOLD = '#C9A96E';
+
 const seminars = [
   { title: "Κυριάρχησε απέναντι στο μυαλό σου", dates: ["11/6/2023 · Θεσσαλονίκη", "24/9/2023 · Αθήνα"] },
   { title: "Ξύπνησε τον νικητή μέσα σου", dates: ["14/4/2024 · Κύπρος", "30/6/2024 · Αθήνα", "4/10/2024 · Θεσσαλονίκη"] },
@@ -24,6 +26,12 @@ export default function Work() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
+          <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
+            <a href="/about" className="hover:text-black transition-colors">About</a>
+            <a href="/work" className="text-black font-medium">Work with me</a>
+            <a href="/corporate" className="hover:text-black transition-colors">Corporate</a>
+            <a href="/insights" className="hover:text-black transition-colors">Insights</a>
+          </div>
           <a href="/assessment" className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
             Ξεκίνα εδώ →
           </a>
@@ -52,15 +60,15 @@ export default function Work() {
             </h2>
             <div className="flex flex-col gap-3 text-gray-400 leading-relaxed">
               <p>Δεν είναι απλώς συνεδρίες.</p>
-              <p>Είναι η δουλειά που αλλάζει τον τρόπο που βλέπεις τον εαυτό σου — και άρα τα πάντα γύρω σου.</p>
+              <p>Είναι η δουλειά που αλλάζει τον τρόπο που βλέπεις τον εαυτό σου - και άρα τα πάντα γύρω σου.</p>
               <p>Κάθε περίοδο δέχομαι έναν συγκεκριμένο αριθμό ατόμων. Η διαδικασία ξεκινάει με ένα σύντομο ερωτηματολόγιο.</p>
             </div>
             <div className="flex flex-col gap-2 text-sm text-gray-400 border-t border-gray-800 pt-6">
               <p>✓ Βαθιά, εξατομικευμένη δουλειά</p>
-              <p>✓ Πραγματική αλλαγή — όχι γενικές συμβουλές</p>
+              <p>✓ Πραγματική αλλαγή - όχι γενικές συμβουλές</p>
               <p>✓ Περιορισμένες θέσεις</p>
             </div>
-            <a href="/assessment" className="self-start text-sm font-medium border border-white px-6 py-3 rounded-full hover:bg-white hover:text-black transition-all">
+            <a href="/assessment" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
               Συμπλήρωσε το ερωτηματολόγιο →
             </a>
           </div>
@@ -78,10 +86,8 @@ export default function Work() {
             Βιωματικές εμπειρίες που μένουν.
           </h2>
           <p className="text-lg text-gray-500 mb-12 max-w-2xl">
-            2.5 ώρες. Καμία θεωρία. Μόνο αλλαγή. Κάθε seminar είναι διαφορετικό — και δεν επαναλαμβάνεται.
+            2.5 ώρες. Καμία θεωρία. Μόνο αλλαγή. Κάθε seminar είναι διαφορετικό - και δεν επαναλαμβάνεται.
           </p>
-
-          {/* Timeline οριζόντιο */}
           <div className="mb-16 overflow-x-auto pb-4">
             <div className="relative" style={{minWidth: '600px'}}>
               <div className="absolute top-3 left-0 right-0 h-px bg-gray-200" />
@@ -104,16 +110,10 @@ export default function Work() {
               </div>
             </div>
           </div>
-
-          {/* Testimonials carousel */}
           <div className="mb-12">
             <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">Τι λενε οσοι ηταν εκει</p>
             <div className="relative rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center" style={{minHeight: '400px'}}>
-              <img
-                src={`/seminar_testimonial${current + 1}.webp`}
-                alt={`Testimonial ${current + 1}`}
-                className="max-w-full max-h-[500px] object-contain"
-              />
+              <img src={`/seminar_testimonial${current + 1}.webp`} alt={`Testimonial ${current + 1}`} className="max-w-full max-h-[500px] object-contain" />
             </div>
             <div className="flex items-center justify-center gap-4 mt-6">
               <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
@@ -125,9 +125,8 @@ export default function Work() {
               <button onClick={next} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">→</button>
             </div>
           </div>
-
           <div className="text-center">
-            <a href="/assessment" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+            <a href="/assessment" className="inline-block text-black px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
               Μπες στη λίστα αναμονής →
             </a>
           </div>
@@ -150,16 +149,16 @@ export default function Work() {
             </h2>
             <div className="flex flex-col gap-3 text-gray-500 leading-relaxed">
               <p>Ένα δομημένο πρόγραμμα 30 ημερών. Βήμα βήμα, με εργαλεία και καθοδήγηση.</p>
-              <p>Ανοίγει σε συγκεκριμένες περιόδους τον χρόνο — κάθε κύκλος έχει περιορισμένες θέσεις.</p>
+              <p>Ανοίγει σε συγκεκριμένες περιόδους τον χρόνο - κάθε κύκλος έχει περιορισμένες θέσεις.</p>
             </div>
             <div className="flex flex-col gap-2 text-sm text-gray-400 border-t border-gray-100 pt-6">
               <p>✓ Πλήρες πρόγραμμα 30 ημερών</p>
               <p>✓ Εργαλεία & ασκήσεις καθημερινά</p>
               <p>✓ Άμεση πρόσβαση</p>
             </div>
-            <a href="/30days" className="self-start bg-black text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
-  Αγόρασε τώρα — 15€ →
-</a>
+            <a href="/30days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+              Κατοχύρωσε τώρα — 15€ →
+            </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
             <img src="/prokopis_audience.webp" alt="Program" className="w-full h-full object-cover" />
@@ -177,7 +176,6 @@ export default function Work() {
           <p className="text-lg text-gray-500 mb-12 max-w-2xl">
             Βιωματικά προγράμματα εσωτερικής ισορροπίας, σύνδεσης και ψυχικής ανθεκτικότητας για εργαζόμενους και στελέχη. Κάθε πρόγραμμα σχεδιάζεται εξατομικευμένα για τις ανάγκες του οργανισμού σου.
           </p>
-
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <div className="flex flex-col gap-3 p-6 border border-gray-100 rounded-2xl">
               <h3 className="font-semibold text-gray-900">Διαχείριση Άγχους</h3>
@@ -185,14 +183,13 @@ export default function Work() {
             </div>
             <div className="flex flex-col gap-3 p-6 border border-gray-100 rounded-2xl">
               <h3 className="font-semibold text-gray-900">Ισορροπία Ζωής & Εργασίας</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">Επαναπροσδιορίζοντας την ισορροπία για μακροπρόθεσμη ευεξία. Workshop 90' με workbook.</p>
+              <p className="text-sm text-gray-500 leading-relaxed">Επαναπροσδιορισμός ισορροπίας για μακροπρόθεσμη ευεξία. Workshop 90' με τετράδιο εργασίας.</p>
             </div>
             <div className="flex flex-col gap-3 p-6 border border-gray-100 rounded-2xl">
               <h3 className="font-semibold text-gray-900">Διαχείριση Χρόνου</h3>
               <p className="text-sm text-gray-500 leading-relaxed">Κάνε περισσότερα με λιγότερο άγχος. Workshop 90' με εξατομικευμένο πλάνο.</p>
             </div>
           </div>
-
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
               <img src="/prokopis_workshop.webp" alt="Workshop" className="w-full h-full object-cover object-[50%_25%]" />
@@ -201,11 +198,10 @@ export default function Work() {
               <img src="/prokopis_team.webp" alt="Team" className="w-full h-full object-cover object-[50%_25%]" />
             </div>
           </div>
-
           <div className="text-center">
             <p className="text-gray-500 mb-6">Ας μιλήσουμε για τις ανάγκες της ομάδας σου.</p>
-            <a href="mailto:hello@withinsuccess.gr" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
-              Επικοινώνησε μαζί μας →
+            <a href="/corporate" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+              Δες τις συνεργασίες →
             </a>
           </div>
         </div>
