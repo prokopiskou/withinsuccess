@@ -27,7 +27,7 @@ export default function SiteNav({ active, ctaHref, ctaLabel }: SiteNavProps) {
             <span className="block w-5 h-0.5 bg-black" />
           </button>
           <a href="/" className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <a href={ctaHref} className="text-[13px] px-4 py-2 whitespace-nowrap font-medium border border-black rounded-lg hover:bg-black hover:text-white transition-all">
+          <a href={ctaHref} className="text-[13px] px-4 py-2 whitespace-nowrap font-medium border border-black rounded-none hover:bg-black hover:text-white transition-all">
             {ctaLabel}
           </a>
         </div>
