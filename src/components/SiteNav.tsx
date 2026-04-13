@@ -1,49 +1,38 @@
 "use client";
-
 import { useState } from "react";
 
-type SiteNavProps = {
-  active?: "about" | "work" | "corporate" | "insights";
+type Props = {
   ctaHref: string;
   ctaLabel: string;
+  active?: string;
 };
 
-export default function SiteNav({ active, ctaHref, ctaLabel }: SiteNavProps) {
+export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 py-4 relative">
-        <div className="md:hidden relative flex items-center">
-          <div className="flex h-10 w-28 shrink-0 items-center justify-start">
-            <button
-              type="button"
-              className="flex flex-col gap-1.5"
-              onClick={() => setIsMenuOpen((prev) => !prev)}
-              aria-label="Toggle menu"
-              aria-expanded={isMenuOpen}
-            >
-              <span className="block w-5 h-0.5 bg-black" />
-              <span className="block w-5 h-0.5 bg-black" />
-              <span className="block w-5 h-0.5 bg-black" />
-            </button>
-          </div>
-          <a
-            href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-semibold tracking-tight"
+      <div className="max-w-6xl mx-auto px-6 py-4">
+
+        {/* MOBILE */}
+        <div className="flex md:hidden items-center justify-between">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex flex-col gap-1.5 p-1 w-8"
           >
+            <span className="w-6 h-px bg-black block"></span>
+            <span className="w-6 h-px bg-black block"></span>
+            <span className="w-6 h-px bg-black block"></span>
+          </button>
+          <a href="/" className="text-base font-semibold tracking-tight absolute left-1/2 -translate-x-1/2">
             WithinSuccess
           </a>
-          <div className="flex h-10 w-28 shrink-0 items-center justify-end">
-            <a
-              href={ctaHref}
-              className="text-xs px-2 py-1 whitespace-nowrap font-medium border border-black rounded-none hover:bg-black hover:text-white transition-all"
-            >
-              {ctaLabel}
-            </a>
-          </div>
+          <a href={ctaHref} className="text-xs font-medium border border-black px-3 py-1.5 hover:bg-black hover:text-white transition-all">
+            {ctaLabel}
+          </a>
         </div>
 
+        {/* DESKTOP */}
         <div className="hidden md:flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
           <div className="flex items-center gap-8 text-sm text-gray-500">
@@ -57,8 +46,10 @@ export default function SiteNav({ active, ctaHref, ctaLabel }: SiteNavProps) {
           </a>
         </div>
       </div>
+
+      {/* MOBILE MENU */}
       {isMenuOpen && (
-        <div className="md:hidden w-full bg-white px-6 py-4 flex flex-col gap-4 text-gray-500 border-t border-gray-100">
+        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm text-gray-500">
           <a href="/about" className="hover:text-black transition-colors">About</a>
           <a href="/work" className="hover:text-black transition-colors">Work with me</a>
           <a href="/corporate" className="hover:text-black transition-colors">Corporate</a>
