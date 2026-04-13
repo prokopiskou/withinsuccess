@@ -29,31 +29,16 @@ export async function POST(req: Request) {
     normalizedName = name;
   }
 
-  // Αποθήκευση στο MailerLite group
-  await fetch("https://connect.mailerlite.com/api/subscribers", {
+  // Email notification μέσω Resend
+  await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.MAILERLITE_API_KEY}`,
+      "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      email,
-      fields: { name: normalizedName },
-      groups: ["184651469072368868"],
-    }),
-  });
-
-  // Email notification μέσω MailerLite
-  const emailRes = await fetch("https://connect.mailerlite.com/api/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.MAILERLITE_API_KEY}`,
-    },
-    body: JSON.stringify({
-      from: "hello@withinsuccess.gr",
-      from_name: "WithinSuccess",
-      to: "hello@withinsuccess.gr",
+      from: "WithinSuccess <onboarding@resend.dev>",
+      to: ["hello@withinsuccess.gr"],
       subject: `Νέα αίτηση 1:1 Coaching - ${normalizedName}`,
       html: `
         <h2>Νέα αίτηση 1:1 Coaching</h2>
@@ -67,9 +52,19 @@ export async function POST(req: Request) {
     }),
   });
 
-  console.log("Email response status:", emailRes.status);
-  const emailData = await emailRes.json();
-  console.log("Email response:", JSON.stringify(emailData));
+  // Αποθήκευση στο MailerLite group
+  await fetch("https://connect.mailerlite.com/api/subscribers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.MAILERLITE_API_KEY}`,
+    },
+    body: JSON.stringify({
+      email,
+      fields: { name: normalizedName },
+      groups: ["184651469072368868"],
+    }),
+  });
 
   return NextResponse.json({ success: true });
 }
