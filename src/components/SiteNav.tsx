@@ -14,22 +14,34 @@ export default function SiteNav({ active, ctaHref, ctaLabel }: SiteNavProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 py-4 relative">
-        <div className="md:hidden flex items-center justify-between">
-          <button
-            type="button"
-            className="flex flex-col gap-1.5"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-            aria-expanded={isMenuOpen}
+        <div className="md:hidden relative flex items-center">
+          <div className="flex h-10 w-28 shrink-0 items-center justify-start">
+            <button
+              type="button"
+              className="flex flex-col gap-1.5"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
+            >
+              <span className="block w-5 h-0.5 bg-black" />
+              <span className="block w-5 h-0.5 bg-black" />
+              <span className="block w-5 h-0.5 bg-black" />
+            </button>
+          </div>
+          <a
+            href="/"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-semibold tracking-tight"
           >
-            <span className="block w-5 h-0.5 bg-black" />
-            <span className="block w-5 h-0.5 bg-black" />
-            <span className="block w-5 h-0.5 bg-black" />
-          </button>
-          <a href="/" className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <a href={ctaHref} className="text-[13px] px-4 py-2 whitespace-nowrap font-medium border border-black rounded-none hover:bg-black hover:text-white transition-all">
-            {ctaLabel}
+            WithinSuccess
           </a>
+          <div className="flex h-10 w-28 shrink-0 items-center justify-end">
+            <a
+              href={ctaHref}
+              className="text-xs px-2 py-1 whitespace-nowrap font-medium border border-black rounded-none hover:bg-black hover:text-white transition-all"
+            >
+              {ctaLabel}
+            </a>
+          </div>
         </div>
 
         <div className="hidden md:flex items-center justify-between">
