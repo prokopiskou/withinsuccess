@@ -105,10 +105,11 @@ export default function Home() {
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">WithinSuccess</span>
+          <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
             <a href="/about" className="hover:text-black transition-colors">About</a>
             <a href="/work" className="hover:text-black transition-colors">Work with me</a>
+            <a href="/corporate" className="hover:text-black transition-colors">Corporate</a>
             <a href="/insights" className="hover:text-black transition-colors">Insights</a>
           </div>
           <a href="/assessment" className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
@@ -125,7 +126,7 @@ export default function Home() {
               Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία.
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
-              Δεν είσαι χαμένη. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου — μπορεί να αλλάξει.
+              Δεν είσαι χαμένος. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
             <a href="/assessment" className="self-start bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
               Ξεκίνα εδώ →
@@ -152,8 +153,8 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
               <span className="text-2xl font-light text-gray-200">01</span>
-              <h3 className="text-lg font-semibold">Νιώθεις χαμένη</h3>
-              <p className="text-gray-500 leading-relaxed">Ξέρεις ότι κάτι πρέπει να αλλάξει — αλλά δεν ξέρεις από πού να αρχίσεις.</p>
+              <h3 className="text-lg font-semibold">Νιώθεις χαμένος</h3>
+              <p className="text-gray-500 leading-relaxed">Ξέρεις ότι κάτι πρέπει να αλλάξει - αλλά δεν ξέρεις από πού να αρχίσεις.</p>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
               <span className="text-2xl font-light text-gray-200">02</span>
@@ -236,10 +237,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
           </div>
         </div>
@@ -256,10 +257,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8 mb-16">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline />
             </div>
           </div>
 
@@ -315,19 +316,19 @@ export default function Home() {
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική μεταμόρφωση — όχι γενικές συμβουλές.</p>
+              <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική αλλαγή - όχι γενικές συμβουλές.</p>
               <a href="/work#coaching" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Ξεκίνα →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-black text-white rounded-2xl">
               <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">Seminars</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Live Εμπειρίες</h3>
-              <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις — εμπειρίες που μένουν.</p>
+              <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις - εμπειρίες που μένουν.</p>
               <a href="/work#seminars" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Δες τα seminars →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30-Day Programs</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή — με εργαλεία, δομή και καθοδήγηση.</p>
+              <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή - με εργαλεία, δομή και καθοδήγηση.</p>
               <a href="/30days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
             </div>
           </div>
@@ -342,7 +343,7 @@ export default function Home() {
             Ανακάλυψε σε ποιο στάδιο βρίσκεσαι.
           </h2>
           <p className="text-lg text-gray-500 mb-8">
-            Κάνε το Within Assessment — δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
+            Κάνε το Within Assessment - δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
           </p>
           <a href="/assessment" className="inline-block bg-black text-white px-8 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
             Κάνε το assessment →
