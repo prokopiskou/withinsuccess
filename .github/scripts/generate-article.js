@@ -109,12 +109,9 @@ HTML RULES:
 async function main() {
   const dateStr = getDateString();
  // Βρες keywords που έχουν ήδη χρησιμοποιηθεί
-const usedKeywords = [];
-const matches = currentFile.match(/"keywords":\s*\[([^\]]+)\]/g) || [];
-matches.forEach(m => {
-  const kws = m.match(/"([^"]+)"/g) || [];
-  kws.forEach(k => usedKeywords.push(k.replace(/"/g, '')));
-});
+ const usedKeywords = [];
+ const slugMatches = currentFile.match(/slug:\s*"([^"]+)"/g) || [];
+ console.log('Existing articles:', slugMatches.length);
 
 // Επέλεξε keyword που δεν έχει χρησιμοποιηθεί
 const availableKeywords = KEYWORDS.filter(k => !usedKeywords.includes(k));
