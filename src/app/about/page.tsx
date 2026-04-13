@@ -1,16 +1,11 @@
+import SiteNav from "@/components/SiteNav";
+
 export default function About() {
   return (
     <main className="min-h-screen bg-white font-sans">
 
       {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <a href="/assessment" className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
-            Ξεκίνα εδώ →
-          </a>
-        </div>
-      </nav>
+      <SiteNav active="about" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-4xl mx-auto">

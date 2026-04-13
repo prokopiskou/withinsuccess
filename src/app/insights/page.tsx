@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { articles } from "./articles";
+import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Insights — Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
@@ -17,19 +18,7 @@ export default function Insights() {
     <main className="min-h-screen bg-white font-sans">
 
       {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
-            <a href="/about" className="hover:text-black transition-colors">About</a>
-            <a href="/work" className="hover:text-black transition-colors">Work with me</a>
-            <a href="/insights" className="text-black font-medium">Insights</a>
-          </div>
-          <a href="/assessment" className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
-            Ξεκίνα εδώ →
-          </a>
-        </div>
-      </nav>
+      <SiteNav active="insights" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-4xl mx-auto">
