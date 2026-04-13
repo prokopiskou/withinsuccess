@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       "Notion-Version": "2022-06-28",
     },
     body: JSON.stringify({
-      parent: { database_id: "083d610f-0b0b-41b6-8d3b-ca8390b24615" },
+      parent: { database_id: "3415b53ee189803e9b71000cd808ec4b" },
       properties: {
         Name: { title: [{ text: { content: normalizedName } }] },
         Email: { email },
