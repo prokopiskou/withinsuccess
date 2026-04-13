@@ -100,7 +100,6 @@ HTML RULES:
 
   const data = await response.json();
   let text = data.content[0].text.trim();
-  // Αφαίρεσε markdown backticks αν υπάρχουν
   text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
   const article = JSON.parse(text);
   return article;
@@ -108,16 +107,24 @@ HTML RULES:
 
 async function main() {
   const dateStr = getDateString();
- // Βρες keywords που έχουν ήδη χρησιμοποιηθεί
- const usedKeywords = [];
- const slugMatches = currentFile.match(/slug:\s*"([^"]+)"/g) || [];
- console.log('Existing articles:', slugMatches.length);
 
-// Επέλεξε keyword που δεν έχει χρησιμοποιηθεί
-const availableKeywords = KEYWORDS.filter(k => !usedKeywords.includes(k));
-const keyword = availableKeywords.length > 0 
-  ? availableKeywords[Math.floor(Math.random() * availableKeywords.length)]
-  : KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
+  // Διάβασε το υπάρχον articles.ts πρώτα
+  const currentFile = fs.readFileSync('src/app/insights/articles.ts', 'utf8');
+
+  // Βρες keywords που έχουν ήδη χρησιμοποιηθεί
+  const usedKeywords = [];
+  const matches = currentFile.match(/"keywords":\s*\[([^\]]+)\]/g) || [];
+  matches.forEach(m => {
+    const kws = m.match(/"([^"]+)"/g) || [];
+    kws.forEach(k => usedKeywords.push(k.replace(/"/g, '')));
+  });
+  console.log('Used keywords:', usedKeywords);
+
+  // Επέλεξε keyword που δεν έχει χρησιμοποιηθεί
+  const availableKeywords = KEYWORDS.filter(k => !usedKeywords.includes(k));
+  const keyword = availableKeywords.length > 0
+    ? availableKeywords[Math.floor(Math.random() * availableKeywords.length)]
+    : KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
 
   console.log('Date:', dateStr);
   console.log('Keyword:', keyword);
@@ -130,8 +137,6 @@ const keyword = availableKeywords.length > 0
   const newArticle = await generateArticle(trending, keyword, dateStr);
   console.log('Article generated:', newArticle.title);
   console.log('Slug:', newArticle.slug);
-
-  const currentFile = fs.readFileSync('src/app/insights/articles.ts', 'utf8');
 
   const articleEntry = `  {
     slug: "${newArticle.slug}",
