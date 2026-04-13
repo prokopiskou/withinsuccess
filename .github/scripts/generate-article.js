@@ -63,11 +63,13 @@ TRENDING CONTEXT: ${trendingContext}
 Γράψε ένα άρθρο για το blog withinsuccess.gr με primary keyword: "${keyword}"
 
 BRAND VOICE:
-- Target: Άνθρωποι 25-35 που νιώθουν stuck - γράφεις σε αρσενικό γένος (ο αναγνώστης, ο χρήστης)
-- Tone: Direct, minimal, χωρίς motivational clichés
+- Γράφεις σε απλά ελληνικά, αρσενικό γένος
+- Τόνος: άμεσος, καθαρός, χωρίς κλισέ αυτοβελτίωσης
 - Ποτέ "πειθαρχία" ή "συνέπεια" - πάντα "ταυτότητα" και "εσωτερική ιστορία"
-- Χρησιμοποίησε παύλες - όχι em dashes
-- Μικρές προτάσεις. Καθαρές.
+- Ποτέ αγγλικές λέξεις εκτός αν δεν υπάρχει ελληνικό αντίστοιχο (π.χ. burnout, autopilot = αυτόματος πιλότος)
+- Ποτέ: trance, naming, single-tasking, digital boundaries, zen, present, practice, focused, pause, pattern, trend, mindfulness, scroll, multitasking
+- Αντί για "autopilot" γράφε "αυτόματος πιλότος"
+- Μικρές προτάσεις. Καθαρές. Παύλες - όχι em dashes.
 
 ΔΟΜΗ:
 1. H1 με primary keyword
