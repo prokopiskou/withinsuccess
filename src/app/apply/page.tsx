@@ -30,12 +30,11 @@ export default function Apply() {
       <main className="min-h-screen bg-white font-sans">
         <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
         <section className="pt-40 pb-24 px-6 max-w-xl mx-auto text-center">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">Ελήφθη</p>
           <h1 className="text-3xl md:text-4xl font-semibold leading-tight mb-6" style={{fontFamily: 'Georgia, serif'}}>
             Η αίτησή σου έφτασε.
           </h1>
           <p className="text-gray-500 leading-relaxed">
-            Θα σε επικοινωνήσω εντός 2-3 εργάσιμων ημερών. Αν υπάρχει fit, θα σου στείλω link για να κλείσουμε μια πρώτη συνάντηση.
+            Μετά την αξιολόγηση της αίτησής σου θα λάβεις ένα email εντός 2-3 εργάσιμων ημερών.
           </p>
         </section>
       </main>
@@ -52,7 +51,7 @@ export default function Apply() {
           Αίτηση Συνεργασίας
         </h1>
         <p className="text-gray-500 mb-12">
-          Διαβάζω κάθε αίτηση προσωπικά. Αν υπάρχει fit, επικοινωνώ εντός 2-3 ημερών.
+          Κάθε αίτηση αξιολογείται προσωπικά. Αν υπάρχει αντιστοιχία, επικοινωνώ εντός 2-3 ημερών.
         </p>
 
         {/* PROGRESS */}
@@ -97,8 +96,8 @@ export default function Apply() {
 
         {/* STEP 2 */}
         {step === 2 && (
-          <div className="flex flex-col gap-6">
-            <h2 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Τι σε έφερε εδώ τώρα;</h2>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold mb-2" style={{fontFamily: 'Georgia, serif'}}>Τι σε έφερε εδώ τώρα;</h2>
             {[
               "Νιώθω κολλημένος και δεν ξέρω από πού να ξεκινήσω",
               "Ξεκινάω αλλά δεν συνεχίζω",
@@ -108,7 +107,7 @@ export default function Apply() {
               <button
                 key={option}
                 onClick={() => { setForm({...form, reason: option}); setStep(3); }}
-                className={`text-left px-6 py-4 rounded-xl border text-sm transition-all ${form.reason === option ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-400'}`}
+                className="text-left px-6 py-4 rounded-xl border border-gray-200 text-sm hover:border-black transition-all"
               >
                 {option}
               </button>
@@ -118,8 +117,8 @@ export default function Apply() {
 
         {/* STEP 3 */}
         {step === 3 && (
-          <div className="flex flex-col gap-6">
-            <h2 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Έχεις δουλέψει ξανά με coach ή σε πρόγραμμα;</h2>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold mb-2" style={{fontFamily: 'Georgia, serif'}}>Έχεις δουλέψει ξανά με coach ή σε πρόγραμμα;</h2>
             {[
               "Όχι, είναι η πρώτη φορά",
               "Ναι, αλλά δεν είδα αποτελέσματα",
@@ -128,7 +127,7 @@ export default function Apply() {
               <button
                 key={option}
                 onClick={() => { setForm({...form, experience: option}); setStep(4); }}
-                className={`text-left px-6 py-4 rounded-xl border text-sm transition-all ${form.experience === option ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-400'}`}
+                className="text-left px-6 py-4 rounded-xl border border-gray-200 text-sm hover:border-black transition-all"
               >
                 {option}
               </button>
@@ -159,8 +158,8 @@ export default function Apply() {
 
         {/* STEP 5 */}
         {step === 5 && (
-          <div className="flex flex-col gap-6">
-            <h2 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Το 1:1 coaching είναι επένδυση χρόνου και χρημάτων. Πώς το βλέπεις;</h2>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold mb-2" style={{fontFamily: 'Georgia, serif'}}>Το 1:1 coaching είναι επένδυση χρόνου και χρημάτων. Πώς το βλέπεις;</h2>
             {[
               "Είμαι έτοιμος αν αυτό είναι το σωστό βήμα",
               "Θέλω να μάθω περισσότερα πριν αποφασίσω",
@@ -169,7 +168,7 @@ export default function Apply() {
               <button
                 key={option}
                 onClick={() => setForm({...form, readiness: option})}
-                className={`text-left px-6 py-4 rounded-xl border text-sm transition-all ${form.readiness === option ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-400'}`}
+                className={`text-left px-6 py-4 rounded-xl border text-sm transition-all ${form.readiness === option ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-black'}`}
               >
                 {option}
               </button>
