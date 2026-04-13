@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     normalizedName = name;
   }
 
-  // Email notification μέσω Resend
+  // Email μέσω Resend
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
       "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "WithinSuccess <onboarding@resend.dev>",
-      to: ["hello@withinsuccess.gr"],
+      from: "onboarding@resend.dev",
+      to: ["withinsuccess@gmail.com"],
       subject: `Νέα αίτηση 1:1 Coaching - ${normalizedName}`,
       html: `
         <h2>Νέα αίτηση 1:1 Coaching</h2>
