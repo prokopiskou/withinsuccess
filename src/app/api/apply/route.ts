@@ -29,29 +29,30 @@ export async function POST(req: Request) {
     normalizedName = name;
   }
 
-  // Αποθήκευση στο Notion
-  await fetch("https://api.notion.com/v1/pages", {
+  // Email notification στον Προκόπη μέσω MailerLite
+  await fetch("https://connect.mailerlite.com/api/transactional/email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.NOTION_API_KEY}`,
-      "Notion-Version": "2022-06-28",
+      "Authorization": `Bearer ${process.env.MAILERLITE_API_KEY}`,
     },
     body: JSON.stringify({
-      parent: { database_id: "3415b53ee189803e9b71000cd808ec4b" },
-      properties: {
-        Name: { title: [{ text: { content: normalizedName } }] },
-        Email: { email },
-        Reason: { rich_text: [{ text: { content: reason } }] },
-        Experience: { rich_text: [{ text: { content: experience } }] },
-        Goal: { rich_text: [{ text: { content: goal } }] },
-        Readiness: { rich_text: [{ text: { content: readiness } }] },
-        Status: { select: { name: "Νέα" } },
-      },
+      from: { email: "hello@withinsuccess.gr", name: "WithinSuccess" },
+      to: [{ email: "hello@withinsuccess.gr" }],
+      subject: `Νέα αίτηση 1:1 Coaching - ${normalizedName}`,
+      html: `
+        <h2>Νέα αίτηση 1:1 Coaching</h2>
+        <p><strong>Όνομα:</strong> ${normalizedName}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Τι τον έφερε εδώ:</strong> ${reason}</p>
+        <p><strong>Εμπειρία:</strong> ${experience}</p>
+        <p><strong>Στόχος σε 6 μήνες:</strong> ${goal}</p>
+        <p><strong>Ετοιμότητα:</strong> ${readiness}</p>
+      `,
     }),
   });
 
-  // Αποθήκευση στο MailerLite
+  // Αποθήκευση στο MailerLite group
   await fetch("https://connect.mailerlite.com/api/subscribers", {
     method: "POST",
     headers: {
