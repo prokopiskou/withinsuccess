@@ -2,20 +2,20 @@
 
 import { Suspense, useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import SiteNav from '@/components/SiteNav'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const STRIPE_LINK = 'https://buy.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
 
-function getPersonalizedHeadline(painPoint: string | null): string {
-  if (!painPoint) return 'Η πιο επώδυνη ανθρώπινη ύπαρξη δεν είναι να χάσεις τα πάντα. Είναι να μην τολμήσεις να χάσεις ποτέ τίποτα.'
-  return `Αυτό που κουβαλάς — "${painPoint}" — είναι ακριβώς από εκεί που ξεκινάμε.`
+const DEFAULTS = {
+  headline: 'Η πιο επώδυνη ανθρώπινη ύπαρξη δεν είναι να χάσεις τα πάντα. Είναι να μην τολμήσεις να χάσεις ποτέ τίποτα.',
+  subheadline: '63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη.\nΌχι τεχνικές. Όχι λίστες. Μόνο αυτό που ξέρεις ήδη αλλά δεν έχεις ζήσει.',
+  bullets: [
+    '9 φωνητικά μηνύματα — κάθε Κυριακή',
+    '9 Playbooks — καθημερινές πράξεις 1-3 λεπτών',
+    'Πρόσβαση στην κοινότητα για 63 ημέρες',
+    'Ξεκινάς 12 Μαΐου'
+  ]
 }
 
 const broadcastImages = [
@@ -43,16 +43,10 @@ function Carousel({ images }: { images: string[] }) {
     trackRef.current?.scrollTo({ left: i * trackRef.current.offsetWidth, behavior: 'smooth' })
   }
 
-  const prev = () => goTo(Math.max(0, current - 1))
-  const next = () => goTo(Math.min(images.length - 1, current + 1))
-
   useEffect(() => {
     const el = trackRef.current
     if (!el) return
-    const onScroll = () => {
-      const i = Math.round(el.scrollLeft / el.offsetWidth)
-      setCurrent(i)
-    }
+    const onScroll = () => setCurrent(Math.round(el.scrollLeft / el.offsetWidth))
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
   }, [])
@@ -72,13 +66,13 @@ function Carousel({ images }: { images: string[] }) {
         ))}
       </div>
       <div className="flex items-center justify-between mt-4">
-        <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'<'}</button>
+        <button onClick={() => goTo(Math.max(0, current - 1))} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'<'}</button>
         <div className="flex gap-2">
           {images.map((_, i) => (
             <button key={i} onClick={() => goTo(i)} className={`h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
           ))}
         </div>
-        <button onClick={next} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'>'}</button>
+        <button onClick={() => goTo(Math.min(images.length - 1, current + 1))} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'>'}</button>
       </div>
     </div>
   )
@@ -86,23 +80,55 @@ function Carousel({ images }: { images: string[] }) {
 
 function PageContent() {
   const searchParams = useSearchParams()
-  const token = searchParams.get('token')
-  const [painPoint, setPainPoint] = useState<string | null>(null)
+  const sid = searchParams.get('sid')
+  const [headline, setHeadline] = useState(DEFAULTS.headline)
+  const [subheadline, setSubheadline] = useState(DEFAULTS.subheadline)
+  const [bullets, setBullets] = useState(DEFAULTS.bullets)
   const [loading, setLoading] = useState(true)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   useEffect(() => {
-    async function fetchConversation() {
-      if (!token) { setLoading(false); return }
-      const { data } = await supabase
-        .from('manychat_conversations')
-        .select('last_user_message')
-        .eq('subscriber_id', token)
-        .single()
-      if (data?.last_user_message) setPainPoint(data.last_user_message)
+    async function load() {
+      if (!sid) { setLoading(false); return }
+      try {
+        const res = await fetch('/api/manychat/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscriber_id: sid })
+        })
+        const data = await res.json()
+        if (data.personalized) {
+          if (data.headline) setHeadline(data.headline)
+          if (data.subheadline) setSubheadline(data.subheadline)
+          if (data.bullets?.length) {
+            setBullets([...data.bullets, 'Ξεκινάς 12 Μαΐου'])
+          }
+        }
+      } catch {}
       setLoading(false)
     }
-    fetchConversation()
-  }, [token])
+    load()
+  }, [sid])
+
+  const handleCheckout = async () => {
+    if (!sid) {
+      window.location.href = STRIPE_LINK
+      return
+    }
+    setCheckoutLoading(true)
+    try {
+      const res = await fetch('/api/stripe/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriber_id: sid })
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch {
+      window.location.href = STRIPE_LINK
+    }
+    setCheckoutLoading(false)
+  }
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -118,19 +144,15 @@ function PageContent() {
       <section className="pt-32 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-8" style={{ fontFamily: 'Georgia, serif' }}>
-          {getPersonalizedHeadline(painPoint)}
+          {headline}
         </h1>
         <p className="text-lg text-gray-500 leading-relaxed mb-12">
-          63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη.<br />
-          Όχι τεχνικές. Όχι λίστες. Μόνο αυτό που ξέρεις ήδη αλλά δεν έχεις ζήσει.
+          {subheadline.split('\n').map((line, i) => (
+            <span key={i}>{line}{i < subheadline.split('\n').length - 1 && <br />}</span>
+          ))}
         </p>
         <div className="flex flex-col gap-3 max-w-sm mx-auto mb-12 text-left">
-          {[
-            '9 φωνητικά μηνύματα — κάθε Κυριακή',
-            '9 Playbooks — καθημερινές πράξεις 1-3 λεπτών',
-            'Πρόσβαση στην κοινότητα για 63 ημέρες',
-            'Ξεκινάς 12 Μαΐου'
-          ].map((item, i) => (
+          {bullets.map((item, i) => (
             <div key={i} className="flex items-start gap-3">
               <span className="text-gray-300 mt-1">—</span>
               <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
@@ -141,13 +163,14 @@ function PageContent() {
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-2">Επένδυση</p>
           <p className="text-5xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>€69</p>
         </div>
-        
-<a href={STRIPE_LINK}
+        <button
+          onClick={handleCheckout}
+          disabled={checkoutLoading}
           className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: GOLD }}
+          style={{ backgroundColor: GOLD, cursor: checkoutLoading ? 'wait' : 'pointer', opacity: checkoutLoading ? 0.6 : 1 }}
         >
-          Κατοχύρωσε τη θέση σου
-        </a>
+          {checkoutLoading ? 'Φόρτωση...' : 'Κατοχύρωσε τη θέση σου'}
+        </button>
       </section>
 
       <section className="py-16 px-6 bg-gray-50">
@@ -173,13 +196,14 @@ function PageContent() {
             Ο χειμώνας πέρασε. Η άνοιξη τελειώνει.<br />
             Το καλοκαίρι έρχεται και έχεις ακόμα 63 μέρες μπροστά σου.
           </p>
-          <a
-            href={STRIPE_LINK}
+          <button
+            onClick={handleCheckout}
+            disabled={checkoutLoading}
             className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: GOLD }}
+            style={{ backgroundColor: GOLD, cursor: checkoutLoading ? 'wait' : 'pointer', opacity: checkoutLoading ? 0.6 : 1 }}
           >
-            Κατοχύρωσε τη θέση σου
-          </a>
+            {checkoutLoading ? 'Φόρτωση...' : 'Κατοχύρωσε τη θέση σου'}
+          </button>
           <p className="text-xs text-gray-400 mt-4">Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.</p>
         </div>
       </section>
@@ -190,7 +214,6 @@ function PageContent() {
           <p className="text-xs text-gray-400">© 2026 WithinSuccess · Προκόπης Κούκης</p>
         </div>
       </footer>
-
     </main>
   )
 }

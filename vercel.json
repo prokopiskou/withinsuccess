@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/manychat/cron",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}
