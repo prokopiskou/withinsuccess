@@ -1,8 +1,9 @@
 'use client'
 
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import Image from 'next/image'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,111 +35,45 @@ function getPersonalizedHeadline(painPoint: string | null): string {
 
 function Carousel({ images }: { images: string[] }) {
   const [current, setCurrent] = useState(0)
-  const scrollerRef = useRef<HTMLDivElement>(null)
-
-  const scrollToIndex = (index: number) => {
-    const el = scrollerRef.current
-    if (!el) return
-    const clamped = Math.max(0, Math.min(images.length - 1, index))
-    const w = el.clientWidth
-    el.scrollTo({ left: clamped * w, behavior: 'smooth' })
-    setCurrent(clamped)
-  }
-
-  useEffect(() => {
-    const el = scrollerRef.current
-    if (!el) return
-    const onScroll = () => {
-      const w = el.clientWidth
-      if (w === 0) return
-      const idx = Math.round(el.scrollLeft / w)
-      setCurrent(Math.min(images.length - 1, Math.max(0, idx)))
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [images.length])
-
-  const arrowStyle = {
-    background: 'transparent',
-    border: '0.5px solid rgba(255,255,255,0.25)',
-    color: '#fff',
-    padding: '10px 18px',
-    cursor: 'pointer',
-    borderRadius: 4,
-    fontSize: 18,
-    lineHeight: 1,
-  } as const
 
   return (
-    <div style={{ width: '100%', position: 'relative', background: '#000' }}>
-      <div
-        ref={scrollerRef}
-        style={{
-          display: 'flex',
-          overflowX: 'auto',
-          scrollSnapType: 'x mandatory',
-          WebkitOverflowScrolling: 'touch',
-          borderRadius: 4,
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
-        className="carousel-scroller"
-      >
-        <style>{`.carousel-scroller::-webkit-scrollbar { display: none; }`}</style>
-        {images.map((src, i) => (
-          <div
-            key={`${i}-${src}`}
-            style={{
-              flex: '0 0 100%',
-              width: '100%',
-              minWidth: '100%',
-              scrollSnapAlign: 'start',
-              boxSizing: 'border-box',
-            }}
-          >
-            <img
-              src={src}
-              alt=""
-              style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 4 }}
-            />
-          </div>
-        ))}
+    <div style={{ width: '100%', position: 'relative' }}>
+      <div style={{ overflow: 'hidden', borderRadius: 4 }}>
+        <img
+          src={images[current]}
+          alt=""
+          style={{ width: '100%', display: 'block', borderRadius: 4 }}
+        />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
         {images.map((_, i) => (
           <button
             key={i}
-            type="button"
-            onClick={() => scrollToIndex(i)}
-            aria-label={`Slide ${i + 1}`}
+            onClick={() => setCurrent(i)}
             style={{
               width: i === current ? 24 : 8,
               height: 8,
               borderRadius: 4,
-              background: i === current ? '#fff' : 'rgba(255,255,255,0.35)',
+              background: i === current ? '#fff' : 'rgba(255,255,255,0.3)',
               border: 'none',
               cursor: 'pointer',
               padding: 0,
-              transition: 'width 0.2s, background 0.2s',
+              transition: 'all 0.3s'
             }}
           />
         ))}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
         <button
-          type="button"
-          onClick={() => scrollToIndex(current - 1)}
-          style={arrowStyle}
+          onClick={() => setCurrent(i => Math.max(0, i - 1))}
+          style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: 4, fontSize: 14 }}
         >
           ←
         </button>
-        <span style={{ fontSize: 13, opacity: 0.45, color: '#fff' }}>
-          {current + 1} / {images.length}
-        </span>
+        <span style={{ fontSize: 13, opacity: 0.4, alignSelf: 'center' }}>{current + 1} / {images.length}</span>
         <button
-          type="button"
-          onClick={() => scrollToIndex(current + 1)}
-          style={arrowStyle}
+          onClick={() => setCurrent(i => Math.min(images.length - 1, i + 1))}
+          style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: 4, fontSize: 14 }}
         >
           →
         </button>
@@ -207,25 +142,29 @@ function PageContent() {
         Κατοχύρωσε τη θέση σου
       </a>
 
-      <p style={{ fontSize: 13, opacity: 0.4, letterSpacing: 2, textTransform: 'uppercase', marginTop: 48, marginBottom: 20, textAlign: 'center' }}>
+      <p style={{ marginTop: 32, fontSize: 13, opacity: 0.3, textAlign: 'center', marginBottom: 64 }}>
+        Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.
+      </p>
+
+      <div style={{ width: 40, height: 1, background: '#fff', opacity: 0.1, marginBottom: 48 }} />
+
+      <p style={{ fontSize: 13, opacity: 0.4, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 24, textAlign: 'center' }}>
         Μέσα στο broadcast channel
       </p>
 
-      <div style={{ width: '100%', marginBottom: 48 }}>
+      <div style={{ width: '100%', marginBottom: 64 }}>
         <Carousel images={broadcastImages} />
       </div>
+
+      <div style={{ width: 40, height: 1, background: '#fff', opacity: 0.1, marginBottom: 48 }} />
 
       <div style={{ width: '100%', marginBottom: 48 }}>
         <Carousel images={testimonialImages} />
       </div>
 
-      <a href={STRIPE_LINK} style={{ display: 'block', width: '100%', padding: '18px 0', background: '#fff', color: '#000', textAlign: 'center', fontSize: 16, fontWeight: 600, letterSpacing: 1, textDecoration: 'none' }}>
+      <a href={STRIPE_LINK} style={{ display: 'block', width: '100%', padding: '18px 0', background: '#fff', color: '#000', textAlign: 'center', fontSize: 16, fontWeight: 600, letterSpacing: 1, textDecoration: 'none', marginBottom: 32 }}>
         Κατοχύρωσε τη θέση σου
       </a>
-
-      <p style={{ marginTop: 32, fontSize: 13, opacity: 0.3, textAlign: 'center' }}>
-        Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.
-      </p>
 
     </div>
   )
