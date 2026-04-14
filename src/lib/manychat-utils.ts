@@ -19,7 +19,7 @@ export function hoursSince(dateStr: string): number {
 
 export async function sendManyChatMessage(subscriberId: string, message: string): Promise<boolean> {
   try {
-    const res = await fetch('https://api.manychat.com/ig/sending/sendContent', {
+    const res = await fetch('https://api.manychat.com/fb/sending/sendContent', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`,
