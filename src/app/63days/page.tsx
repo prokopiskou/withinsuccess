@@ -72,13 +72,13 @@ function Carousel({ images }: { images: string[] }) {
         ))}
       </div>
       <div className="flex items-center justify-between mt-4">
-        <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
+        <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'<'}</button>
         <div className="flex gap-2">
           {images.map((_, i) => (
             <button key={i} onClick={() => goTo(i)} className={`h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
           ))}
         </div>
-        <button onClick={next} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">→</button>
+        <button onClick={next} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">{'>'}</button>
       </div>
     </div>
   )
@@ -113,9 +113,8 @@ function PageContent() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans">
-      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
+      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ" />
 
-      {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-8" style={{ fontFamily: 'Georgia, serif' }}>
@@ -143,15 +142,14 @@ function PageContent() {
           <p className="text-5xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>€69</p>
         </div>
         
-          href={STRIPE_LINK}
+<a href={STRIPE_LINK}
           className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
           style={{ backgroundColor: GOLD }}
         >
-          Κατοχύρωσε τη θέση σου →
+          Κατοχύρωσε τη θέση σου
         </a>
       </section>
 
-      {/* BROADCAST */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Μέσα στο broadcast channel</p>
@@ -159,7 +157,6 @@ function PageContent() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Αυτοί το έζησαν</p>
@@ -167,7 +164,6 @@ function PageContent() {
         </div>
       </section>
 
-      {/* SECOND CTA */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif' }}>
@@ -182,13 +178,12 @@ function PageContent() {
             className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
             style={{ backgroundColor: GOLD }}
           >
-            Κατοχύρωσε τη θέση σου →
+            Κατοχύρωσε τη θέση σου
           </a>
           <p className="text-xs text-gray-400 mt-4">Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.</p>
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="py-12 px-6 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>WithinSuccess</span>
