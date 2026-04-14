@@ -148,7 +148,7 @@ async function processPending() {
   let processed = 0
 
   for (const conv of pending) {
-    if (!hasDelayPassed(conv.received_at, getHumanDelayMs())) continue
+    // delay disabled for testing
 
     try {
       const response = await anthropic.messages.create({
