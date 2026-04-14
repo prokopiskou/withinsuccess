@@ -27,6 +27,7 @@ export async function sendManyChatMessage(subscriberId: string, message: string)
       },
       body: JSON.stringify({
         subscriber_id: subscriberId,
+        message_tag: "HUMAN_AGENT",
         data: {
           version: 'v2',
           content: {
