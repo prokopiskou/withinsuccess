@@ -5,7 +5,7 @@ export const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 )
 
-export const LANDING_PAGE_BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://withinsuccess.gr'
+export const LANDING_PAGE_BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://withinsuccess.vercel.app'
 
 export function isWithinBusinessHours(): boolean {
   const now = new Date()
@@ -19,7 +19,7 @@ export function hoursSince(dateStr: string): number {
 
 export async function sendManyChatMessage(subscriberId: string, message: string): Promise<boolean> {
   try {
-    const res = await fetch('https://api.manychat.com/fb/sending/sendContent', {
+    const res = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`,
@@ -27,12 +27,8 @@ export async function sendManyChatMessage(subscriberId: string, message: string)
       },
       body: JSON.stringify({
         subscriber_id: parseInt(subscriberId),
-        data: {
-          version: 'v2',
-          content: {
-            messages: [{ type: 'text', text: message }]
-          }
-        }
+        field_id: 13632075,
+        field_value: message
       })
     })
     if (!res.ok) {
