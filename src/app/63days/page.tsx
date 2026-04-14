@@ -173,7 +173,7 @@ function PageContent() {
             Ο χειμώνας πέρασε. Η άνοιξη τελειώνει.<br />
             Το καλοκαίρι έρχεται και έχεις ακόμα 63 μέρες μπροστά σου.
           </p>
-          
+          <a
             href={STRIPE_LINK}
             className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
             style={{ backgroundColor: GOLD }}
