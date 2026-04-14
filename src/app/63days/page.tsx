@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import Image from 'next/image'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,9 +12,74 @@ const supabase = createClient(
 
 const STRIPE_LINK = 'https://buy.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 
+const broadcastImages = [
+  '/broadcast.webp',
+  '/broadcast1.webp',
+  '/broadcast2.webp',
+  '/broadcast3.webp',
+  '/broadcast4.webp',
+  '/broadcast5.webp',
+  '/broadcast6.webp',
+]
+
+const testimonialImages = [
+  '/testimonial63_1.webp',
+  '/Testimonial63_2.webp',
+  '/testimonial63_3.webp',
+]
+
 function getPersonalizedHeadline(painPoint: string | null): string {
   if (!painPoint) return 'Η πιο επώδυνη ανθρώπινη ύπαρξη δεν είναι να χάσεις τα πάντα. Είναι να μην τολμήσεις να χάσεις ποτέ τίποτα.'
   return `Αυτό που κουβαλάς — "${painPoint}" — είναι ακριβώς από εκεί που ξεκινάμε.`
+}
+
+function Carousel({ images }: { images: string[] }) {
+  const [current, setCurrent] = useState(0)
+
+  return (
+    <div style={{ width: '100%', position: 'relative' }}>
+      <div style={{ overflow: 'hidden', borderRadius: 4 }}>
+        <img
+          src={images[current]}
+          alt=""
+          style={{ width: '100%', display: 'block', borderRadius: 4 }}
+        />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            style={{
+              width: i === current ? 24 : 8,
+              height: 8,
+              borderRadius: 4,
+              background: i === current ? '#fff' : 'rgba(255,255,255,0.3)',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              transition: 'all 0.3s'
+            }}
+          />
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
+        <button
+          onClick={() => setCurrent(i => Math.max(0, i - 1))}
+          style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: 4, fontSize: 14 }}
+        >
+          ←
+        </button>
+        <span style={{ fontSize: 13, opacity: 0.4, alignSelf: 'center' }}>{current + 1} / {images.length}</span>
+        <button
+          onClick={() => setCurrent(i => Math.min(images.length - 1, i + 1))}
+          style={{ background: 'transparent', border: '0.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: 4, fontSize: 14 }}
+        >
+          →
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function PageContent() {
@@ -45,10 +111,19 @@ function PageContent() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#000', color: '#fff', fontFamily: '"Playfair Display", Georgia, serif', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 24px', maxWidth: 640, margin: '0 auto' }}>
+
       <div style={{ fontSize: 120, fontWeight: 700, lineHeight: 1, marginBottom: 48, letterSpacing: -4 }}>63</div>
-      <h1 style={{ fontSize: 28, fontWeight: 400, lineHeight: 1.4, textAlign: 'center', marginBottom: 48 }}>{getPersonalizedHeadline(painPoint)}</h1>
+
+      <h1 style={{ fontSize: 28, fontWeight: 400, lineHeight: 1.4, textAlign: 'center', marginBottom: 48 }}>
+        {getPersonalizedHeadline(painPoint)}
+      </h1>
+
       <div style={{ width: 40, height: 1, background: '#fff', opacity: 0.3, marginBottom: 48 }} />
-      <p style={{ fontSize: 16, lineHeight: 1.8, textAlign: 'center', opacity: 0.7, marginBottom: 48 }}>63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη. Όχι τεχνικές. Όχι λίστες. Μόνο αυτό που ξέρεις ήδη αλλά δεν έχεις ζήσει.</p>
+
+      <p style={{ fontSize: 16, lineHeight: 1.8, textAlign: 'center', opacity: 0.7, marginBottom: 48 }}>
+        63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη. Όχι τεχνικές. Όχι λίστες. Μόνο αυτό που ξέρεις ήδη αλλά δεν έχεις ζήσει.
+      </p>
+
       <div style={{ width: '100%', marginBottom: 48 }}>
         {['9 φωνητικά μηνύματα — κάθε Κυριακή', '9 Playbooks — καθημερινές πράξεις 1-3 λεπτών', 'Πρόσβαση στην κοινότητα για 63 ημέρες', 'Ξεκινάς 12 Μαΐου'].map((item, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
@@ -57,14 +132,40 @@ function PageContent() {
           </div>
         ))}
       </div>
+
       <div style={{ marginBottom: 40, textAlign: 'center' }}>
         <span style={{ fontSize: 14, opacity: 0.5, letterSpacing: 2, textTransform: 'uppercase' }}>Επένδυση</span>
         <div style={{ fontSize: 48, fontWeight: 700, marginTop: 8 }}>€69</div>
       </div>
+
       <a href={STRIPE_LINK} style={{ display: 'block', width: '100%', padding: '18px 0', background: '#fff', color: '#000', textAlign: 'center', fontSize: 16, fontWeight: 600, letterSpacing: 1, textDecoration: 'none' }}>
         Κατοχύρωσε τη θέση σου
       </a>
-      <p style={{ marginTop: 32, fontSize: 13, opacity: 0.3, textAlign: 'center' }}>Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.</p>
+
+      <p style={{ marginTop: 32, fontSize: 13, opacity: 0.3, textAlign: 'center', marginBottom: 64 }}>
+        Περιορισμένες θέσεις. Έναρξη 12 Μαΐου 2026.
+      </p>
+
+      <div style={{ width: 40, height: 1, background: '#fff', opacity: 0.1, marginBottom: 48 }} />
+
+      <p style={{ fontSize: 13, opacity: 0.4, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 24, textAlign: 'center' }}>
+        Μέσα στο broadcast channel
+      </p>
+
+      <div style={{ width: '100%', marginBottom: 64 }}>
+        <Carousel images={broadcastImages} />
+      </div>
+
+      <div style={{ width: 40, height: 1, background: '#fff', opacity: 0.1, marginBottom: 48 }} />
+
+      <div style={{ width: '100%', marginBottom: 48 }}>
+        <Carousel images={testimonialImages} />
+      </div>
+
+      <a href={STRIPE_LINK} style={{ display: 'block', width: '100%', padding: '18px 0', background: '#fff', color: '#000', textAlign: 'center', fontSize: 16, fontWeight: 600, letterSpacing: 1, textDecoration: 'none', marginBottom: 32 }}>
+        Κατοχύρωσε τη θέση σου
+      </a>
+
     </div>
   )
 }
