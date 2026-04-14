@@ -19,21 +19,14 @@ export function hoursSince(dateStr: string): number {
 
 export async function sendManyChatMessage(subscriberId: string, message: string): Promise<boolean> {
   try {
-    const res = await fetch('https://api.manychat.com/fb/sending/sendContent', {
+    const res = await fetch(`https://api.manychat.com/fb/subscriber/sendContent/${subscriberId}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        subscriber_id: subscriberId,
-        message_tag: "ACCOUNT_UPDATE",
-        data: {
-          version: 'v2',
-          content: {
-            messages: [{ type: 'text', text: message }]
-          }
-        }
+        messages: [{ type: 'text', text: message }]
       })
     })
     if (!res.ok) {
