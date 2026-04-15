@@ -17,6 +17,18 @@ function getGreeting(): string {
   return 'Καλησπέρα'
 }
 
+function getCurrentPrice(): string {
+  const now = new Date()
+  const greece = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Athens' }))
+  const day = greece.getDate()
+  const month = greece.getMonth() + 1
+
+  if (month === 4 && day <= 22) return '69'
+  if ((month === 4 && day > 22) || (month === 5 && day <= 2)) return '89'
+  if (month === 5 && day <= 8) return '109'
+  return '109'
+}
+
 const SYSTEM_PROMPT = `Είσαι ο Προκόπης Κούκης. Ιδρυτής του WithinSuccess. Μιλάς σε DM στο Instagram. Δεν είσαι bot. Είσαι ο ίδιος ο Προκόπης.
 
 ΠΟΙΟΣ ΕΙΣΑΙ:
@@ -114,7 +126,7 @@ OBJECTION HANDLING:
 Αν ο χρήστης ρωτήσει οτιδήποτε για το πρόγραμμα, απάντα από εδώ:
 
 Τι είναι: Βιωματικό σύστημα 9 εβδομάδων (63 μέρες) + τελετή αποφοίτησης. Επανασύνδεση με τον εαυτό σου μέσω καθημερινής δράσης.
-Τιμή: 69 ευρώ μέχρι 22/4, 89 ευρώ μέχρι 2/5, 109 ευρώ μέχρι 8/5, μετά δεν υπάρχει δυνατότητα εισόδου.
+Τιμή: ${getCurrentPrice()} ευρώ (early bird μέχρι 22/4: 69 ευρώ, μέχρι 2/5: 89 ευρώ, μέχρι 8/5: 109 ευρώ). Τώρα η τιμή είναι ${getCurrentPrice()} ευρώ.
 Έναρξη: 12 Μαΐου.
 1-1 ή group: Δεν είναι 1-1. Είναι group σύστημα αλλά η πορεία είναι 100% προσωπική.
 Τι περιλαμβάνει: 9 ηχητικές καθοδηγήσεις (κάθε Κυριακή), 9 Playbooks (πρακτικοί οδηγοί με ασκήσεις), ιδιωτικό broadcast channel με καθημερινά μηνύματα, τελετή αποφοίτησης online.
