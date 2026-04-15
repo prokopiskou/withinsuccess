@@ -5,6 +5,7 @@ import {
   isWithinBusinessHours,
   hoursSince,
   sendManyChatMessage,
+  setManyChatField,
   LANDING_PAGE_BASE
 } from '@/lib/manychat-utils'
 
@@ -207,6 +208,14 @@ async function processPending() {
 
   for (const conv of pending) {
     // delay disabled for testing
+    if (hoursSince(conv.received_at) > 48) {
+      await setManyChatField(conv.subscriber_id, 14485912, 'No')
+      await supabaseAdmin
+        .from('manychat_conversations')
+        .update({ status: 'expired' })
+        .eq('id', conv.id)
+      continue
+    }
 
     try {
       const response = await anthropic.messages.create({
