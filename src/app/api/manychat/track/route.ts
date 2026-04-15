@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/manychat-utils'
+import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       .from('manychat_conversations')
       .update({ link_clicked_at: new Date().toISOString() })
       .eq('subscriber_id', subscriber_id)
+    await setManyChatField(subscriber_id, 14490100, 'yes')
 
     return NextResponse.json({
       personalized: !!(data.personalized_headline),

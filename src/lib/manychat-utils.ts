@@ -41,3 +41,28 @@ export async function sendManyChatMessage(subscriberId: string, message: string)
     return false
   }
 }
+
+export async function setManyChatField(subscriberId: string, fieldId: number, value: string): Promise<boolean> {
+  try {
+    const res = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        subscriber_id: parseInt(subscriberId),
+        field_id: fieldId,
+        field_value: value
+      })
+    })
+    if (!res.ok) {
+      console.error(`ManyChat setField error (${res.status}):`, await res.text())
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('ManyChat setField failed:', err)
+    return false
+  }
+}

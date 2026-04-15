@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { supabaseAdmin } from '@/lib/manychat-utils'
+import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia'
@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
         status: 'converted'
       })
       .eq('subscriber_id', subscriberId)
+    const sid = session.metadata?.subscriber_id
+    if (sid) await setManyChatField(sid, 14490102, 'yes')
   }
 
   if (event.type === 'checkout.session.expired') {
