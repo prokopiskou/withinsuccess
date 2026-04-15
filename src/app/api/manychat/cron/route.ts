@@ -270,34 +270,28 @@ async function processPending() {
   return { processed }
 }
 
-async function followUpNoClick() {
+async function followUpNoCheckout() {
   const { data: rows } = await supabaseAdmin
     .from('manychat_conversations')
     .select('*')
     .eq('status', 'link_sent')
-    .is('link_clicked_at', null)
+    .not('link_clicked_at', 'is', null)
+    .is('checkout_started_at', null)
     .eq('followup_no_click_sent', false)
-    .not('link_sent_at', 'is', null)
 
-  if (!rows?.length) return { followups_no_click: 0 }
+  if (!rows?.length) return { followups_no_checkout: 0 }
   let sent = 0
 
   for (const conv of rows) {
-    if (hoursSince(conv.link_sent_at) < 2) continue
-    await sendTelegramAlert(`🔔 Follow-up needed (no click)\nSubscriber: ${conv.subscriber_id}\nLast message: ${conv.last_user_message}\nHours since link: ${Math.round(hoursSince(conv.link_sent_at))}h\n\nSuggested: "Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις."`)
-    const msg = 'Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις.'
-    const ok = await sendManyChatMessage(conv.subscriber_id, msg)
-    if (!ok) continue
+    if (hoursSince(conv.link_clicked_at) < 2) continue
+    await sendTelegramAlert(`🔔 Άνοιξε τη σελίδα αλλά δεν πάτησε κατοχύρωσε\nSubscriber: ${conv.subscriber_id}\nΏρες: ${Math.round(hoursSince(conv.link_clicked_at))}h\n\nΠρότεινε: "Είδα ότι μπήκες στη σελίδα. Αν έχεις κάποια απορία, μου γράφεις."`)
     await supabaseAdmin
       .from('manychat_conversations')
-      .update({
-        followup_no_click_sent: true,
-        messages: [...conv.messages, { role: 'assistant', content: msg }]
-      })
+      .update({ followup_no_click_sent: true })
       .eq('id', conv.id)
     sent++
   }
-  return { followups_no_click: sent }
+  return { followups_no_checkout: sent }
 }
 
 async function followUpAbandonedCheckout() {
@@ -341,7 +335,7 @@ export async function GET(req: NextRequest) {
 
   const [a, b, c] = await Promise.all([
     processPending(),
-    followUpNoClick(),
+    followUpNoCheckout(),
     followUpAbandonedCheckout()
   ])
 
