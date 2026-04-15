@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     } else {
       await supabaseAdmin.from('manychat_conversations').insert({
         subscriber_id: subscriberId,
-        messages,
+        messages: [{ role: 'assistant', content: 'Γεια σου, έλαβα το 63 σου και θα ήθελα για αρχή να σε ρωτήσω, τι είναι αυτό που θα ήθελες να αλλάξεις μέσα από το πρόγραμμα;' }, { role: 'user', content: userMessage }],
         last_user_message: userMessage,
         received_at: new Date().toISOString(),
         status: 'pending'
