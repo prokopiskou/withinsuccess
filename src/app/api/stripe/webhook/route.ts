@@ -39,6 +39,11 @@ export async function POST(req: NextRequest) {
     // Add to MailerLite group
     if (session.customer_details?.email) {
       try {
+        const fullName = session.customer_details.name || ''
+        const nameParts = fullName.trim().split(/\s+/)
+        const firstName = nameParts[0] || ''
+        const lastName = nameParts.slice(1).join(' ') || ''
+
         await fetch('https://connect.mailerlite.com/api/subscribers', {
           method: 'POST',
           headers: {
@@ -47,6 +52,10 @@ export async function POST(req: NextRequest) {
           },
           body: JSON.stringify({
             email: session.customer_details.email,
+            fields: {
+              name: firstName,
+              last_name: lastName
+            },
             groups: ['170438323755550313']
           })
         })
