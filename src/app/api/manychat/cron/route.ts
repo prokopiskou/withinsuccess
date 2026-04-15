@@ -182,6 +182,20 @@ function parseSendLink(reply: string) {
   }
 }
 
+async function sendTelegramAlert(message: string) {
+  try {
+    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    })
+  } catch {}
+}
+
 async function processPending() {
   const { data: pending } = await supabaseAdmin
     .from('manychat_conversations')
@@ -238,6 +252,7 @@ async function processPending() {
 
         await sendManyChatMessage(conv.subscriber_id, personalizedUrl)
         processed++
+        await sendTelegramAlert(`✅ AI replied to ${conv.subscriber_id}\nScore: ${finalScore}\nReply: ${cleanReply.substring(0, 200)}`)
       } else {
         const sent = await sendManyChatMessage(conv.subscriber_id, cleanReply)
         if (!sent) continue
@@ -253,6 +268,7 @@ async function processPending() {
           .eq('id', conv.id)
 
         processed++
+        await sendTelegramAlert(`✅ AI replied to ${conv.subscriber_id}\nScore: ${finalScore}\nReply: ${cleanReply.substring(0, 200)}`)
       }
     } catch (err) {
       console.error(`Error processing ${conv.subscriber_id}:`, err)
@@ -275,6 +291,7 @@ async function followUpNoClick() {
 
   for (const conv of rows) {
     if (hoursSince(conv.link_sent_at) < 5) continue
+    await sendTelegramAlert(`🔔 Follow-up needed (no click)\nSubscriber: ${conv.subscriber_id}\nLast message: ${conv.last_user_message}\nHours since link: ${Math.round(hoursSince(conv.link_sent_at))}h\n\nSuggested: "Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις."`)
     const msg = 'Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις.'
     const ok = await sendManyChatMessage(conv.subscriber_id, msg)
     if (!ok) continue
@@ -303,6 +320,7 @@ async function followUpAbandonedCheckout() {
 
   for (const conv of rows) {
     if (hoursSince(conv.checkout_started_at) < 2) continue
+    await sendTelegramAlert(`🔔 Follow-up needed (abandoned checkout)\nSubscriber: ${conv.subscriber_id}\nLast message: ${conv.last_user_message}\nHours since checkout: ${Math.round(hoursSince(conv.checkout_started_at))}h\n\nSuggested: "Είδα ότι ξεκίνησες την κατοχύρωση. Αν υπήρξε κάποιο πρόβλημα, είμαι εδώ."`)
     const msg = 'Είδα ότι ξεκίνησες την κατοχύρωση. Αν υπήρξε κάποιο πρόβλημα, είμαι εδώ να το λύσουμε.'
     const ok = await sendManyChatMessage(conv.subscriber_id, msg)
     if (!ok) continue
