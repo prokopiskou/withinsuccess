@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState, useRef } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 const STRIPE_LINK = 'https://buy.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
@@ -39,53 +39,22 @@ const testimonialImages = [
 ]
 
 function Carousel({ images }: { images: string[] }) {
-  const trackRef = useRef<HTMLDivElement>(null)
   const [current, setCurrent] = useState(0)
-
-  const goTo = (i: number) => {
-    setCurrent(i)
-    const el = trackRef.current
-    if (!el) return
-    const children = el.children
-    if (!children[i]) return
-    const child = children[i] as HTMLElement
-    el.scrollTo({ left: child.offsetLeft - 16, behavior: 'smooth' })
-  }
-
-  useEffect(() => {
-    const el = trackRef.current
-    if (!el) return
-    const onScroll = () => {
-      const children = Array.from(el.children) as HTMLElement[]
-      let closest = 0
-      let minDist = Infinity
-      children.forEach((child, i) => {
-        const dist = Math.abs(child.offsetLeft - el.scrollLeft - 16)
-        if (dist < minDist) { minDist = dist; closest = i }
-      })
-      setCurrent(closest)
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
+  const prev = () => setCurrent(c => Math.max(0, c - 1))
+  const next = () => setCurrent(c => Math.min(images.length - 1, c + 1))
 
   return (
     <div className="w-full">
-      <style>{`.hide-scroll::-webkit-scrollbar{display:none}`}</style>
-      <div
-        ref={trackRef}
-        className="hide-scroll flex gap-4 overflow-x-auto px-4"
-        style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
-      >
-        {images.map((src, i) => (
-          <div key={i} className="flex-shrink-0" style={{ scrollSnapAlign: 'start' }}>
-            <img src={src} alt="" className="rounded-2xl max-h-[70vh] w-auto object-contain" />
-          </div>
-        ))}
+      <div className="relative flex items-center justify-center">
+        <button onClick={prev} className="absolute left-0 z-10 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm bg-white">{'<'}</button>
+        <div className="w-full flex justify-center px-10">
+          <img src={images[current]} alt="" className="rounded-2xl max-w-full max-h-[70vh] object-contain" />
+        </div>
+        <button onClick={next} className="absolute right-0 z-10 w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm bg-white">{'>'}</button>
       </div>
       <div className="flex items-center justify-center gap-2 mt-4">
         {images.map((_, i) => (
-          <button key={i} onClick={() => goTo(i)} className={`h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
+          <button key={i} onClick={() => setCurrent(i)} className={`h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
         ))}
       </div>
     </div>
@@ -175,12 +144,9 @@ function PageContent() {
           {headline}
         </h1>
         <p className="text-lg text-gray-500 leading-relaxed mb-10">{subheadline}</p>
-        <div className="flex flex-col gap-3 max-w-sm mx-auto mb-12 text-left">
+        <div className="flex flex-col gap-2 max-w-md mx-auto mb-12 text-center">
           {bullets.map((item, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <span className="text-gray-300 mt-1">—</span>
-              <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
-            </div>
+            <p key={i} className="text-gray-600 text-sm leading-relaxed">{item}</p>
           ))}
         </div>
         <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
