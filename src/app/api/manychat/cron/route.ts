@@ -247,7 +247,6 @@ async function processPending() {
 
         await sendManyChatMessage(conv.subscriber_id, personalizedUrl)
         processed++
-        await sendTelegramAlert(`✅ AI replied to ${conv.subscriber_id}\nScore: ${finalScore}\nReply: ${cleanReply.substring(0, 200)}`)
       } else {
         const sent = await sendManyChatMessage(conv.subscriber_id, cleanReply)
         if (!sent) continue
@@ -263,7 +262,6 @@ async function processPending() {
           .eq('id', conv.id)
 
         processed++
-        await sendTelegramAlert(`✅ AI replied to ${conv.subscriber_id}\nScore: ${finalScore}\nReply: ${cleanReply.substring(0, 200)}`)
       }
     } catch (err) {
       console.error(`Error processing ${conv.subscriber_id}:`, err)
