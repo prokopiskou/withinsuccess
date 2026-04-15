@@ -35,6 +35,25 @@ export async function POST(req: NextRequest) {
       .eq('subscriber_id', subscriberId)
     const sid = session.metadata?.subscriber_id
     if (sid) await setManyChatField(sid, 14490102, 'yes')
+
+    // Add to MailerLite group
+    if (session.customer_details?.email) {
+      try {
+        await fetch('https://connect.mailerlite.com/api/subscribers', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.MAILERLITE_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: session.customer_details.email,
+            groups: ['170438323755550313']
+          })
+        })
+      } catch (err) {
+        console.error('MailerLite error:', err)
+      }
+    }
   }
 
   if (event.type === 'checkout.session.expired') {
