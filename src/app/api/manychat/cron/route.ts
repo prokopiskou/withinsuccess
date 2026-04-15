@@ -283,7 +283,7 @@ async function followUpNoClick() {
   let sent = 0
 
   for (const conv of rows) {
-    if (hoursSince(conv.link_sent_at) < 5) continue
+    if (hoursSince(conv.link_sent_at) < 2) continue
     await sendTelegramAlert(`🔔 Follow-up needed (no click)\nSubscriber: ${conv.subscriber_id}\nLast message: ${conv.last_user_message}\nHours since link: ${Math.round(hoursSince(conv.link_sent_at))}h\n\nSuggested: "Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις."`)
     const msg = 'Αν κάτι δεν είναι σαφές για το πρόγραμμα, οποιαδήποτε στιγμή μου γράφεις.'
     const ok = await sendManyChatMessage(conv.subscriber_id, msg)
