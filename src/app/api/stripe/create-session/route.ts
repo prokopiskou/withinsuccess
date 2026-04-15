@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         quantity: 1
       }],
       metadata: { subscriber_id, source: 'manychat_agent' },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/63days/success?sid=${subscriber_id}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/63days/thank-you?sid=${subscriber_id}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/63days?sid=${subscriber_id}`,
       expires_at: Math.floor(Date.now() / 1000) + 1800
     })
