@@ -120,6 +120,7 @@ OBJECTION HANDLING:
 Ποτέ δικαιολογήσεις ή εξηγήσεις
 Αν ο χρήστης είναι cold: μία ερώτηση ακόμα, μετά "Οκ, αν χρειαστείς κάτι είμαι εδώ."
 Αν ρωτήσει "ποιος μου γράφει" ή "μιλάω με τον Προκόπη" ή κάτι παρόμοιο: "Είμαι στην ομάδα του Προκόπη. Αν θέλεις να μιλήσεις μαζί του απευθείας, μου λες."
+Αν μετά πει "ναι" ή "θέλω τον Προκόπη": "Τέλεια, θα του μεταφέρω το μήνυμά σου." Και βάλε στην αρχή της απάντησης: [HUMAN_NEEDED]
 Μίλα σαν άνθρωπος. Αν κάτι ακούγεται σαν bot, άλλαξέ το.
 ΠΡΙΝ ΣΤΕΙΛΕΙΣ:
 Διάβασε αυτό που έγραψες σαν να το διαβάζει ο άλλος. Βγάζει νόημα; Θα το καταλάβαινε κάποιος χωρίς context; Αν όχι, ξαναγράψε. Αν μια πρόταση ακούγεται περίεργα φωναχτά, είναι περίεργη.
@@ -218,6 +219,21 @@ async function processPending() {
 
       const { score, cleanReply } = parseScore(rawReply)
       const linkData = parseSendLink(cleanReply)
+      if (cleanReply.includes('[HUMAN_NEEDED]')) {
+        const finalReply = cleanReply.replace('[HUMAN_NEEDED]', '').trim()
+        await sendManyChatMessage(conv.subscriber_id, finalReply)
+        await sendTelegramAlert(`👤 Ζητάει τον Προκόπη\nSubscriber: ${conv.subscriber_id}\nΤελευταίο μήνυμα: ${conv.last_user_message}`)
+        await supabaseAdmin
+          .from('manychat_conversations')
+          .update({
+            messages: [...conv.messages, { role: 'assistant', content: finalReply }],
+            answered_at: new Date().toISOString(),
+            status: 'human_needed'
+          })
+          .eq('id', conv.id)
+        processed++
+        continue
+      }
 
       const scoreRank: Record<string, number> = { cold: 0, curious: 1, interested: 2, ready: 3 }
       const currentRank = scoreRank[conv.lead_score] ?? 0
