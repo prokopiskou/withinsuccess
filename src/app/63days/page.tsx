@@ -144,7 +144,7 @@ function PageContent() {
           {headline}
         </h1>
         <p className="text-lg text-gray-500 leading-relaxed mb-10">{subheadline}</p>
-        <div className="flex flex-col gap-3 max-w-sm mx-auto mb-12 text-left">
+        <div className="flex flex-col gap-3 max-w-xs mx-auto mb-12 text-left md:ml-[calc(50%-140px)]">
           {bullets.map((item, i) => (
             <div key={i} className="flex items-start gap-3">
               <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 20 20" fill="none">
