@@ -101,6 +101,7 @@ function DashboardContent() {
     pending: conversations.filter(c => c.status === 'pending').length,
     linkSent: conversations.filter(c => c.link_sent_at).length,
     linkClicked: conversations.filter(c => c.link_clicked_at).length,
+    checkoutStarted: conversations.filter(c => c.checkout_started_at).length,
     paid: paidCount,
     humanNeeded: conversations.filter(c => c.status === 'human_needed').length,
     revenue: revenue,
@@ -110,20 +111,47 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-7xl mx-auto">
           <h1 className="text-lg font-semibold">WithinSuccess Dashboard</h1>
-          <div className="flex gap-4 text-xs">
-            <div><span className="text-gray-400">Leads:</span> <span className="font-semibold ml-1">{stats.total}</span></div>
-            <div><span className="text-gray-400">Links:</span> <span className="font-semibold ml-1 text-blue-600">{stats.linkSent}</span></div>
-            <div><span className="text-gray-400">Άνοιξαν:</span> <span className="font-semibold ml-1 text-purple-600">{stats.linkClicked}</span></div>
-            <div><span className="text-gray-400">Πληρωμές:</span> <span className="font-semibold ml-1 text-green-600">{stats.paid}</span></div>
-            <div><span className="text-gray-400">Έσοδα:</span> <span className="font-semibold ml-1 text-green-700">{stats.revenue}€</span></div>
-            <div><span className="text-gray-400">Conv:</span> <span className="font-semibold ml-1">{stats.conversionRate}%</span></div>
-          </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 pt-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Συνολικά Leads</p>
+            <p className="text-2xl font-semibold">{stats.total}</p>
+            <p className="text-xs text-gray-400 mt-1">Άτομα που έγραψαν DM</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Links Απεσταλμένα</p>
+            <p className="text-2xl font-semibold text-blue-600">{stats.linkSent}</p>
+            <p className="text-xs text-gray-400 mt-1">Ο AI πρότεινε σελίδα</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Άνοιξαν Σελίδα</p>
+            <p className="text-2xl font-semibold text-purple-600">{stats.linkClicked}</p>
+            <p className="text-xs text-gray-400 mt-1">{stats.linkSent > 0 ? Math.round(stats.linkClicked / stats.linkSent * 100) : 0}% click rate</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Ξεκίνησαν Checkout</p>
+            <p className="text-2xl font-semibold text-orange-600">{stats.checkoutStarted}</p>
+            <p className="text-xs text-gray-400 mt-1">{stats.linkClicked > 0 ? Math.round(stats.checkoutStarted / stats.linkClicked * 100) : 0}% of visits</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Πληρωμές</p>
+            <p className="text-2xl font-semibold text-green-600">{stats.paid}</p>
+            <p className="text-xs text-gray-400 mt-1">{stats.total > 0 ? Math.round(stats.paid / stats.total * 100) : 0}% overall conversion</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <p className="text-xs text-gray-500 mb-1">Έσοδα</p>
+            <p className="text-2xl font-semibold text-green-700">{stats.revenue}€</p>
+            <p className="text-xs text-gray-400 mt-1">Από {stats.paid} πληρωμές</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 pb-6">
         <div className="flex gap-4 mb-6">
           <select value={filterFlow} onChange={e => setFilterFlow(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white">
             <option value="all">Όλα τα flows</option>
