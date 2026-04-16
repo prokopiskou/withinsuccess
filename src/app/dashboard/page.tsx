@@ -94,12 +94,17 @@ function DashboardContent() {
     return true
   })
 
+  const paidCount = conversations.filter(c => c.payment_completed_at).length
+  const revenue = paidCount * 69 // assuming 63 at 69€, rough estimate
   const stats = {
     total: conversations.length,
     pending: conversations.filter(c => c.status === 'pending').length,
     linkSent: conversations.filter(c => c.link_sent_at).length,
-    paid: conversations.filter(c => c.payment_completed_at).length,
+    linkClicked: conversations.filter(c => c.link_clicked_at).length,
+    paid: paidCount,
     humanNeeded: conversations.filter(c => c.status === 'human_needed').length,
+    revenue: revenue,
+    conversionRate: conversations.length > 0 ? Math.round((paidCount / conversations.length) * 100) : 0,
   }
 
   return (
@@ -107,12 +112,13 @@ function DashboardContent() {
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-lg font-semibold">WithinSuccess Dashboard</h1>
-          <div className="flex gap-6 text-sm">
-            <div><span className="text-gray-400">Σύνολο:</span> <span className="font-semibold">{stats.total}</span></div>
-            <div><span className="text-gray-400">Σε αναμονή:</span> <span className="font-semibold text-orange-600">{stats.pending}</span></div>
-            <div><span className="text-gray-400">Links:</span> <span className="font-semibold text-blue-600">{stats.linkSent}</span></div>
-            <div><span className="text-gray-400">Πληρωμές:</span> <span className="font-semibold text-green-600">{stats.paid}</span></div>
-            <div><span className="text-gray-400">Θέλουν Πρ.:</span> <span className="font-semibold text-red-600">{stats.humanNeeded}</span></div>
+          <div className="flex gap-4 text-xs">
+            <div><span className="text-gray-400">Leads:</span> <span className="font-semibold ml-1">{stats.total}</span></div>
+            <div><span className="text-gray-400">Links:</span> <span className="font-semibold ml-1 text-blue-600">{stats.linkSent}</span></div>
+            <div><span className="text-gray-400">Άνοιξαν:</span> <span className="font-semibold ml-1 text-purple-600">{stats.linkClicked}</span></div>
+            <div><span className="text-gray-400">Πληρωμές:</span> <span className="font-semibold ml-1 text-green-600">{stats.paid}</span></div>
+            <div><span className="text-gray-400">Έσοδα:</span> <span className="font-semibold ml-1 text-green-700">{stats.revenue}€</span></div>
+            <div><span className="text-gray-400">Conv:</span> <span className="font-semibold ml-1">{stats.conversionRate}%</span></div>
           </div>
         </div>
       </header>
