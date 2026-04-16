@@ -10,7 +10,7 @@ export const LANDING_PAGE_BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://wi
 export function isWithinBusinessHours(): boolean {
   const now = new Date()
   const greeceHour = (now.getUTCHours() + 3) % 24
-  return greeceHour >= 9 && greeceHour < 21
+  return greeceHour >= 8 && greeceHour < 21
 }
 
 export function hoursSince(dateStr: string): number {
