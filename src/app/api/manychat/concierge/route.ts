@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const subscriberId = String(body.subscriber_id || body.id || '')
     const text = body.last_input_text || body.text || ''
+    const source = body.source || 'dm'
 
     if (!subscriberId || !text) {
       return NextResponse.json({ error: 'missing data' }, { status: 400 })
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
         .insert({
           subscriber_id: subscriberId,
           flow: 'concierge',
+          source: source,
           messages: [{ role: 'user', content: text }],
           last_user_message: text,
           received_at: new Date().toISOString(),

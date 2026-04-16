@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const subscriberId = body.subscriber_id
     const userMessage = body.message?.text
+    const source = body.source || 'comment_63'
 
     if (!subscriberId || !userMessage) {
       return NextResponse.json({ error: 'invalid payload' }, { status: 400 })
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest) {
     } else {
       await supabaseAdmin.from('manychat_conversations').insert({
         subscriber_id: subscriberId,
+        flow: '63',
+        source: source,
         messages: [{ role: 'assistant', content: 'Γεια σου, έλαβα το 63 σου και θα ήθελα για αρχή να σε ρωτήσω, τι είναι αυτό που θα ήθελες να αλλάξεις μέσα από το πρόγραμμα;' }, { role: 'user', content: userMessage }],
         last_user_message: userMessage,
         received_at: new Date().toISOString(),

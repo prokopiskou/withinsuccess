@@ -20,6 +20,7 @@ type Conversation = {
   checkout_started_at: string | null
   payment_completed_at: string | null
   product_interest: string | null
+  source: string | null
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -198,6 +199,7 @@ function DashboardContent() {
                 <tr>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Subscriber</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Flow</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Source</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Τελευταίο μήνυμα</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Ώρες</th>
@@ -210,6 +212,7 @@ function DashboardContent() {
                     <td className="px-4 py-3">
                       <span className="inline-block px-2 py-1 rounded text-xs bg-gray-100">{PRODUCT_LABELS[c.product_interest || c.flow] || c.flow}</span>
                     </td>
+                    <td className="px-4 py-3 text-xs text-gray-500">{c.source || '-'}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-block px-2 py-1 rounded text-xs ${c.status === 'paid' ? 'bg-green-100 text-green-700' : c.status === 'human_needed' ? 'bg-red-100 text-red-700' : c.status === 'link_sent' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}>
                         {STATUS_LABELS[c.status] || c.status}
