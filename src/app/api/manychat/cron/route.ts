@@ -346,7 +346,7 @@ async function processPending() {
             lead_score: finalScore,
             messages: [...conv.messages, { role: 'assistant', content: cleanReply }],
             answered_at: new Date().toISOString(),
-            status: 'answered'
+            status: ['link_sent', 'page_visited', 'checkout_started', 'paid'].includes(conv.status) ? conv.status : 'answered'
           })
           .eq('id', conv.id)
 
