@@ -59,11 +59,16 @@ function DashboardContent() {
   const [selected, setSelected] = useState<Conversation | null>(null)
   const [filterFlow, setFilterFlow] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [fromDate, setFromDate] = useState<string>('')
+  const [toDate, setToDate] = useState<string>('')
 
   useEffect(() => {
     if (pw !== DASHBOARD_PASSWORD) return
     async function load() {
-      const res = await fetch('/api/manychat/dashboard-full', {
+      const params = new URLSearchParams()
+      if (fromDate) params.set('from', fromDate)
+      if (toDate) params.set('to', toDate)
+      const res = await fetch(`/api/manychat/dashboard-full?${params}`, {
         headers: { 'x-dashboard-pw': pw! }
       })
       const data = await res.json()
@@ -73,7 +78,18 @@ function DashboardContent() {
     load()
     const interval = setInterval(load, 30000)
     return () => clearInterval(interval)
-  }, [pw])
+  }, [pw, fromDate, toDate])
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Σίγουρα διαγραφή;')) return
+    await fetch('/api/manychat/dashboard-full', {
+      method: 'DELETE',
+      headers: { 'x-dashboard-pw': pw!, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    setSelected(null)
+    setConversations(conversations.filter(c => c.id !== id))
+  }
 
   if (pw !== DASHBOARD_PASSWORD) {
     return (
@@ -152,7 +168,7 @@ function DashboardContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pb-6">
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 mb-6 flex-wrap items-center">
           <select value={filterFlow} onChange={e => setFilterFlow(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white">
             <option value="all">Όλα τα flows</option>
             <option value="63">63 Μέρες</option>
@@ -162,6 +178,17 @@ function DashboardContent() {
             <option value="all">Όλα τα status</option>
             {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
+          <div className="flex items-center gap-2 text-sm">
+            <label className="text-gray-500 text-xs">Από:</label>
+            <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white" />
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <label className="text-gray-500 text-xs">Έως:</label>
+            <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white" />
+          </div>
+          {(fromDate || toDate) && (
+            <button onClick={() => { setFromDate(''); setToDate('') }} className="text-xs text-gray-500 underline">Καθάρισμα</button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -202,13 +229,16 @@ function DashboardContent() {
               <p className="text-gray-400 text-sm text-center py-12">Κάνε κλικ σε μια συνομιλία</p>
             ) : (
               <div>
-                <div className="mb-4 pb-4 border-b">
-                  <p className="text-xs text-gray-400 mb-1">Subscriber ID</p>
-                  <p className="font-mono text-sm">{selected.subscriber_id}</p>
-                  <div className="flex gap-2 mt-2">
-                    <span className="inline-block px-2 py-1 rounded text-xs bg-gray-100">{PRODUCT_LABELS[selected.flow]}</span>
-                    <span className="inline-block px-2 py-1 rounded text-xs bg-gray-100">Score: {selected.lead_score || 'n/a'}</span>
+                <div className="mb-4 pb-4 border-b flex justify-between items-start">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Subscriber ID</p>
+                    <p className="font-mono text-sm">{selected.subscriber_id}</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className="inline-block px-2 py-1 rounded text-xs bg-gray-100">{PRODUCT_LABELS[selected.flow]}</span>
+                      <span className="inline-block px-2 py-1 rounded text-xs bg-gray-100">Score: {selected.lead_score || 'n/a'}</span>
+                    </div>
                   </div>
+                  <button onClick={() => handleDelete(selected.id)} className="text-xs text-red-500 hover:text-red-700 ml-2">Διαγραφή</button>
                 </div>
 
                 <div className="mb-4 space-y-2 text-xs">
