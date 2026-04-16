@@ -262,7 +262,7 @@ async function processPending() {
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 500,
-        system: SYSTEM_PROMPT_63,
+        system: conv.flow === 'concierge' ? SYSTEM_PROMPT_CONCIERGE : SYSTEM_PROMPT_63,
         messages: conv.messages
       })
 
