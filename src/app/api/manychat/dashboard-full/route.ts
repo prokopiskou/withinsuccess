@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
   let query = supabaseAdmin
     .from('manychat_conversations')
     .select('*')
+    .neq('status', 'human_needed')
+    .neq('status', 'expired')
     .order('received_at', { ascending: false })
     .limit(500)
 
