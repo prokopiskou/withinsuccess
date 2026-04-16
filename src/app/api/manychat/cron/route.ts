@@ -94,6 +94,16 @@ Score μόνο ανεβαίνει, ποτέ δεν κατεβαίνει.
 8: Αναβλητικότητα, ξεκινάς πριν νιώσεις έτοιμος
 9: Όραμα, πορεία με σκοπό
 
+ΟΤΑΝ ΣΤΕΛΝΕΙΣ LINK:
+Αν ο χρήστης ζήτησε link ΚΑΙ ρώτησε κάτι ταυτόχρονα, απάντα στην ερώτηση ΚΑΙ στείλε το link στο ίδιο μήνυμα. Παράδειγμα: "Κοστίζει 69€ μέχρι τις 22/4. Εδώ μπορείς να δεις τα πάντα: [SEND_LINK]"
+Μην στέλνεις μόνο link χωρίς να απαντήσεις στην ερώτηση.
+
+ΣΥΧΝΕΣ ΕΡΩΤΗΣΕΙΣ ΠΡΙΝ ΤΟ LINK:
+- "Τι είναι;" → "Είναι ένα πρόγραμμα 9 εβδομάδων. Κάθε μέρα μία μικρή πράξη 1-2 λεπτών. Αλλάζεις σκέψη, συμπεριφορά, ταυτότητα."
+- "Είναι σεμινάριο;" → "Όχι, δεν είναι σεμινάριο. Είναι ένα σύστημα καθημερινής δράσης. Κάθε εβδομάδα λαμβάνεις ηχητική καθοδήγηση, playbook και μικρές πράξεις. Στο τέλος υπάρχει online τελετή αποφοίτησης."
+- "Είναι 1-1;" → "Όχι, δεν είναι 1-1. Είναι group σύστημα αλλά η πορεία είναι 100% προσωπική. Κανείς δεν βλέπει κανέναν."
+Σε κάθε περίπτωση απάντα ΚΑΙ στείλε link αν το ζήτησε.
+
 ΑΠΟΣΤΟΛΗ LINK:
 Όταν ο χρήστης πει ναι, γράψε ΑΚΡΙΒΩΣ:
 
@@ -203,11 +213,14 @@ function parseScore(aiReply: string): { score: string; cleanReply: string } {
 
 function parseSendLink(reply: string) {
   if (!reply.includes('[SEND_LINK]')) return { isSendLink: false }
+  const [before, after = ''] = reply.split('[SEND_LINK]')
+  const prefixText = before.trim()
+  const jsonPart = after.trim()
   try {
-    const jsonPart = reply.split('[SEND_LINK]')[1].trim()
     const d = JSON.parse(jsonPart)
     return {
       isSendLink: true,
+      prefixText,
       painSummary: d.pain_summary,
       painKeywords: d.pain_keywords,
       weekMatch: d.week_match,
@@ -217,7 +230,7 @@ function parseSendLink(reply: string) {
       bullets: d.bullets
     }
   } catch {
-    return { isSendLink: true }
+    return { isSendLink: true, prefixText }
   }
 }
 
@@ -293,6 +306,10 @@ async function processPending() {
 
       if (linkData.isSendLink) {
         const personalizedUrl = `${LANDING_PAGE_BASE}/63days?sid=${conv.subscriber_id}`
+        const linkMessage =
+          linkData.prefixText && linkData.prefixText.length > 0
+            ? `${linkData.prefixText}\n\n${personalizedUrl}`
+            : personalizedUrl
 
         await supabaseAdmin
           .from('manychat_conversations')
@@ -306,13 +323,13 @@ async function processPending() {
             personalized_subheadline: linkData.subheadline || null,
             personalized_bullets: linkData.bullets || null,
             link_sent_at: new Date().toISOString(),
-            messages: [...conv.messages, { role: 'assistant', content: '[Sent personalized link]' }],
+            messages: [...conv.messages, { role: 'assistant', content: linkMessage }],
             answered_at: new Date().toISOString(),
             status: 'link_sent'
           })
           .eq('id', conv.id)
 
-        await sendManyChatMessage(conv.subscriber_id, personalizedUrl)
+        await sendManyChatMessage(conv.subscriber_id, linkMessage)
         processed++
       } else {
         const sent = await sendManyChatMessage(conv.subscriber_id, cleanReply)
