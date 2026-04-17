@@ -154,7 +154,6 @@ function PageContent() {
             </div>
           ))}
         </div>
-        <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
       </section>
 
       {/* ΤΙ ΠΕΡΙΛΑΜΒΑΝΕΙ */}
