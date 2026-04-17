@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import SiteNav from "@/components/SiteNav";
+import { LazyVideo } from "@/components/LazyVideo";
 
 const SEMINAR1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar1.mp4";
 const SEMINAR2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar2.mp4";
@@ -181,9 +182,11 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-            <video src={SEMINAR1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />            </div>
+              <LazyVideo src={SEMINAR1} className="w-full h-full object-cover" />
+            </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-            <video src={SEMINAR2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />            </div>
+              <LazyVideo src={SEMINAR2} className="w-full h-full object-cover" />
+            </div>
           </div>
         </div>
       </section>
@@ -199,10 +202,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8 mb-16">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-            <video src={TESTIMONIAL1} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <LazyVideo src={TESTIMONIAL1} className="w-full h-full object-cover" />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-            <video src={TESTIMONIAL2} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="none" />
+              <LazyVideo src={TESTIMONIAL2} className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="hidden md:grid md:grid-cols-3 gap-8">
