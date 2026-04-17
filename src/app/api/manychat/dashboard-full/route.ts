@@ -41,3 +41,16 @@ export async function DELETE(req: NextRequest) {
   await supabaseAdmin.from('manychat_conversations').delete().eq('id', id)
   return NextResponse.json({ ok: true })
 }
+
+export async function PATCH(req: NextRequest) {
+  const pw = req.headers.get('x-dashboard-pw')
+  if (pw !== DASHBOARD_PASSWORD) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
+  const { id, status } = await req.json()
+  if (!id || !status) return NextResponse.json({ error: 'missing data' }, { status: 400 })
+
+  await supabaseAdmin.from('manychat_conversations').update({ status }).eq('id', id)
+  return NextResponse.json({ ok: true })
+}

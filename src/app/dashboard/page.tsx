@@ -92,6 +92,16 @@ function DashboardContent() {
     setConversations(conversations.filter(c => c.id !== id))
   }
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    await fetch('/api/manychat/dashboard-full', {
+      method: 'PATCH',
+      headers: { 'x-dashboard-pw': pw!, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: newStatus })
+    })
+    setConversations(conversations.map(c => c.id === id ? { ...c, status: newStatus } : c))
+    setSelected(prev => prev ? { ...prev, status: newStatus } : null)
+  }
+
   if (pw !== DASHBOARD_PASSWORD) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -242,6 +252,16 @@ function DashboardContent() {
                     </div>
                   </div>
                   <button onClick={() => handleDelete(selected.id)} className="text-xs text-red-500 hover:text-red-700 ml-2">Διαγραφή</button>
+                </div>
+                <div className="mb-4 pb-4 border-b">
+                  <p className="text-xs text-gray-400 mb-2">Αλλαγή Status</p>
+                  <select
+                    value={selected.status}
+                    onChange={e => handleStatusChange(selected.id, e.target.value)}
+                    className="border rounded-lg px-3 py-2 text-sm bg-white w-full"
+                  >
+                    {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                  </select>
                 </div>
 
                 <div className="mb-4 space-y-2 text-xs">
