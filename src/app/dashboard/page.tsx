@@ -128,6 +128,7 @@ function DashboardContent() {
     pending: conversations.filter(c => c.status === 'pending').length,
     linkSent: conversations.filter(c => c.link_sent_at).length,
     linkClicked: conversations.filter(c => c.link_clicked_at).length,
+    linkClickedFromSent: conversations.filter(c => c.link_sent_at && c.link_clicked_at).length,
     checkoutStarted: conversations.filter(c => c.checkout_started_at).length,
     paid: paidCount,
     humanNeeded: conversations.filter(c => c.status === 'human_needed').length,
@@ -158,7 +159,7 @@ function DashboardContent() {
           <div className="bg-white rounded-xl shadow-sm p-4">
             <p className="text-xs text-gray-500 mb-1">Άνοιξαν Σελίδα</p>
             <p className="text-2xl font-semibold text-purple-600">{stats.linkClicked}</p>
-            <p className="text-xs text-gray-400 mt-1">{stats.linkSent > 0 ? Math.round(stats.linkClicked / stats.linkSent * 100) : 0}% click rate</p>
+            <p className="text-xs text-gray-400 mt-1">{stats.linkSent > 0 ? Math.round(stats.linkClickedFromSent / stats.linkSent * 100) : 0}% click rate</p>
           </div>
           <div className="bg-white rounded-xl shadow-sm p-4">
             <p className="text-xs text-gray-500 mb-1">Ξεκίνησαν Checkout</p>
