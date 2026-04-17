@@ -27,16 +27,11 @@ export async function POST(req: NextRequest) {
     messages.push({ role: 'user', content: userMessage })
 
     if (existing) {
-      await supabaseAdmin
-        .from('manychat_conversations')
-        .update({
-          messages,
-          last_user_message: userMessage,
-          received_at: new Date().toISOString(),
-          answered_at: null,
-          status: 'pending'
-        })
-        .eq('subscriber_id', subscriberId)
+      await supabaseAdmin.rpc('append_message', {
+        p_subscriber_id: subscriberId,
+        p_message: JSON.stringify({ role: 'user', content: userMessage }),
+        p_last_user_message: userMessage
+      })
     } else {
       await supabaseAdmin.from('manychat_conversations').insert({
         subscriber_id: subscriberId,

@@ -20,19 +20,11 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (existing) {
-      const newMessages = [
-        ...existing.messages,
-        { role: 'user', content: text }
-      ]
-      await supabaseAdmin
-        .from('manychat_conversations')
-        .update({
-          messages: newMessages,
-          last_user_message: text,
-          received_at: new Date().toISOString(),
-          status: 'pending'
-        })
-        .eq('id', existing.id)
+      await supabaseAdmin.rpc('append_message', {
+        p_subscriber_id: subscriberId,
+        p_message: JSON.stringify({ role: 'user', content: text }),
+        p_last_user_message: text
+      })
     } else {
       await supabaseAdmin
         .from('manychat_conversations')
