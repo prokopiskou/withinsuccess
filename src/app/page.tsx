@@ -55,7 +55,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-black font-sans">
 
-      {/* NAV */}
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
@@ -68,9 +67,14 @@ export default function Home() {
             <p className="text-lg text-gray-500 leading-relaxed">
               Δεν είσαι χαμένος. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
-            <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-              Ξεκίνα εδώ →
-            </a>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+                Ξεκίνα εδώ →
+              </a>
+              <a href="https://app.withinsuccess.gr/63days" className="self-start border border-black px-8 py-4 rounded-full text-sm font-medium hover:bg-black hover:text-white transition-all">
+                63 Μέρες της Ζωής σου →
+              </a>
+            </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
               <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-400 mt-1">Ατομα</p></div>
               <div><span className="text-2xl font-semibold">9.000+</span><p className="text-xs text-gray-400 mt-1">Community</p></div>
@@ -249,18 +253,24 @@ export default function Home() {
               Διάλεξε το επόμενο βήμα σου.
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική αλλαγή - όχι γενικές συμβουλές.</p>
-              <a href="/work#coaching" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Ξεκίνα →</a>
+              <a href="/apply" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε αίτηση →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-black text-white rounded-2xl">
               <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">Seminars</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Live Εμπειρίες</h3>
               <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις - εμπειρίες που μένουν.</p>
-              <a href="/work#seminars" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Δες τα seminars →</a>
+              <a href="/waitlist" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Λίστα αναμονής →</a>
+            </div>
+            <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
+              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">63 Μέρες</span>
+              <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>63 Μέρες της Ζωής σου</h3>
+              <p className="text-gray-500 leading-relaxed text-sm">Ένα σύστημα που σε κρατάει σε πορεία. Κάθε μέρα μία πράξη. Έναρξη 12 Μαΐου.</p>
+              <a href="https://app.withinsuccess.gr/63days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κατοχύρωσε →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>

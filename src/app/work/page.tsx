@@ -119,7 +119,38 @@ export default function Work() {
           </div>
         </div>
       </section>
-
+{/* 63 ΜΕΡΕΣ */}
+<section id="63days" className="py-16 px-6 bg-white">
+  <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-3">
+        <p className="text-xs font-medium tracking-widest text-gray-400 uppercase">63 Μέρες</p>
+        <span className="flex items-center gap-1.5 bg-amber-50 text-amber-600 text-xs font-medium px-3 py-1 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse inline-block"></span>
+          Έναρξη 12 Μαΐου
+        </span>
+      </div>
+      <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
+        63 Μέρες της Ζωής σου.
+      </h2>
+      <div className="flex flex-col gap-3 text-gray-500 leading-relaxed">
+        <p>Δεν σου λείπει η θέληση. Σου λείπει ένα σύστημα να σε κρατάει σε πορεία.</p>
+        <p>63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη.</p>
+      </div>
+      <div className="flex flex-col gap-2 text-sm text-gray-400 border-t border-gray-100 pt-6">
+        <p>✓ 9 φωνητικά μηνύματα καθοδήγησης</p>
+        <p>✓ Ιδιωτικό Viber broadcast channel</p>
+        <p>✓ Online τελετή αποφοίτησης</p>
+      </div>
+      <a href="https://app.withinsuccess.gr/63days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+        Μάθε περισσότερα — 69€ →
+      </a>
+    </div>
+    <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
+      <img src="/prokopis_stage.webp" alt="63 Μέρες" className="w-full h-full object-cover" />
+    </div>
+  </div>
+</section>
       {/* 30-DAY PROGRAMS */}
       <section id="programs" className="py-16 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-16 items-center">
