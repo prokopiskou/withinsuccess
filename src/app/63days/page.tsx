@@ -138,7 +138,7 @@ function PageContent() {
     <main className="min-h-screen bg-white text-black font-sans">
 
       {/* HERO + CTA 1 */}
-      <section className="pt-24 pb-8 px-6 max-w-3xl mx-auto text-center">
+      <section className="pt-20 pb-4 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
           {headline}
@@ -157,7 +157,7 @@ function PageContent() {
       </section>
 
       {/* ΤΙ ΠΕΡΙΛΑΜΒΑΝΕΙ */}
-      <section className="py-10 px-6 bg-gray-50">
+      <section className="py-6 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι περιλαμβάνει</p>
           <div className="space-y-8">
@@ -182,7 +182,7 @@ function PageContent() {
       </section>
 
       {/* ΓΙΑΤΙ ΔΟΥΛΕΥΕΙ */}
-      <section className="py-10 px-6 bg-white">
+      <section className="py-6 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Γιατί δουλεύει</p>
           <p className="text-2xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif' }}>
@@ -194,7 +194,7 @@ function PageContent() {
       </section>
 
       {/* ΤΙ ΑΛΛΑΖΕΙ */}
-      <section className="py-10 px-6 bg-gray-50">
+      <section className="py-6 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι αλλάζει σε σένα</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,7 +218,7 @@ function PageContent() {
       </section>
 
       {/* WITHIN PATH */}
-      <section className="py-10 px-6 bg-white">
+      <section className="py-6 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">The Within Path</p>
           <p className="text-gray-500 text-sm mb-8">Η μέθοδος που μέχρι τώρα υπήρχε μόνο στο 1-1 coaching. Τώρα σε μορφή συστήματος.</p>
@@ -240,7 +240,7 @@ function PageContent() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-10 px-6 bg-gray-50">
+      <section className="py-6 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Αυτοί το έζησαν</p>
           <Carousel images={testimonialImages} />
@@ -248,7 +248,7 @@ function PageContent() {
       </section>
 
       {/* CTA 2 - ΚΕΝΤΡΙΚΟ */}
-      <section className="py-10 px-6 bg-white">
+      <section className="py-6 px-6 bg-white">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-4" style={{ fontFamily: 'Georgia, serif' }}>Η απόφαση</h2>
           <p className="text-gray-500 mb-8">
@@ -259,7 +259,7 @@ function PageContent() {
       </section>
 
       {/* BROADCAST CHANNEL */}
-      <section className="py-10 px-6 bg-gray-50">
+      <section className="py-6 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Μέσα στο broadcast channel</p>
           <Carousel images={broadcastImages} />
@@ -267,14 +267,14 @@ function PageContent() {
       </section>
 
       {/* CTA 3 */}
-      <section className="py-10 px-6 bg-white">
+      <section className="py-6 px-6 bg-white">
         <div className="max-w-xl mx-auto text-center">
           <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="py-10 px-6 bg-gray-50">
+      <section className="py-6 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Συχνές ερωτήσεις</p>
           <div className="space-y-0">
