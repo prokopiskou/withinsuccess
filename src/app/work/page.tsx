@@ -23,7 +23,6 @@ export default function Work() {
   return (
     <main className="min-h-screen bg-white font-sans">
 
-      {/* NAV */}
       <SiteNav active="work" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
@@ -56,7 +55,7 @@ export default function Work() {
               <p>✓ Πραγματική αλλαγή - όχι γενικές συμβουλές</p>
               <p>✓ Περιορισμένες θέσεις</p>
             </div>
-            <a href="/assessment" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+            <a href="/apply" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
               Συμπλήρωσε το ερωτηματολόγιο →
             </a>
           </div>
@@ -114,7 +113,7 @@ export default function Work() {
             </div>
           </div>
           <div className="text-center">
-            <a href="/assessment" className="inline-block text-black px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+            <a href="/waitlist" className="inline-block text-black px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
               Μπες στη λίστα αναμονής →
             </a>
           </div>
