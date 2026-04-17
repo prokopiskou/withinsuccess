@@ -1,0 +1,8 @@
+wc -l src/app/63days/page.tsx
+wc -l src/app/63days/page.tsxwc -l src/app/63days/page.tsx
+
+
+
+wc -l src/app/63days/page.tsx
+
+pbpaste > src/app/63days/page.tsx
