@@ -81,7 +81,7 @@ export default function Corporate() {
       {/* ΣΥΝΕΡΓΑΣΙΕΣ */}
       <section className="py-16 px-6 bg-black text-white">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Εχουν εμπιστευτει το εργο μου</p>
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Μας έχουν εμπιστευτεί</p>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-4 p-8 border border-gray-800 rounded-2xl">
               <p className="text-xs font-medium text-gray-400 tracking-widest uppercase">Medusa</p>
