@@ -193,7 +193,7 @@ function PageContent() {
       </section>
 
       {/* ΔΥΟ ΕΠΙΛΟΓΕΣ — Angle 4 */}
-      <section className="py-12 px-6 bg-white">
+      <section className="pt-4 pb-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Μόνο δύο επιλογές</p>
           <p className="text-2xl md:text-3xl font-semibold mb-8 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
