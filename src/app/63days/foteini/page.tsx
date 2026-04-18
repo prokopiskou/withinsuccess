@@ -197,11 +197,13 @@ function PageContent() {
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Μόνο δύο επιλογές</p>
           <p className="text-2xl md:text-3xl font-semibold mb-8 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-            Αυτό που είσαι είναι αποτέλεσμα του τι σου συνέβη.
-          </p>
-          <p className="text-2xl md:text-3xl font-semibold mb-8 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-            Ή αποτέλεσμα του τι επιλέγεις να είσαι.
-          </p>
+  Αυτό που είσαι<br />
+  είναι αποτέλεσμα του τι σου συνέβη.
+</p>
+<p className="text-2xl md:text-3xl font-semibold mb-8 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+  Ή αποτέλεσμα<br />
+  του τι επιλέγεις να είσαι.
+</p>
           <p className="text-gray-500 leading-relaxed">
             Δεν υπάρχει τρίτο. Και η επιλογή σου είναι πάντα δική σου.
           </p>
