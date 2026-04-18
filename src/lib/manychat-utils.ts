@@ -66,3 +66,28 @@ export async function setManyChatField(subscriberId: string, fieldId: number, va
     return false
   }
 }
+
+export async function getManyChatSubscriber(subscriberId: string): Promise<{ firstName: string | null; lastName: string | null }> {
+  try {
+    const res = await fetch(
+      `https://api.manychat.com/fb/subscriber/getInfo?subscriber_id=${subscriberId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`
+        }
+      }
+    )
+    if (!res.ok) {
+      console.error(`ManyChat getInfo error (${res.status}):`, await res.text())
+      return { firstName: null, lastName: null }
+    }
+    const data = await res.json()
+    return {
+      firstName: data.data?.first_name || null,
+      lastName: data.data?.last_name || null
+    }
+  } catch (err) {
+    console.error('ManyChat getInfo failed:', err)
+    return { firstName: null, lastName: null }
+  }
+}

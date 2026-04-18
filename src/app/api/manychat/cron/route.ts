@@ -8,6 +8,7 @@ import {
   hoursSince,
   sendManyChatMessage,
   setManyChatField,
+  getManyChatSubscriber,
   LANDING_PAGE_BASE
 } from '@/lib/manychat-utils'
 import { SYSTEM_PROMPT_63, SYSTEM_PROMPT_CONCIERGE } from '@/lib/prompts'
@@ -48,7 +49,6 @@ function parseScore(reply: string): { score: string; cleanReply: string } {
   return { score, cleanReply }
 }
 
-// FIXED: Πιο αυστηρό parsing — αν το JSON αποτύχει, δεν στέλνει link
 function parseSendLink(reply: string) {
   if (!reply.includes('[SEND_LINK]')) {
     return { isSendLink: false as const }
@@ -60,7 +60,6 @@ function parseSendLink(reply: string) {
   
   try {
     const d = JSON.parse(jsonPart)
-    // Validate required fields
     if (!d.headline || !d.subheadline) {
       console.error('[SEND_LINK] Missing required fields', d)
       return { isSendLink: false as const }
@@ -78,8 +77,6 @@ function parseSendLink(reply: string) {
     }
   } catch (err) {
     console.error('[SEND_LINK] JSON parse failed:', err, jsonPart)
-    // Αν το JSON είναι invalid, ΔΕΝ στέλνουμε link
-    // Καλύτερα ο χρήστης να πάρει κανονική απάντηση
     return { isSendLink: false as const }
   }
 }
@@ -117,7 +114,6 @@ async function processPending() {
   let processed = 0
 
   for (const conv of pending) {
-    // Expire conversations older than 48h
     if (hoursSince(conv.received_at) > 48) {
       await setManyChatField(conv.subscriber_id, 14485912, 'No')
       await supabaseAdmin
@@ -128,7 +124,10 @@ async function processPending() {
     }
 
     try {
-      // Pick system prompt based on flow
+      // Fetch user's first name from ManyChat
+      const subscriber = await getManyChatSubscriber(conv.subscriber_id)
+      const userFirstName = subscriber.firstName
+
       const basePrompt =
         conv.flow === 'concierge'
           ? SYSTEM_PROMPT_CONCIERGE
@@ -138,7 +137,14 @@ async function processPending() {
 
 ΠΑΡΟΝ: Η σωστή ώρα προσφώνησης τώρα είναι "${getGreeting()}". 
 Χρησιμοποιείς αυτή μόνο αν είναι το πρώτο μήνυμά σου. 
-Αν ο χρήστης σε χαιρετήσει διαφορετικά, ακολούθησέ τον.`
+Αν ο χρήστης σε χαιρετήσει διαφορετικά, ακολούθησέ τον.
+
+${userFirstName ? `ΟΝΟΜΑ ΧΡΗΣΤΗ: ${userFirstName}
+
+ΚΑΝΟΝΑΣ ΧΡΗΣΗΣ ΟΝΟΜΑΤΟΣ:
+Μπορείς να το χρησιμοποιήσεις με φειδώ. Μία φορά στην αρχή της συζήτησης ή σε σημαντική συναισθηματική στιγμή.
+ΠΟΤΕ σε κάθε μήνυμα. ΠΟΤΕ "${userFirstName}, καταλαβαίνω ${userFirstName}...". Γίνεται πλαστικό.
+Όταν το χρησιμοποιείς, νιώθεται φυσικό — σαν να μιλάς σε φίλο, όχι σαν marketing.` : ''}`
 
       const response = await anthropic.messages.create({
         model: MODEL,
@@ -159,13 +165,13 @@ async function processPending() {
 
       const { score, cleanReply } = parseScore(rawReply)
 
-      // Check for HUMAN_NEEDED
       if (cleanReply.includes('[HUMAN_NEEDED]')) {
         const finalReply = cleanReply.replace('[HUMAN_NEEDED]', '').trim()
         await sendManyChatMessage(conv.subscriber_id, finalReply)
         await sendTelegramAlert(
           `👤 Ζητάει τον Προκόπη\n` +
           `Subscriber: ${conv.subscriber_id}\n` +
+          `Όνομα: ${userFirstName || 'άγνωστο'}\n` +
           `Τελευταίο μήνυμα: ${conv.last_user_message}`
         )
         await supabaseAdmin
@@ -180,7 +186,6 @@ async function processPending() {
         continue
       }
 
-      // Score tracking (only goes up)
       const scoreRank: Record<string, number> = {
         cold: 0,
         curious: 1,
@@ -191,7 +196,6 @@ async function processPending() {
       const newRank = scoreRank[score] ?? 0
       const finalScore = newRank >= currentRank ? score : conv.lead_score
 
-      // Check for SEND_LINK
       const linkData = parseSendLink(cleanReply)
 
       if (linkData.isSendLink) {
@@ -224,7 +228,6 @@ async function processPending() {
         continue
       }
 
-      // Normal reply
       const sent = await sendManyChatMessage(conv.subscriber_id, cleanReply)
       if (!sent) continue
 
