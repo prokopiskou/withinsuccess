@@ -31,8 +31,8 @@ function getCurrentPrice(): string {
   const day = greece.getDate()
   const month = greece.getMonth() + 1
 
-  if (month === 4 && day <= 22) return '69'
-  if ((month === 4 && day > 22) || (month === 5 && day <= 2)) return '89'
+  if (month === 4 && day <= 27) return '69'
+  if ((month === 4 && day > 27) || (month === 5 && day <= 4)) return '89'
   return '109'
 }
 

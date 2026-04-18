@@ -12,10 +12,10 @@ function getPricingInfo() {
   const month = greece.getMonth() + 1
   const day = greece.getDate()
 
-  if (month === 4 && day <= 22) return { price: 69, next: 89, deadline: '22 Απριλίου' }
-  if ((month === 4 && day > 22) || (month === 5 && day <= 2)) return { price: 89, next: 109, deadline: '2 Μαΐου' }
-  if (month === 5 && day <= 8) return { price: 109, next: null, deadline: '8 Μαΐου' }
-  return { price: 109, next: null, deadline: '8 Μαΐου' }
+  if (month === 4 && day <= 27) return { price: 69, next: 89, deadline: '27 Απριλίου' }
+  if ((month === 4 && day > 27) || (month === 5 && day <= 4)) return { price: 89, next: 109, deadline: '4 Μαΐου' }
+  if (month === 5 && day <= 11) return { price: 109, next: null, deadline: '11 Μαΐου' }
+  return { price: 109, next: null, deadline: '11 Μαΐου' }
 }
 
 const DEFAULTS = {
@@ -204,9 +204,10 @@ function PageContent() {
   Ή αποτέλεσμα<br />
   του τι επιλέγεις να είσαι.
 </p>
-          <p className="text-gray-500 leading-relaxed">
-            Δεν υπάρχει τρίτο. Και η επιλογή σου είναι πάντα δική σου.
-          </p>
+<p className="text-gray-500 leading-relaxed">
+  Δεν υπάρχει τρίτο.<br />
+  Η επιλογή σου είναι πάντα δική σου.
+</p>
         </div>
       </section>
 
