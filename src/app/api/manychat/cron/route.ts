@@ -20,6 +20,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 // ===================================================================
 const MODEL = 'claude-opus-4-7'
 const MAX_TOKENS = 500
+const NAME_RESET_DAYS = 5 // Μετά από 5 μέρες χωρίς activity, επιτρέπεται ξανά το όνομα
 
 // ===================================================================
 // HELPERS
@@ -81,6 +82,38 @@ function parseSendLink(reply: string) {
   }
 }
 
+/**
+ * Αποφασίζει αν μπορούμε να χρησιμοποιήσουμε το όνομα του χρήστη.
+ * Regel: Μόνο μία φορά ΕΚΤΟΣ αν πέρασαν 5+ μέρες από το τελευταίο μήνυμα του agent.
+ */
+function shouldUseName(
+  userFirstName: string | null,
+  messages: any[],
+  lastAnsweredAt: string | null
+): boolean {
+  if (!userFirstName) return false
+  
+  // Βρες αν το όνομα έχει ήδη χρησιμοποιηθεί σε προηγούμενο assistant message
+  const nameAlreadyUsed = messages.some(
+    (m: any) => 
+      m.role === 'assistant' && 
+      typeof m.content === 'string' && 
+      m.content.includes(userFirstName)
+  )
+  
+  // Αν δεν έχει χρησιμοποιηθεί ποτέ → επιτρέπεται
+  if (!nameAlreadyUsed) return true
+  
+  // Αν έχει χρησιμοποιηθεί, check αν πέρασαν 5+ μέρες από το τελευταίο activity
+  if (lastAnsweredAt) {
+    const daysSince = (Date.now() - new Date(lastAnsweredAt).getTime()) / (1000 * 60 * 60 * 24)
+    if (daysSince >= NAME_RESET_DAYS) return true
+  }
+  
+  // Αλλιώς, μην το ξαναχρησιμοποιήσεις
+  return false
+}
+
 async function sendTelegramAlert(message: string) {
   try {
     await fetch(
@@ -128,23 +161,39 @@ async function processPending() {
       const subscriber = await getManyChatSubscriber(conv.subscriber_id)
       const userFirstName = subscriber.firstName
 
+      // Check if we can use the name (only once, reset after 5 days)
+      const canUseName = shouldUseName(userFirstName, conv.messages, conv.answered_at)
+
       const basePrompt =
         conv.flow === 'concierge'
           ? SYSTEM_PROMPT_CONCIERGE
           : SYSTEM_PROMPT_63(getCurrentPrice())
+      
+      // Build name-related instructions
+      let nameInstructions = ''
+      if (canUseName && userFirstName) {
+        nameInstructions = `
+ΟΝΟΜΑ ΧΡΗΣΤΗ: ${userFirstName}
+
+ΚΑΝΟΝΑΣ ΧΡΗΣΗΣ ΟΝΟΜΑΤΟΣ — ΑΥΣΤΗΡΟΣ:
+Σε αυτό το μήνυμα ΜΠΟΡΕΙΣ να χρησιμοποιήσεις το όνομα ${userFirstName} — ΜΙΑ ΦΟΡΑ.
+Μορφή: "Γεια σου ${userFirstName}, ..." ή "${userFirstName}, ..."
+
+ΜΕΤΑ από αυτό το μήνυμα, ΠΟΤΕ ΞΑΝΑ το όνομα σε αυτή τη συζήτηση.
+ΠΟΤΕ "${userFirstName}, καταλαβαίνω..." ή "Να σου πω ${userFirstName}...". Γίνεται πλαστικό.`
+      } else if (userFirstName && !canUseName) {
+        nameInstructions = `
+ΟΝΟΜΑ ΧΡΗΣΤΗ: ${userFirstName} — ΜΗ ΤΟ ΧΡΗΣΙΜΟΠΟΙΗΣΕΙΣ
+Το έχεις ήδη χρησιμοποιήσει πρόσφατα σε αυτή τη συνομιλία.
+Συνέχισε φυσικά χωρίς να αναφέρεις το όνομα.`
+      }
       
       const systemPrompt = `${basePrompt}
 
 ΠΑΡΟΝ: Η σωστή ώρα προσφώνησης τώρα είναι "${getGreeting()}". 
 Χρησιμοποιείς αυτή μόνο αν είναι το πρώτο μήνυμά σου. 
 Αν ο χρήστης σε χαιρετήσει διαφορετικά, ακολούθησέ τον.
-
-${userFirstName ? `ΟΝΟΜΑ ΧΡΗΣΤΗ: ${userFirstName}
-
-ΚΑΝΟΝΑΣ ΧΡΗΣΗΣ ΟΝΟΜΑΤΟΣ:
-Μπορείς να το χρησιμοποιήσεις με φειδώ. Μία φορά στην αρχή της συζήτησης ή σε σημαντική συναισθηματική στιγμή.
-ΠΟΤΕ σε κάθε μήνυμα. ΠΟΤΕ "${userFirstName}, καταλαβαίνω ${userFirstName}...". Γίνεται πλαστικό.
-Όταν το χρησιμοποιείς, νιώθεται φυσικό — σαν να μιλάς σε φίλο, όχι σαν marketing.` : ''}`
+${nameInstructions}`
 
       const response = await anthropic.messages.create({
         model: MODEL,
