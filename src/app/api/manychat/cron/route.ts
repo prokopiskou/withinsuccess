@@ -19,8 +19,8 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 // MODEL CONFIG — Opus 4.7 για ποιότητα
 // ===================================================================
 const MODEL = 'claude-opus-4-7'
-const MAX_TOKENS = 500
-const NAME_RESET_DAYS = 5 // Μετά από 5 μέρες χωρίς activity, επιτρέπεται ξανά το όνομα
+const MAX_TOKENS = 1000 // Αυξήθηκε από 500 για να μην κόβεται το JSON
+const NAME_RESET_DAYS = 5
 
 // ===================================================================
 // HELPERS
@@ -50,9 +50,25 @@ function parseScore(reply: string): { score: string; cleanReply: string } {
   return { score, cleanReply }
 }
 
-function parseSendLink(reply: string) {
+/**
+ * Parse [SEND_LINK] block. 
+ * Returns the structured data AND always returns a sanitized reply
+ * with the [SEND_LINK] block and JSON REMOVED — never leak it to user.
+ */
+function parseSendLink(reply: string): {
+  hasSendLink: boolean
+  isValid: boolean
+  prefixText: string
+  painSummary?: string | null
+  painKeywords?: string[] | null
+  weekMatch?: number | null
+  weekDescription?: string | null
+  headline?: string
+  subheadline?: string
+  bullets?: string[] | null
+} {
   if (!reply.includes('[SEND_LINK]')) {
-    return { isSendLink: false as const }
+    return { hasSendLink: false, isValid: false, prefixText: reply }
   }
   
   const [before, after = ''] = reply.split('[SEND_LINK]')
@@ -63,10 +79,11 @@ function parseSendLink(reply: string) {
     const d = JSON.parse(jsonPart)
     if (!d.headline || !d.subheadline) {
       console.error('[SEND_LINK] Missing required fields', d)
-      return { isSendLink: false as const }
+      return { hasSendLink: true, isValid: false, prefixText }
     }
     return {
-      isSendLink: true as const,
+      hasSendLink: true,
+      isValid: true,
       prefixText,
       painSummary: d.pain_summary || null,
       painKeywords: d.pain_keywords || null,
@@ -78,13 +95,12 @@ function parseSendLink(reply: string) {
     }
   } catch (err) {
     console.error('[SEND_LINK] JSON parse failed:', err, jsonPart)
-    return { isSendLink: false as const }
+    return { hasSendLink: true, isValid: false, prefixText }
   }
 }
 
 /**
  * Αποφασίζει αν μπορούμε να χρησιμοποιήσουμε το όνομα του χρήστη.
- * Regel: Μόνο μία φορά ΕΚΤΟΣ αν πέρασαν 5+ μέρες από το τελευταίο μήνυμα του agent.
  */
 function shouldUseName(
   userFirstName: string | null,
@@ -93,7 +109,6 @@ function shouldUseName(
 ): boolean {
   if (!userFirstName) return false
   
-  // Βρες αν το όνομα έχει ήδη χρησιμοποιηθεί σε προηγούμενο assistant message
   const nameAlreadyUsed = messages.some(
     (m: any) => 
       m.role === 'assistant' && 
@@ -101,16 +116,13 @@ function shouldUseName(
       m.content.includes(userFirstName)
   )
   
-  // Αν δεν έχει χρησιμοποιηθεί ποτέ → επιτρέπεται
   if (!nameAlreadyUsed) return true
   
-  // Αν έχει χρησιμοποιηθεί, check αν πέρασαν 5+ μέρες από το τελευταίο activity
   if (lastAnsweredAt) {
     const daysSince = (Date.now() - new Date(lastAnsweredAt).getTime()) / (1000 * 60 * 60 * 24)
     if (daysSince >= NAME_RESET_DAYS) return true
   }
   
-  // Αλλιώς, μην το ξαναχρησιμοποιήσεις
   return false
 }
 
@@ -157,11 +169,8 @@ async function processPending() {
     }
 
     try {
-      // Fetch user's first name from ManyChat
       const subscriber = await getManyChatSubscriber(conv.subscriber_id)
       const userFirstName = subscriber.firstName
-
-      // Check if we can use the name (only once, reset after 5 days)
       const canUseName = shouldUseName(userFirstName, conv.messages, conv.answered_at)
 
       const basePrompt =
@@ -169,7 +178,6 @@ async function processPending() {
           ? SYSTEM_PROMPT_CONCIERGE
           : SYSTEM_PROMPT_63(getCurrentPrice())
       
-      // Build name-related instructions
       let nameInstructions = ''
       if (canUseName && userFirstName) {
         nameInstructions = `
@@ -184,23 +192,17 @@ async function processPending() {
 ΑΠΑΓΟΡΕΥΕΤΑΙ σαν χαιρετισμός:
 ❌ "Γεια σου ${userFirstName}, ..."
 ❌ "${userFirstName}, καλώς ήρθες..."
-❌ "Χαίρομαι ${userFirstName}..."
 
 ΕΠΙΤΡΕΠΕΤΑΙ μέσα στη ροή:
 ✅ "Αυτό που περιγράφεις, ${userFirstName}, είναι..."
 ✅ "${userFirstName}, είναι κάτι που..."
 ✅ "Το ακούω, ${userFirstName}. Τι είναι αυτό που..."
-✅ "Κοίτα ${userFirstName}, το σημαντικό εδώ είναι..."
-
-Το όνομα δίνει βάρος στη στιγμή. Δεν είναι διακοσμητικό, δεν είναι χαιρετισμός.
-Μπαίνει όταν θες να "προσγειώσεις" τον άλλο σε κάτι σημαντικό.
 
 ΜΕΤΑ από αυτό το μήνυμα, ΠΟΤΕ ΞΑΝΑ το όνομα σε αυτή τη συζήτηση.`
       } else if (userFirstName && !canUseName) {
         nameInstructions = `
 ΟΝΟΜΑ ΧΡΗΣΤΗ: ${userFirstName} — ΜΗ ΤΟ ΧΡΗΣΙΜΟΠΟΙΗΣΕΙΣ
-Το έχεις ήδη χρησιμοποιήσει πρόσφατα σε αυτή τη συνομιλία.
-Συνέχισε φυσικά χωρίς να αναφέρεις το όνομα.`
+Το έχεις ήδη χρησιμοποιήσει πρόσφατα σε αυτή τη συνομιλία.`
       }
       
       const systemPrompt = `${basePrompt}
@@ -208,7 +210,12 @@ async function processPending() {
 ΠΑΡΟΝ: Η σωστή ώρα προσφώνησης τώρα είναι "${getGreeting()}". 
 Χρησιμοποιείς αυτή μόνο αν είναι το πρώτο μήνυμά σου. 
 Αν ο χρήστης σε χαιρετήσει διαφορετικά, ακολούθησέ τον.
-${nameInstructions}`
+${nameInstructions}
+
+ΚΡΙΣΙΜΟ ΓΙΑ [SEND_LINK]:
+Αν στέλνεις link, το JSON ΠΡΕΠΕΙ να είναι πλήρες και έγκυρο. 
+Όλα τα strings κλείνουν με quotes. Όλα τα arrays κλείνουν με ].
+Αν δεν μπορείς να γράψεις πλήρες JSON, ΜΗ χρησιμοποιήσεις καθόλου το [SEND_LINK] — απάντα κανονικά.`
 
       const response = await anthropic.messages.create({
         model: MODEL,
@@ -262,7 +269,8 @@ ${nameInstructions}`
 
       const linkData = parseSendLink(cleanReply)
 
-      if (linkData.isSendLink) {
+      // CASE 1: Έγκυρο SEND_LINK → στέλνουμε personalized link
+      if (linkData.hasSendLink && linkData.isValid) {
         const personalizedUrl = `${LANDING_PAGE_BASE}/63days?sid=${conv.subscriber_id}`
         const linkMessage =
           linkData.prefixText && linkData.prefixText.length > 0
@@ -292,6 +300,38 @@ ${nameInstructions}`
         continue
       }
 
+      // CASE 2: Invalid SEND_LINK → στείλε generic link χωρίς personalization
+      // ΠΟΤΕ μη στέλνεις το raw JSON στον χρήστη
+      if (linkData.hasSendLink && !linkData.isValid) {
+        console.warn(`[SEND_LINK] Invalid JSON for ${conv.subscriber_id}, falling back to generic link`)
+        
+        const genericUrl = `${LANDING_PAGE_BASE}/63days?sid=${conv.subscriber_id}`
+        const fallbackPrefix = linkData.prefixText || 'Εδώ μπορείς να δεις τα πάντα:'
+        const fallbackMessage = `${fallbackPrefix}\n\n${genericUrl}`
+
+        await sendTelegramAlert(
+          `⚠️ Invalid SEND_LINK JSON\n` +
+          `Subscriber: ${conv.subscriber_id}\n` +
+          `Στάλθηκε generic link αντί personalized.`
+        )
+
+        await supabaseAdmin
+          .from('manychat_conversations')
+          .update({
+            lead_score: finalScore,
+            link_sent_at: new Date().toISOString(),
+            messages: [...conv.messages, { role: 'assistant', content: fallbackMessage }],
+            answered_at: new Date().toISOString(),
+            status: 'link_sent'
+          })
+          .eq('id', conv.id)
+
+        await sendManyChatMessage(conv.subscriber_id, fallbackMessage)
+        processed++
+        continue
+      }
+
+      // CASE 3: Normal reply (χωρίς SEND_LINK)
       const sent = await sendManyChatMessage(conv.subscriber_id, cleanReply)
       if (!sent) continue
 
@@ -339,8 +379,7 @@ async function followUpNoCheckout() {
     await sendTelegramAlert(
       `🔔 Άνοιξε τη σελίδα αλλά δεν πάτησε κατοχύρωσε\n` +
       `Subscriber: ${conv.subscriber_id}\n` +
-      `Ώρες: ${Math.round(hoursSince(conv.link_clicked_at))}h\n\n` +
-      `Πρότεινε: "Είδα ότι μπήκες στη σελίδα. Αν έχεις κάποια απορία, μου γράφεις."`
+      `Ώρες: ${Math.round(hoursSince(conv.link_clicked_at))}h`
     )
     
     await supabaseAdmin
@@ -371,9 +410,7 @@ async function followUpAbandonedCheckout() {
     
     await sendTelegramAlert(
       `🔔 Abandoned checkout\n` +
-      `Subscriber: ${conv.subscriber_id}\n` +
-      `Last message: ${conv.last_user_message}\n` +
-      `Hours: ${Math.round(hoursSince(conv.checkout_started_at))}h`
+      `Subscriber: ${conv.subscriber_id}`
     )
     
     const msg = 'Είδα ότι ξεκίνησες την κατοχύρωση. Αν υπήρξε κάποιο πρόβλημα, είμαι εδώ να το λύσουμε.'
