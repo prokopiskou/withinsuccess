@@ -168,7 +168,7 @@ function PageContent() {
           <p>Μου είπε ότι οι 63 μέρες ζωής ήταν η πρώτη της μεγάλη νίκη.</p>
           <p>Δεν βρήκε κάτι νέο. Θυμήθηκε κάτι που ήταν πάντα μέσα της.</p>
           <p className="pt-2 text-lg font-medium text-black" style={{ fontFamily: 'Georgia, serif' }}>
-            Αυτή τη σελίδα τη φτιάξαμε για τη Φωτεινή που είσαι εσύ.
+          Αυτό κάνουν οι 63 μέρες.
           </p>
         </div>
       </section>
