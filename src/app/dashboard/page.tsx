@@ -62,6 +62,7 @@ function DashboardContent() {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [fromDate, setFromDate] = useState<string>('')
   const [toDate, setToDate] = useState<string>('')
+  const [searchId, setSearchId] = useState<string>('')
 
   useEffect(() => {
     if (pw !== DASHBOARD_PASSWORD) return
@@ -116,6 +117,7 @@ function DashboardContent() {
   if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-500">Φόρτωση...</p></div>
 
   const filtered = conversations.filter(c => {
+    if (searchId && !c.subscriber_id.includes(searchId)) return false
     if (filterFlow !== 'all' && c.flow !== filterFlow) return false
     if (filterStatus !== 'all' && c.status !== filterStatus) return false
     return true
@@ -181,6 +183,13 @@ function DashboardContent() {
 
       <div className="max-w-7xl mx-auto px-6 pb-6">
         <div className="flex gap-4 mb-6 flex-wrap items-center">
+          <input
+            type="text"
+            placeholder="Αναζήτηση subscriber ID..."
+            value={searchId}
+            onChange={e => setSearchId(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-sm bg-white w-48"
+          />
           <select value={filterFlow} onChange={e => setFilterFlow(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white">
             <option value="all">Όλα τα flows</option>
             <option value="63">63 Μέρες</option>
