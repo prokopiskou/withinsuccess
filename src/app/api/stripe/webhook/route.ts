@@ -33,6 +33,10 @@ export async function POST(req: NextRequest) {
         status: 'converted'
       })
       .eq('subscriber_id', subscriberId)
+    await supabaseAdmin
+      .from('manychat_conversations')
+      .update({ status: 'paid' })
+      .eq('subscriber_id', subscriberId)
     const sid = session.metadata?.subscriber_id
     if (sid) await setManyChatField(sid, 14490102, 'yes')
 

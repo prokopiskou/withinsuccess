@@ -18,6 +18,11 @@ export async function POST(req: NextRequest) {
       .from('manychat_conversations')
       .update({ link_clicked_at: new Date().toISOString() })
       .eq('subscriber_id', subscriber_id)
+    await supabaseAdmin
+      .from('manychat_conversations')
+      .update({ status: 'page_visited' })
+      .eq('subscriber_id', subscriber_id)
+      .in('status', ['link_sent', 'answered'])
     await setManyChatField(subscriber_id, 14490100, 'yes')
 
     return NextResponse.json({

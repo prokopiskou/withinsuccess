@@ -33,6 +33,10 @@ export async function POST(req: NextRequest) {
         checkout_started_at: new Date().toISOString()
       })
       .eq('subscriber_id', subscriber_id)
+    await supabaseAdmin
+      .from('manychat_conversations')
+      .update({ status: 'checkout_started' })
+      .eq('subscriber_id', subscriber_id)
     await setManyChatField(subscriber_id, 14490101, 'yes')
 
     return NextResponse.json({ url: session.url })
