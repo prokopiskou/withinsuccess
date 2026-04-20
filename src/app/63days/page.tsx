@@ -18,6 +18,24 @@ function getPricingInfo() {
   return { price: 109, next: null, deadline: '11 Μαΐου' }
 }
 
+/**
+ * Παίρνει τα Facebook cookies από το browser για deduplication με server-side events.
+ */
+function getFbCookies(): { fbp: string; fbc: string } {
+  if (typeof document === 'undefined') return { fbp: '', fbc: '' }
+  
+  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split('=')
+    acc[key] = value
+    return acc
+  }, {} as Record<string, string>)
+  
+  return {
+    fbp: cookies._fbp || '',
+    fbc: cookies._fbc || ''
+  }
+}
+
 const DEFAULTS = {
   headline: 'Δεν σου λείπει η θέληση. Σου λείπει ένα σύστημα να σε κρατάει σε πορεία.',
   subheadline: '63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη.',
@@ -113,17 +131,50 @@ function PageContent() {
   }, [sid])
 
   const handleCheckout = async () => {
-    if (!sid) { window.location.href = STRIPE_LINK; return }
     setCheckoutLoading(true)
+    
+    const pricing = getPricingInfo()
+    
+    // 1. Track InitiateCheckout CLIENT-SIDE (πριν το redirect)
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'InitiateCheckout', {
+        value: pricing.price,
+        currency: 'EUR',
+        content_name: '63 Μέρες Ζωής',
+        content_type: 'product'
+      })
+    }
+    
+    // 2. Αν δεν έχει sid, generic Stripe link
+    if (!sid) { 
+      window.location.href = STRIPE_LINK
+      return 
+    }
+    
+    // 3. Πάρε Facebook cookies για deduplication με server-side CAPI
+    const { fbp, fbc } = getFbCookies()
+    
     try {
       const res = await fetch('/api/stripe/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriber_id: sid })
+        body: JSON.stringify({ 
+          subscriber_id: sid,
+          fbp,
+          fbc
+        })
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
-    } catch { window.location.href = STRIPE_LINK }
+      
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        window.location.href = STRIPE_LINK
+      }
+    } catch { 
+      window.location.href = STRIPE_LINK 
+    }
+    
     setCheckoutLoading(false)
   }
 

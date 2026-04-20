@@ -1,10 +1,85 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia'
 })
+
+const META_PIXEL_ID = '3382009922036740'
+
+/**
+ * Στέλνει Purchase event στο Meta Conversions API.
+ * Δουλεύει server-side, άρα δεν χάνει data από ad blockers.
+ */
+async function sendMetaPurchaseEvent(params: {
+  email: string | null | undefined
+  phone?: string | null
+  amount: number
+  eventSourceUrl?: string
+  eventId?: string
+}) {
+  if (!process.env.META_CAPI_ACCESS_TOKEN) {
+    console.log('Meta CAPI token missing, skipping server-side event')
+    return
+  }
+
+  const userData: Record<string, string[]> = {}
+
+  if (params.email) {
+    const hashedEmail = crypto
+      .createHash('sha256')
+      .update(params.email.toLowerCase().trim())
+      .digest('hex')
+    userData.em = [hashedEmail]
+  }
+
+  if (params.phone) {
+    const cleanPhone = params.phone.replace(/[^\d]/g, '')
+    const hashedPhone = crypto
+      .createHash('sha256')
+      .update(cleanPhone)
+      .digest('hex')
+    userData.ph = [hashedPhone]
+  }
+
+  try {
+    const res = await fetch(
+      `https://graph.facebook.com/v18.0/${META_PIXEL_ID}/events`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_token: process.env.META_CAPI_ACCESS_TOKEN,
+          data: [{
+            event_name: 'Purchase',
+            event_time: Math.floor(Date.now() / 1000),
+            event_id: params.eventId, // για deduplication με client pixel
+            action_source: 'website',
+            event_source_url: params.eventSourceUrl || 'https://app.withinsuccess.gr/63days',
+            user_data: userData,
+            custom_data: {
+              currency: 'EUR',
+              value: params.amount,
+              content_name: '63 Μέρες Ζωής',
+              content_type: 'product'
+            }
+          }]
+        })
+      }
+    )
+    
+    if (!res.ok) {
+      const errorText = await res.text()
+      console.error(`Meta CAPI error (${res.status}):`, errorText)
+    } else {
+      console.log(`Meta Purchase event sent: €${params.amount}`)
+    }
+  } catch (err) {
+    console.error('Meta CAPI fetch failed:', err)
+  }
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -18,44 +93,56 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid signature' }, { status: 400 })
   }
 
-  const session = event.data.object as Stripe.Checkout.Session
-  const subscriberId = session.metadata?.subscriber_id
-
-  if (!subscriberId) {
-    return NextResponse.json({ received: true })
-  }
-
+  // ===================================================================
+  // CHECKOUT COMPLETED — Successful payment
+  // ===================================================================
   if (event.type === 'checkout.session.completed') {
-    await supabaseAdmin
-      .from('manychat_conversations')
-      .update({
-        payment_completed_at: new Date().toISOString(),
-        status: 'converted'
-      })
-      .eq('subscriber_id', subscriberId)
-    await supabaseAdmin
-      .from('manychat_conversations')
-      .update({ status: 'paid' })
-      .eq('subscriber_id', subscriberId)
-    const sid = session.metadata?.subscriber_id
-    if (sid) await setManyChatField(sid, 14490102, 'yes')
+    const session = event.data.object as Stripe.Checkout.Session
+    const subscriberId = session.metadata?.subscriber_id
+    const email = session.customer_email || session.customer_details?.email || null
+    const phone = session.customer_details?.phone || null
+    const amount = (session.amount_total || 0) / 100
 
-    // Add to MailerLite group
-    if (session.customer_details?.email) {
+    // 1. Στείλε Purchase event στο Meta (server-side)
+    // Αυτό δουλεύει ΑΝΕΞΑΡΤΗΤΑ αν υπάρχει subscriberId
+    await sendMetaPurchaseEvent({
+      email,
+      phone,
+      amount,
+      eventId: session.id, // Stripe session ID ως event_id για deduplication
+      eventSourceUrl: 'https://app.withinsuccess.gr/63days'
+    })
+
+    // 2. Update Supabase (μόνο αν έχουμε subscriberId από DM agent)
+    if (subscriberId) {
+      await supabaseAdmin
+        .from('manychat_conversations')
+        .update({
+          payment_completed_at: new Date().toISOString(),
+          status: 'paid'
+        })
+        .eq('subscriber_id', subscriberId)
+      
+      // 3. Update ManyChat custom field
+      await setManyChatField(subscriberId, 14490102, 'yes')
+    }
+
+    // 4. Add στο MailerLite buyers group
+    if (email) {
       try {
-        const fullName = session.customer_details.name || ''
+        const fullName = session.customer_details?.name || ''
         const nameParts = fullName.trim().split(/\s+/)
         const firstName = nameParts[0] || ''
         const lastName = nameParts.slice(1).join(' ') || ''
 
-        await fetch('https://connect.mailerlite.com/api/subscribers', {
+        const mlRes = await fetch('https://connect.mailerlite.com/api/subscribers', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${process.env.MAILERLITE_API_KEY}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            email: session.customer_details.email,
+            email,
             fields: {
               name: firstName,
               last_name: lastName
@@ -63,15 +150,39 @@ export async function POST(req: NextRequest) {
             groups: ['170438323755550313']
           })
         })
+        
+        if (!mlRes.ok) {
+          console.error(`MailerLite error (${mlRes.status}):`, await mlRes.text())
+        }
       } catch (err) {
-        console.error('MailerLite error:', err)
+        console.error('MailerLite fetch failed:', err)
       }
     }
+
+    return NextResponse.json({ received: true, processed: 'purchase' })
   }
 
+  // ===================================================================
+  // CHECKOUT EXPIRED — Abandoned cart
+  // ===================================================================
   if (event.type === 'checkout.session.expired') {
-    console.log(`Checkout expired: ${subscriberId}`)
+    const session = event.data.object as Stripe.Checkout.Session
+    const subscriberId = session.metadata?.subscriber_id
+    const email = session.customer_email || session.customer_details?.email
+
+    if (subscriberId) {
+      await supabaseAdmin
+        .from('manychat_conversations')
+        .update({
+          status: 'checkout_abandoned'
+        })
+        .eq('subscriber_id', subscriberId)
+    }
+
+    console.log(`Checkout expired: ${subscriberId || 'unknown'} (email: ${email || 'none'})`)
+    return NextResponse.json({ received: true, processed: 'expired' })
   }
 
+  // Άγνωστο event type — return received χωρίς action
   return NextResponse.json({ received: true })
 }
