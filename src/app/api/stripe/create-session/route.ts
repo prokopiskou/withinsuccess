@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-03-25.dahlia'
 })
 
-const META_PIXEL_ID = '3382009922036740'
+const META_PIXEL_ID = '1653590555890252'
 
 /**
  * Στέλνει InitiateCheckout event στο Meta server-side για deduplication.
