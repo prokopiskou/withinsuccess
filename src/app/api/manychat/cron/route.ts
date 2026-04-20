@@ -18,7 +18,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 // ===================================================================
 // MODEL CONFIG — Opus 4.7 για ποιότητα
 // ===================================================================
-const MODEL = 'claude-opus-4-7'
+const MODEL = 'claude-sonnet-4-6'
 const MAX_TOKENS = 1000 // Αυξήθηκε από 500 για να μην κόβεται το JSON
 const NAME_RESET_DAYS = 5
 

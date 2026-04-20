@@ -72,8 +72,9 @@ export async function setManyChatField(subscriberId: string, fieldId: number, va
 // ===================================================================
 
 /**
- * Λίστα κοινών ελληνικών ονομάτων (ονομαστική).
- * Αν το όνομα είναι εδώ, είμαστε 100% σίγουροι ότι είναι όνομα.
+ * Λίστα κοινών ΕΛΛΗΝΙΚΩΝ ονομάτων (χωρίς τόνους).
+ * ΚΑΝΕΝΑ λατινικό όνομα σε αυτή τη λίστα.
+ * Αν το όνομα είναι εδώ ΚΑΙ είναι σε ελληνικούς χαρακτήρες, το χρησιμοποιούμε.
  */
 const GREEK_NAMES = new Set([
   // Αρσενικά -ος
@@ -95,7 +96,7 @@ const GREEK_NAMES = new Set([
   'μηνας', 'νεκταριος', 'ξενοφων', 'οδυσσεας', 'ονουφριος', 'παντελης',
   'παρασκευας', 'πελοπιδας', 'πλατων', 'πολυχρονης', 'ραφαηλ', 'ροδολφος',
   'σαμουηλ', 'σταματης', 'σωτηρης', 'τιμος', 'τιμολεων', 'τρυφων',
-  'φαιδων', 'φωτιος', 'χριστοφορος', 'ζαφειρης', 'ηλιας', 'μαρτινος',
+  'φαιδων', 'φωτιος', 'χριστοφορος', 'ζαφειρης', 'μαρτινος',
 
   // Θηλυκά
   'μαρια', 'ελενη', 'αννα', 'κατερινα', 'ειρηνη', 'σοφια', 'βασιλικη',
@@ -118,22 +119,28 @@ const GREEK_NAMES = new Set([
   'συλβια', 'ταξιαρχη', 'τερψιχορη', 'τζενη', 'τζινα', 'τριανταφυλλια',
   'υπατια', 'φαιδρα', 'φανη', 'φανουρια', 'φιλιτσα', 'φλωρα', 'φροσω',
   'χαρα', 'χαρικλεια', 'χαρουλα', 'χρυσα', 'χρυσαυγη', 'χρυσουλα',
-  'χριστιανα', 'ωραια', 'παναγιωτα', 'ευδοξια', 'ευτυχια', 'ευσεβια',
+  'χριστιανα', 'ωραια', 'ευδοξια', 'ευτυχια', 'ευσεβια',
   'μελισσα', 'εβελινα', 'ιλεανα',
 
   // Αρσενικά -ης  
-  'γιαννης', 'μιχαλης', 'αντωνης', 'λευτερης', 'βασιλης', 'δημητρης',
-  'φωτης', 'μανωλης', 'μανος', 'πανος', 'σακης', 'μπαμπης', 'νικολης',
+  'γιαννης', 'μανωλης', 'πανος', 'σακης', 'μπαμπης', 'νικολης',
   'αργυρης', 'θοδωρης', 'παρις', 'ζαχαρης', 'σταθης',
-
-  // Αρσενικά -ας
-  'ανδρεας', 'νικολας', 'φωτας', 'ηρακλας', 'ηρακλης', 'μηνας',
-
-  // Ξένα που εμφανίζονται συχνά
-  'maria', 'eleni', 'anna', 'kostas', 'giorgos', 'nikos', 'yannis',
-  'dimitris', 'christos', 'alex', 'andreas', 'michael', 'john', 'maria',
-  'sophia', 'sofia', 'elena', 'katerina', 'george', 'nick', 'peter'
 ])
+
+/**
+ * Ελέγχει αν το string περιέχει ΜΟΝΟ ελληνικούς χαρακτήρες (και κενά).
+ * Αν υπάρχει οποιοσδήποτε λατινικός χαρακτήρας, επιστρέφει false.
+ */
+function isGreekOnly(str: string): boolean {
+  return /^[\u0370-\u03FF\u1F00-\u1FFF\s]+$/.test(str)
+}
+
+/**
+ * Αφαιρεί τόνους από ελληνικό string για lookup.
+ */
+function stripAccents(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
 
 /**
  * Καθαρίζει το όνομα από emojis, underscores, κλπ.
@@ -152,13 +159,11 @@ function cleanName(name: string): string {
  * Κώστας → Κώστα
  * Γιάννης → Γιάννη
  * Μαρία → Μαρία (δεν αλλάζει)
- * Νικόλας → Νικόλα
+ * Γιώργος → Γιώργο
  */
 function toVocative(name: string): string {
-  // Κεφαλαίο πρώτο, μικρά τα υπόλοιπα
   const formatted = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
   
-  // Ειδικές περιπτώσεις - ονόματα που η κλητική τους δεν ακολουθεί κανόνα
   const specialCases: Record<string, string> = {
     'Γιώργος': 'Γιώργο',
     'Κώστας': 'Κώστα',
@@ -211,28 +216,30 @@ function toVocative(name: string): string {
   
   if (specialCases[formatted]) return specialCases[formatted]
   
-  // Γενικοί κανόνες κλητικής
-  // -ος → -ε (αλλά πολλά -ος → -ο, οπότε καλύτερα να μην το κάνουμε αυτόματα)
-  // -ης → -η
+  // Γενικοί κανόνες κλητικής (για ελληνικά ονόματα)
   if (formatted.endsWith('ης')) {
     return formatted.slice(0, -1) // Γιάννης → Γιάννη
   }
-  // -ας → -α
   if (formatted.endsWith('ας')) {
     return formatted.slice(0, -1) // Κώστας → Κώστα
   }
-  // -ος → -ο (για ονόματα σαν Γιώργος, Νίκος)
   if (formatted.endsWith('ος')) {
     return formatted.slice(0, -1) // Γιώργος → Γιώργο
   }
   
-  // Θηλυκά και ξένα ονόματα παραμένουν ως έχουν
+  // Θηλυκά παραμένουν ως έχουν
   return formatted
 }
 
 /**
- * Επιστρέφει όνομα σε κλητική ΜΟΝΟ αν είμαστε 100% σίγουροι ότι είναι όνομα.
+ * Επιστρέφει όνομα σε κλητική ΜΟΝΟ αν είμαστε 100% σίγουροι ότι είναι ελληνικό όνομα.
  * Αλλιώς επιστρέφει null.
+ * 
+ * RULES:
+ * 1. Empty/invalid → null
+ * 2. Περιέχει λατινικούς χαρακτήρες → null (ΠΟΤΕ Latin names)
+ * 3. Δεν είναι στη λίστα γνωστών ελληνικών ονομάτων → null
+ * 4. Αλλιώς → return vocative
  */
 function validateAndFormatName(rawName: string | null | undefined): string | null {
   if (!rawName || typeof rawName !== 'string') return null
@@ -240,18 +247,22 @@ function validateAndFormatName(rawName: string | null | undefined): string | nul
   const cleaned = cleanName(rawName)
   if (cleaned.length < 2) return null
   
-  // Πάρε μόνο την πρώτη λέξη
   const firstWord = cleaned.split(' ')[0]
   if (firstWord.length < 2) return null
   
-  // 100% check: Είναι στη λίστα γνωστών ονομάτων;
-  const normalized = firstWord.toLowerCase()
-  if (!GREEK_NAMES.has(normalized)) {
-    // Δεν είναι στη λίστα — δεν το χρησιμοποιούμε
+  // CRITICAL: Απορρίπτουμε λατινικά ονόματα
+  // Αυτό λύνει το "Giorgos" bug.
+  if (!isGreekOnly(firstWord)) {
     return null
   }
   
-  // Είναι αναγνωρισμένο όνομα — format σε κλητική
+  // Lookup στη λίστα χωρίς τόνους για ευελιξία
+  // (π.χ. "Γιώργος" και "γιωργος" και "ΓΙΩΡΓΟΣ" all match)
+  const normalized = stripAccents(firstWord.toLowerCase())
+  if (!GREEK_NAMES.has(normalized)) {
+    return null
+  }
+  
   return toVocative(firstWord)
 }
 
@@ -273,7 +284,7 @@ export async function getManyChatSubscriber(subscriberId: string): Promise<{ fir
     
     return {
       firstName: validateAndFormatName(data.data?.first_name),
-      lastName: null // Δεν χρησιμοποιούμε lastName στα DMs
+      lastName: null
     }
   } catch (err) {
     console.error('ManyChat getInfo failed:', err)
