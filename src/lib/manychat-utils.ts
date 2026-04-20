@@ -18,6 +18,13 @@ export function hoursSince(dateStr: string): number {
 }
 
 export async function sendManyChatMessage(subscriberId: string, message: string): Promise<boolean> {
+  const numericId = parseInt(subscriberId)
+
+  if (isNaN(numericId) || numericId === 0) {
+    console.log(`Skipping ManyChat message - invalid subscriber_id: ${subscriberId}`)
+    return false
+  }
+
   try {
     const res = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
       method: 'POST',
@@ -26,7 +33,7 @@ export async function sendManyChatMessage(subscriberId: string, message: string)
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        subscriber_id: parseInt(subscriberId),
+        subscriber_id: numericId,
         field_id: 13632075,
         field_value: message
       })
@@ -43,6 +50,14 @@ export async function sendManyChatMessage(subscriberId: string, message: string)
 }
 
 export async function setManyChatField(subscriberId: string, fieldId: number, value: string): Promise<boolean> {
+  const numericId = parseInt(subscriberId)
+
+  // Skip αν δεν είναι valid numeric ID (π.χ. test subscribers)
+  if (isNaN(numericId) || numericId === 0) {
+    console.log(`Skipping ManyChat setField - invalid subscriber_id: ${subscriberId}`)
+    return false
+  }
+
   try {
     const res = await fetch('https://api.manychat.com/fb/subscriber/setCustomField', {
       method: 'POST',
@@ -51,7 +66,7 @@ export async function setManyChatField(subscriberId: string, fieldId: number, va
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        subscriber_id: parseInt(subscriberId),
+        subscriber_id: numericId,
         field_id: fieldId,
         field_value: value
       })
@@ -267,9 +282,16 @@ function validateAndFormatName(rawName: string | null | undefined): string | nul
 }
 
 export async function getManyChatSubscriber(subscriberId: string): Promise<{ firstName: string | null; lastName: string | null }> {
+  const numericId = parseInt(subscriberId)
+
+  if (isNaN(numericId) || numericId === 0) {
+    console.log(`Skipping ManyChat getInfo - invalid subscriber_id: ${subscriberId}`)
+    return { firstName: null, lastName: null }
+  }
+
   try {
     const res = await fetch(
-      `https://api.manychat.com/fb/subscriber/getInfo?subscriber_id=${subscriberId}`,
+      `https://api.manychat.com/fb/subscriber/getInfo?subscriber_id=${numericId}`,
       {
         headers: {
           'Authorization': `Bearer ${process.env.MANYCHAT_API_KEY}`
