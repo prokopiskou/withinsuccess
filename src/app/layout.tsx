@@ -25,6 +25,10 @@ export const metadata: Metadata = {
   keywords: ["προσωπική ανάπτυξη", "αλλαγή νοοτροπίας", "διαχείριση άγχους", "αυτοβελτίωση", "σεμινάρια αυτοβελτίωσης", "life coaching", "online coaching", "αυτογνωσία", "ψυχική ευεξία", "Προκόπης Κούκης"],
   authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
   creator: "Προκόπης Κούκης",
+  // Facebook domain verification
+  other: {
+    "facebook-domain-verification": "irchrcs50cp19rnfgafr8j067xor89",
+  },
   openGraph: {
     type: "website",
     locale: "el_GR",
