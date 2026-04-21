@@ -59,10 +59,10 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
             </span>
           </a>
           <div className="flex items-center gap-8 text-sm text-gray-500">
-            <a href="/about" className={active === "about" ? "text-black font-medium" : "hover:text-black transition-colors"}>About</a>
-            <a href="/work" className={active === "work" ? "text-black font-medium" : "hover:text-black transition-colors"}>Work with me</a>
-            <a href="/corporate" className={active === "corporate" ? "text-black font-medium" : "hover:text-black transition-colors"}>Corporate</a>
-            <a href="/insights" className={active === "insights" ? "text-black font-medium" : "hover:text-black transition-colors"}>Insights</a>
+            <a href="/about" className={active === "about" ? "text-black font-medium" : "hover:text-black transition-colors"}>Η ιστορία</a>
+            <a href="/work" className={active === "work" ? "text-black font-medium" : "hover:text-black transition-colors"}>Συνεργασία</a>
+            <a href="/corporate" className={active === "corporate" ? "text-black font-medium" : "hover:text-black transition-colors"}>Για εταιρείες</a>
+            <a href="/insights" className={active === "insights" ? "text-black font-medium" : "hover:text-black transition-colors"}>Σκέψεις</a>
           </div>
           <a href={ctaHref} className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
             {ctaLabel}
@@ -70,13 +70,12 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
-      {isMenuOpen && (
+      {/& (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm text-gray-500">
-          <a href="/about" className="hover:text-black transition-colors">About</a>
-          <a href="/work" className="hover:text-black transition-colors">Work with me</a>
-          <a href="/corporate" className="hover:text-black transition-colors">Corporate</a>
-          <a href="/insights" className="hover:text-black transition-colors">Insights</a>
+          <a href="/about" className="hover:text-black transition-colors">Η ιστορία</a>
+          <a href="/work" className="hover:text-black transition-colors">Συνεργασία</a>
+          <a href="/corporate" className="hover:text-black transition-colors">Για εταιρείες</a>
+          <a href="/insights" className="hover:text-black transition-colors">Σκέψεις</a>
         </div>
       )}
     </nav>
