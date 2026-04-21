@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-// Landing pages που ΔΕΝ θα έχουν header
 const LANDING_PAGE_PREFIXES = [
   '/63days',
   '/30days',
@@ -13,17 +12,14 @@ const LANDING_PAGE_PREFIXES = [
 export default function ConditionalHeader() {
   const pathname = usePathname()
 
-  // Έλεγξε αν η τρέχουσα σελίδα είναι landing page
   const isLandingPage = LANDING_PAGE_PREFIXES.some(prefix => 
     pathname === prefix || pathname.startsWith(prefix + '/')
   )
 
-  // Αν είναι landing page, μην εμφανίσεις header
   if (isLandingPage) {
     return null
   }
 
-  // Κανονικό header για όλες τις άλλες σελίδες
   return (
     <header className="w-full bg-white border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-center">
