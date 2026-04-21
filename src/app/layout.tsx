@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,11 +23,29 @@ export const metadata: Metadata = {
     default: "Προκόπης Κούκης | Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
     template: "%s | WithinSuccess",
   },
-  description: "Βοηθώ ανθρώπους να αλλάξουν την εσωτερική τους ιστορία μέσα από coaching, σεμινάρια αυτοβελτίωσης και προγράμματα προσωπικής ανάπτυξης. 900+ άτομα. 7+ χρόνια εμπειρία.",
-  keywords: ["προσωπική ανάπτυξη", "αλλαγή νοοτροπίας", "διαχείριση άγχους", "αυτοβελτίωση", "σεμινάρια αυτοβελτίωσης", "life coaching", "online coaching", "αυτογνωσία", "ψυχική ευεξία", "Προκόπης Κούκης"],
+  description:
+    "Βοηθώ ανθρώπους να αλλάξουν την εσωτερική τους ιστορία μέσα από coaching, σεμινάρια αυτοβελτίωσης και προγράμματα προσωπικής ανάπτυξης. 900+ άτομα. 7+ χρόνια εμπειρία.",
+  keywords: [
+    "προσωπική ανάπτυξη",
+    "αλλαγή νοοτροπίας",
+    "διαχείριση άγχους",
+    "αυτοβελτίωση",
+    "σεμινάρια αυτοβελτίωσης",
+    "life coaching",
+    "online coaching",
+    "αυτογνωσία",
+    "ψυχική ευεξία",
+    "Προκόπης Κούκης",
+  ],
   authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
   creator: "Προκόπης Κούκης",
-  // Facebook domain verification
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon.png", sizes: "180x180", type: "image/png" }],
+  },
   other: {
     "facebook-domain-verification": "irchrcs50cp19rnfgafr8j067xor89",
   },
@@ -35,14 +55,22 @@ export const metadata: Metadata = {
     url: "https://withinsuccess.gr",
     siteName: "WithinSuccess",
     title: "Προκόπης Κούκης | Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
-    description: "Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία. Coaching, σεμινάρια και προγράμματα αυτοβελτίωσης από τον Προκόπη Κούκη.",
-    images: [{ url: "/withinsuccess_head.webp", width: 1200, height: 630, alt: "Προκόπης Κούκης - WithinSuccess" }],
+    description:
+      "Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία. Coaching, σεμινάρια και προγράμματα αυτοβελτίωσης από τον Προκόπη Κούκη.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "WithinSuccess - Προκόπης Κούκης",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Προκόπης Κούκης | WithinSuccess",
     description: "Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία.",
-    images: ["/withinsuccess_head.webp"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -68,15 +96,22 @@ const jsonLd = {
         "https://www.youtube.com/@Prokopiskoukis",
       ],
       jobTitle: "Life Coach & Personal Development Expert",
-      description: "Ειδικός προσωπικής ανάπτυξης και αλλαγής νοοτροπίας. 7+ χρόνια εμπειρία, 900+ άτομα.",
-      knowsAbout: ["Προσωπική Ανάπτυξη", "Αλλαγή Νοοτροπίας", "Διαχείριση Άγχους", "Life Coaching", "Αυτογνωσία"],
+      description:
+        "Ειδικός προσωπικής ανάπτυξης και αλλαγής νοοτροπίας. 7+ χρόνια εμπειρία, 900+ άτομα.",
+      knowsAbout: [
+        "Προσωπική Ανάπτυξη",
+        "Αλλαγή Νοοτροπίας",
+        "Διαχείριση Άγχους",
+        "Life Coaching",
+        "Αυτογνωσία",
+      ],
     },
     {
       "@type": "Organization",
       "@id": "https://withinsuccess.gr/#organization",
       name: "WithinSuccess",
       url: "https://withinsuccess.gr",
-      logo: "https://withinsuccess.gr/withinsuccess_head.webp",
+      logo: "https://withinsuccess.gr/logo.png",
       founder: { "@id": "https://withinsuccess.gr/#person" },
       sameAs: [
         "https://www.instagram.com/withinsuccess/",
@@ -138,7 +173,34 @@ export default function RootLayout({
           />
         </noscript>
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* HEADER - ALL PAGES */}
+        <header className="w-full bg-white border-b border-gray-100">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center">
+            <Link
+              href="/"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <Image
+                src="/logo.png"
+                alt="WithinSuccess"
+                width={60}
+                height={60}
+                priority
+                className="w-[50px] h-[50px] md:w-[60px] md:h-[60px]"
+              />
+              <span
+                className="text-lg md:text-xl font-semibold tracking-tight text-black"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                WithinSuccess
+              </span>
+            </Link>
+          </div>
+        </header>
+
+        {children}
+      </body>
     </html>
   );
 }
