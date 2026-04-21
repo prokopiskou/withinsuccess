@@ -176,7 +176,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {/* HEADER - ALL PAGES */}
         <header className="w-full bg-white border-b border-gray-100">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-center">
             <Link
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
