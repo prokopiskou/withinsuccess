@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import Link from "next/link";
-import Image from "next/image";
 import "./globals.css";
+import ConditionalHeader from "./components/ConditionalHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -173,32 +172,8 @@ export default function RootLayout({
           />
         </noscript>
       </head>
-      <body className="min-h-full flex flex-col"><div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-center">
-        {/* HEADER - ALL PAGES */}
-        <header className="w-full bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-center">
-            <Link
-              href="/"
-              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-            >
-              <Image
-                src="/logo.png"
-                alt="WithinSuccess"
-                width={60}
-                height={60}
-                priority
-                className="w-[50px] h-[50px] md:w-[60px] md:h-[60px]"
-              />
-              <span
-                className="text-lg md:text-xl font-semibold tracking-tight text-black"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                WithinSuccess
-              </span>
-            </Link>
-          </div>
-        </header>
-
+      <body className="min-h-full flex flex-col">
+        <ConditionalHeader />
         {children}
       </body>
     </html>
