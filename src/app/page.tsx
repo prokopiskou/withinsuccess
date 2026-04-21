@@ -69,10 +69,7 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Ξεκίνα εδώ →
-              </a>
-              <a href="https://app.withinsuccess.gr/63days" className="self-start border border-black px-8 py-4 rounded-full text-sm font-medium hover:bg-black hover:text-white transition-all">
+              <a href="https://app.withinsuccess.gr/63days" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
                 63 Μέρες της Ζωής σου →
               </a>
             </div>
