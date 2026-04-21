@@ -25,18 +25,15 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
             <span className="w-6 h-px bg-black block"></span>
             <span className="w-6 h-px bg-black block"></span>
           </button>
-          <a href="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+          <a href="/" className="absolute left-1/2 -translate-x-1/2">
             <Image
               src="/logo.png"
               alt="WithinSuccess"
-              width={36}
-              height={36}
+              width={40}
+              height={40}
               priority
-              className="w-9 h-9"
+              className="w-10 h-10"
             />
-            <span className="text-base font-semibold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
-              WithinSuccess
-            </span>
           </a>
           <a href={ctaHref} className="text-xs font-medium border border-black px-3 py-1.5 rounded-full hover:bg-black hover:text-white transition-all">
             {ctaLabel}
@@ -70,9 +67,10 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
         </div>
       </div>
 
-      {/& (
+      {/* MOBILE MENU */}
+      {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm text-gray-500">
-          <a href="/about" className="hover:text-black transition-colors">Η ιστορία</a>
+          <ablack transition-colors">Η ιστορία</a>
           <a href="/work" className="hover:text-black transition-colors">Συνεργασία</a>
           <a href="/corporate" className="hover:text-black transition-colors">Για εταιρείες</a>
           <a href="/insights" className="hover:text-black transition-colors">Σκέψεις</a>
