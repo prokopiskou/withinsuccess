@@ -173,10 +173,10 @@ export default function RootLayout({
           />
         </noscript>
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col"><div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-center">
         {/* HEADER - ALL PAGES */}
         <header className="w-full bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-center">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-center">
             <Link
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
