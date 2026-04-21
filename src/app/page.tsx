@@ -63,7 +63,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-8">
             <h1 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight" style={{fontFamily: 'Georgia, serif'}}>
-              Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία.
+              Η ζωή αλλάζει<br />όταν αλλάξει<br />η εσωτερική ιστορία.
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
