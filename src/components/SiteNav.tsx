@@ -70,7 +70,7 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
       {/* MOBILE MENU */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm text-gray-500">
-          <ablack transition-colors">Η ιστορία</a>
+          <a href="/about" className="hover:text-black transition-colors">Η ιστορία</a>
           <a href="/work" className="hover:text-black transition-colors">Συνεργασία</a>
           <a href="/corporate" className="hover:text-black transition-colors">Για εταιρείες</a>
           <a href="/insights" className="hover:text-black transition-colors">Σκέψεις</a>
