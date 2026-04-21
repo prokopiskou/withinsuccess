@@ -188,7 +188,7 @@ function PageContent() {
   return (
     <main className="min-h-screen bg-white text-black font-sans">
       {/* HERO + CTA 1 */}
-      <section className="pt-20 pb-4 px-6 max-w-3xl mx-auto text-center">
+      <section className="pt-8 pb-4 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
           {headline}
