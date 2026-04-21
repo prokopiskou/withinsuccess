@@ -89,7 +89,7 @@ export default function Work() {
               <p>✓ Online τελετή αποφοίτησης</p>
             </div>
             <a href="https://app.withinsuccess.gr/63days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
-              Κατοχύρωσε τη θέση σου — 69–109€ →
+              Κατοχύρωσε τη θέση σου — από 69€ →
             </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
