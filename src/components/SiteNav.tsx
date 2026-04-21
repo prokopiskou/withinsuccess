@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 type Props = {
   ctaHref: string;
@@ -12,7 +13,7 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 py-4">
+      <div className="max-w-6xl mx-auto px-6 py-3">
 
         {/* MOBILE */}
         <div className="flex md:hidden items-center justify-between">
@@ -24,8 +25,18 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
             <span className="w-6 h-px bg-black block"></span>
             <span className="w-6 h-px bg-black block"></span>
           </button>
-          <a href="/" className="text-base font-semibold tracking-tight absolute left-1/2 -translate-x-1/2">
-            WithinSuccess
+          <a href="/" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            <Image
+              src="/logo.png"
+              alt="WithinSuccess"
+              width={36}
+              height={36}
+              priority
+              className="w-9 h-9"
+            />
+            <span className="text-base font-semibold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
+              WithinSuccess
+            </span>
           </a>
           <a href={ctaHref} className="text-xs font-medium border border-black px-3 py-1.5 rounded-full hover:bg-black hover:text-white transition-all">
             {ctaLabel}
@@ -34,7 +45,19 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
 
         {/* DESKTOP */}
         <div className="hidden md:flex items-center justify-between">
-          <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
+          <a href="/" className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="WithinSuccess"
+              width={48}
+              height={48}
+              priority
+              className="w-12 h-12"
+            />
+            <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
+              WithinSuccess
+            </span>
+          </a>
           <div className="flex items-center gap-8 text-sm text-gray-500">
             <a href="/about" className={active === "about" ? "text-black font-medium" : "hover:text-black transition-colors"}>About</a>
             <a href="/work" className={active === "work" ? "text-black font-medium" : "hover:text-black transition-colors"}>Work with me</a>
