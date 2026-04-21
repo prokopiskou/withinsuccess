@@ -66,7 +66,7 @@ export default function Home() {
               Η ζωή αλλάζει όταν αλλάξει η εσωτερική ιστορία.
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
-              Δεν είσαι χαμένος. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
+              Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
@@ -78,7 +78,7 @@ export default function Home() {
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
               <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-400 mt-1">Ατομα</p></div>
-              <div><span className="text-2xl font-semibold">9.000+</span><p className="text-xs text-gray-400 mt-1">Community</p></div>
+              <div><span className="text-2xl font-semibold">10.000+</span><p className="text-xs text-gray-400 mt-1">Community</p></div>
               <div><span className="text-2xl font-semibold">173k</span><p className="text-xs text-gray-400 mt-1">Instagram</p></div>
               <div><span className="text-2xl font-semibold">7+</span><p className="text-xs text-gray-400 mt-1">Χρονια</p></div>
             </div>
