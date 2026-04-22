@@ -3,11 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
 
-const SEMINAR1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar1.mp4";
-const SEMINAR2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar2.mp4";
-const TESTIMONIAL1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial1.MP4";
-const TESTIMONIAL2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial2.MP4";
-
+const SEMINAR1 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/seminar1_compressed.mp4";
+const SEMINAR2 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/seminar2_compressed.mp4";
+const TESTIMONIAL1 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/testimonial1.mp4";
+const TESTIMONIAL2 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/testimonial2.mp4";
 const GOLD = '#C9A96E';
 
 const reviews = [
