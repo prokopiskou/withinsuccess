@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import MetaPixel, { trackEvent } from "@/components/MetaPixel";
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
@@ -9,8 +10,11 @@ export default function ThirtyDays() {
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);
 
+  useEffect(() => { trackEvent("ViewContent", { content_name: "30days" }); }, []);
+
   return (
     <main className="min-h-screen bg-white font-sans">
+      <MetaPixel />
 
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">

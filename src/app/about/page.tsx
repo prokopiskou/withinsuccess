@@ -1,8 +1,10 @@
 import SiteNav from "@/components/SiteNav";
+import MetaPixel from "@/components/MetaPixel";
 
 export default function About() {
   return (
     <main className="min-h-screen bg-white font-sans">
+      <MetaPixel />
 
       {/* NAV */}
       <SiteNav active="about" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />

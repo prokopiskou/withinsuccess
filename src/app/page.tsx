@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
+import MetaPixel from "@/components/MetaPixel";
 
 const SEMINAR1 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/seminar1_compressed.mp4";
 const SEMINAR2 = "https://pub-d8566a21e362417eab8a7a2d5e834c39.r2.dev/seminar2_compressed.mp4";
@@ -54,6 +55,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans">
+      <MetaPixel />
 
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 

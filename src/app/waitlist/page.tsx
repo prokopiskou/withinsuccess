@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import SiteNav from "@/components/SiteNav";
+import MetaPixel, { trackEvent } from "@/components/MetaPixel";
 
 const GOLD = '#C9A96E';
 
@@ -19,12 +20,14 @@ export default function Waitlist() {
       body: JSON.stringify({ name, email }),
     });
     setSubmitted(true);
+    trackEvent("Lead");
     setLoading(false);
   };
 
   if (submitted) {
     return (
       <main className="min-h-screen bg-white font-sans">
+        <MetaPixel />
         <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
         <section className="pt-40 pb-24 px-6 max-w-xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-semibold leading-tight mb-6" style={{fontFamily: 'Georgia, serif'}}>
@@ -40,6 +43,7 @@ export default function Waitlist() {
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <MetaPixel />
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       <section className="pt-32 pb-24 px-6 max-w-xl mx-auto">

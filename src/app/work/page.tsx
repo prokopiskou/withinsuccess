@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import SiteNav from "@/components/SiteNav";
+import MetaPixel from "@/components/MetaPixel";
 
 const GOLD = '#C9A96E';
 
@@ -22,6 +23,7 @@ export default function Work() {
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <MetaPixel />
 
       <SiteNav active="work" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 

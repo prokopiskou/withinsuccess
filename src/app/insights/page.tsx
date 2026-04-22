@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { articles } from "./articles";
 import SiteNav from "@/components/SiteNav";
+import MetaPixel from "@/components/MetaPixel";
 
 export const metadata: Metadata = {
   title: "Insights — Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 export default function Insights() {
   return (
     <main className="min-h-screen bg-white font-sans">
+      <MetaPixel />
 
       {/* NAV */}
       <SiteNav active="insights" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
