@@ -18,9 +18,6 @@ function getPricingInfo() {
   return { price: 109, next: null, deadline: '11 Μαΐου' }
 }
 
-/**
- * Παίρνει τα Facebook cookies από το browser για deduplication με server-side events.
- */
 function getFbCookies(): { fbp: string; fbc: string } {
   if (typeof document === 'undefined') return { fbp: '', fbc: '' }
   
@@ -34,17 +31,6 @@ function getFbCookies(): { fbp: string; fbc: string } {
     fbp: cookies._fbp || '',
     fbc: cookies._fbc || ''
   }
-}
-
-const DEFAULTS = {
-  headline: 'Δεν σου λείπει η θέληση. Σου λείπει ένα σύστημα να σε κρατάει σε πορεία.',
-  subheadline: '63 ημέρες. Κάθε εβδομάδα ένα θέμα. Κάθε μέρα μία πράξη.',
-  bullets: [
-    '9 φωνητικά μηνύματα καθοδήγησης',
-    '9 Playbooks με καθημερινές πράξεις',
-    'Ιδιωτικό Viber broadcast channel',
-    'Online τελετή αποφοίτησης'
-  ]
 }
 
 const broadcastImages = [
@@ -79,7 +65,7 @@ function Carousel({ images }: { images: string[] }) {
   )
 }
 
-function PricingBlock({ onCheckout, loading }: { onCheckout: () => void; loading: boolean }) {
+function PricingBlock({ onCheckout, loading, ctaLabel = 'Κατοχύρωσε τη θέση σου' }: { onCheckout: () => void; loading: boolean; ctaLabel?: string }) {
   const { price, next, deadline } = getPricingInfo()
   return (
     <div className="text-center">
@@ -93,7 +79,7 @@ function PricingBlock({ onCheckout, loading }: { onCheckout: () => void; loading
         className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
         style={{ backgroundColor: GOLD, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.6 : 1 }}
       >
-        {loading ? 'Φόρτωση...' : 'Κατοχύρωσε τη θέση σου'}
+        {loading ? 'Φόρτωση...' : ctaLabel}
       </button>
       <p className="text-xs text-gray-400 mt-3">Περιορισμένες θέσεις. Έναρξη 12 Μαΐου.</p>
     </div>
@@ -103,9 +89,6 @@ function PricingBlock({ onCheckout, loading }: { onCheckout: () => void; loading
 function PageContent() {
   const searchParams = useSearchParams()
   const sid = searchParams.get('sid')
-  const [headline, setHeadline] = useState(DEFAULTS.headline)
-  const [subheadline, setSubheadline] = useState(DEFAULTS.subheadline)
-  const [bullets, setBullets] = useState(DEFAULTS.bullets)
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
 
@@ -113,17 +96,11 @@ function PageContent() {
     async function load() {
       if (!sid) { setLoading(false); return }
       try {
-        const res = await fetch('/api/manychat/track', {
+        await fetch('/api/manychat/track', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscriber_id: sid })
         })
-        const data = await res.json()
-        if (data.personalized) {
-          if (data.headline) setHeadline(data.headline)
-          if (data.subheadline) setSubheadline(data.subheadline)
-          if (data.bullets?.length) setBullets([...data.bullets, 'Ξεκινάς 12 Μαΐου'])
-        }
       } catch {}
       setLoading(false)
     }
@@ -135,7 +112,6 @@ function PageContent() {
     
     const pricing = getPricingInfo()
     
-    // 1. Track InitiateCheckout CLIENT-SIDE (πριν το redirect)
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         value: pricing.price,
@@ -145,13 +121,11 @@ function PageContent() {
       })
     }
     
-    // 2. Αν δεν έχει sid, generic Stripe link
     if (!sid) { 
       window.location.href = STRIPE_LINK
       return 
     }
     
-    // 3. Πάρε Facebook cookies για deduplication με server-side CAPI
     const { fbp, fbc } = getFbCookies()
     
     try {
@@ -187,66 +161,209 @@ function PageContent() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans">
-      {/* HERO + CTA 1 */}
-      <section className="pt-8 pb-4 px-6 max-w-3xl mx-auto text-center">
+      {/* HERO */}
+      <section className="pt-12 pb-8 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες της Ζωής σου</p>
-        <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-          {headline}
+        <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-8" style={{ fontFamily: 'Georgia, serif' }}>
+          Δεν σου λείπει η θέληση.<br />Σου λείπει ένα σύστημα να σε κρατάει σε πορεία.
         </h1>
-        <p className="text-lg text-gray-500 leading-relaxed mb-10">{subheadline}</p>
-        <div className="flex flex-col gap-3 max-w-xs mx-auto mb-12 text-left md:ml-[calc(50%-140px)]">
-          {bullets.map((item, i) => (
+        <div className="text-lg text-gray-600 leading-relaxed space-y-4 mb-10">
+          <p>Οι περισσότεροι ξεκινάνε δυνατά.</p>
+          <p>Και σταματάνε αθόρυβα.</p>
+          <p>Όχι γιατί δεν μπορούν.</p>
+          <p>Αλλά γιατί δεν ξέρουν τι να κάνουν κάθε μέρα.</p>
+          <p className="pt-4">Το 63 Μέρες Ζωής είναι ένα βιωματικό σύστημα επανασύνδεσης με τον εαυτό σου, μέσω καθημερινής δράσης σε βάζει σε ρυθμό και αλλάζει τον τρόπο που σκέφτεσαι και λειτουργείς.</p>
+        </div>
+
+        <div className="max-w-md mx-auto text-left space-y-3 mb-10">
+          <p className="text-gray-700 font-medium mb-4">Για 63 μέρες:</p>
+          {[
+            'Ξέρεις τι πρέπει να κάνεις κάθε μέρα',
+            'Ξέρεις γιατί το κάνεις',
+            'Και δεν έχεις χώρο να κρυφτείς από τον εαυτό σου'
+          ].map((item, i) => (
             <div key={i} className="flex items-start gap-3">
-              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 20 20" fill="none">
+              <svg className="w-4 h-4 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="none">
                 <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="#C9A96E"/>
               </svg>
               <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
             </div>
           ))}
         </div>
+
+        <div className="max-w-md mx-auto text-left space-y-3 mb-10">
+          <p className="text-gray-700 font-medium mb-4">Σε 63 μέρες αλλάζεις:</p>
+          {['Σκέψη', 'Συμπεριφορά', 'Ταυτότητα'].map((item, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <svg className="w-4 h-4 flex-shrink-0 mt-1" viewBox="0 0 20 20" fill="none">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill="#C9A96E"/>
+              </svg>
+              <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Georgia, serif' }}>Έναρξη: 12 Μαΐου</p>
+        <p className="text-sm text-gray-500 mb-2">Μετά δεν υπάρχει δυνατότητα εισόδου.</p>
+        <p className="text-sm text-gray-500">Δες πως λειτουργεί παρακάτω.</p>
       </section>
 
-      {/* ΤΙ ΠΕΡΙΛΑΜΒΑΝΕΙ */}
-      <section className="py-6 px-6 bg-gray-50">
+      {/* ΤΙ ΕΙΝΑΙ ΤΟ 63 ΜΕΡΕΣ ΖΩΗΣ */}
+      <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι περιλαμβάνει</p>
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι είναι το 63 μέρες ζωής</p>
+          <div className="text-gray-700 leading-relaxed space-y-4 mb-10 text-center">
+            <p className="text-xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Ένα δομημένο σύστημα 9 εβδομάδων.</p>
+            <p>Με εβδομαδιαία καθοδήγηση και καθημερινή πράξη.</p>
+          </div>
+
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>Κάθε Κυριακή</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Ηχητική καθοδήγηση για την εβδομάδα. Το προσωπικό σου Playbook με ασκήσεις. Η συμφωνία που κάνεις με τον εαυτό σου.</p>
+              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>Κάθε Κυριακή λαμβάνεις:</h3>
+              <div className="space-y-2 text-gray-600 text-sm">
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Ηχητική καθοδήγηση για την εβδομάδα</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Το προσωπικό σου Playbook (πρακτικό οδηγό με ασκήσεις)</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Τη συμφωνία που κάνεις με τον εαυτό σου</span></div>
+              </div>
             </div>
+
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>Κάθε μέρα</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Μηνύματα καθοδήγησης στο ιδιωτικό Viber channel. Μία πράξη 1-2 λεπτών. Χτίζεις συνέπεια. Σπάς την υπερανάλυση. Ξαναπαίρνεις τον έλεγχο.</p>
+              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>Κάθε μέρα:</h3>
+              <div className="space-y-2 text-gray-600 text-sm">
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Λαμβάνεις μηνύματα καθοδήγησης στο ιδιωτικό Viber channel (κανάλι καθοδήγησης)</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Εκτελείς μία πράξη 1–2 λεπτών που σου έχει τεθεί από πριν (απλό, πρακτικό)</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Χτίζεις συνέπεια</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Σπάς την υπερανάλυση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Ξαναπαίρνεις τον έλεγχο</span></div>
+              </div>
             </div>
+
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>Κάθε εβδομάδα</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Αυτοστοχασμός. Δομημένη αυτοαξιολόγηση. Προχωράς στο επόμενο επίπεδο.</p>
+              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>Κάθε εβδομάδα:</h3>
+              <div className="space-y-2 text-gray-600 text-sm">
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κάνεις αυτοστοχασμό</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κάνεις δομημένη αυτοαξιολόγηση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Προχωράς στο επόμενο επίπεδο</span></div>
+              </div>
             </div>
+
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>Στο τέλος</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Online τελετή αποφοίτησης. Η στιγμή που βλέπεις τη μεταμόρφωση. Κλείνεις έναν κύκλο και μπαίνεις στην επόμενη φάση.</p>
+              <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>Στο τέλος των 63 ημερών:</h3>
+              <div className="space-y-2 text-gray-600 text-sm">
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Online τελετή αποφοίτησης</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Η στιγμή που βλέπεις τη μεταμόρφωση</span></div>
+              </div>
+            </div>
+
+            <div className="pt-6 space-y-2 text-gray-700 text-center">
+              <p>Δεν χρειάζεται χρόνος.</p>
+              <p>Δεν χρειάζεται διάθεση.</p>
+              <p className="font-semibold">Χρειάζεται μία μικρή πράξη τη μέρα.</p>
+            </div>
+
+            <div className="text-center pt-4">
+              <button
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+                className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: GOLD, cursor: checkoutLoading ? 'wait' : 'pointer', opacity: checkoutLoading ? 0.6 : 1 }}
+              >
+                {checkoutLoading ? 'Φόρτωση...' : 'Ναι θέλω να λάβω μέρος'}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ΓΙΑΤΙ ΔΟΥΛΕΥΕΙ */}
-      <section className="py-6 px-6 bg-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Γιατί δουλεύει</p>
-          <p className="text-2xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-            Επειδή δεν βασίζεται στη διάθεση. Βασίζεται στη δράση.
-          </p>
-          <p className="text-gray-500 leading-relaxed mb-4">Κάθε μικρή πράξη μειώνει την αντίσταση, αυξάνει την αυτοπεποίθηση, χτίζει μια νέα ιστορία για τον εαυτό σου.</p>
-          <p className="text-gray-500 leading-relaxed">63 πράξεις = 63 αποδείξεις. Οι αποδείξεις αλλάζουν την ταυτότητα. Η ταυτότητα αλλάζει τη ζωή.</p>
+      {/* ΤΟ ΕΒΔΟΜΑΔΙΑΙΟ PLAYBOOK */}
+      <section className="py-12 px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Το εβδομαδιαίο Playbook</p>
+          <div className="text-gray-700 leading-relaxed space-y-4 mb-8 text-center">
+            <p className="text-xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Ο χάρτης που σε κρατάει σταθερό για 7 ημέρες.</p>
+            <p>Κάθε εβδομάδα ξεκλειδώνεις ένα νέο Playbook.</p>
+            <p>Μίνιμαλ. Ξεκάθαρο. Αποτελεσματικό.</p>
+          </div>
+
+          <div>
+            <p className="text-gray-700 font-medium mb-4">Μέσα περιλαμβάνει:</p>
+            <div className="space-y-3 text-gray-600 text-sm">
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span><strong className="text-gray-800">Τη συμφωνία με τον εαυτό σου:</strong> 7 μέρες, 1 δέσμευση.</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span><strong className="text-gray-800">Τους κανόνες της εβδομάδας:</strong> Καθαρή δομή → καθαρό μυαλό.</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span><strong className="text-gray-800">7 μικρές πράξεις:</strong> 1 πράξη/μέρα (1–2 λεπτά).</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span><strong className="text-gray-800">Αναστοχασμό:</strong> 3 ερωτήσεις που χτίζουν συνειδητότητα.</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span><strong className="text-gray-800">Αυτοαξιολόγηση:</strong> βλέπεις τι κράτησες και τι συνεχίζεις.</span></div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-2 text-gray-700">
+            <p>Κάθε Playbook είναι ένα επίπεδο.</p>
+            <p>Μετά τις 63 μέρες, έχεις ολοκληρώσει και τα 9.</p>
+          </div>
         </div>
       </section>
 
-      {/* ΤΙ ΑΛΛΑΖΕΙ */}
-      <section className="py-6 px-6 bg-gray-50">
+      {/* ΓΙΑΤΙ ΔΟΥΛΕΥΕΙ */}
+      <section className="py-12 px-6 bg-gray-50">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Γιατί δουλεύει</p>
+          <div className="text-gray-700 leading-relaxed space-y-3 mb-8 text-center">
+            <p className="text-xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Επειδή δεν βασίζεται στη διάθεση.</p>
+            <p className="text-xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Βασίζεται στη δράση.</p>
+          </div>
+
+          <div>
+            <p className="text-gray-700 font-medium mb-4">Κάθε μικρή πράξη:</p>
+            <div className="space-y-2 text-gray-600 text-sm">
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μειώνει την αντίσταση</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Αυξάνει την αυτοπεποίθηση</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Χτίζει μια νέα ιστορία για τον εαυτό σου</span></div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-2 text-gray-700 text-center">
+            <p className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>63 πράξεις = 63 αποδείξεις.</p>
+            <p>Οι αποδείξεις αλλάζουν την ταυτότητα.</p>
+            <p>Η ταυτότητα αλλάζει τη ζωή.</p>
+          </div>
+
+          <div className="text-center pt-8">
+            <button
+              onClick={handleCheckout}
+              disabled={checkoutLoading}
+              className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: GOLD, cursor: checkoutLoading ? 'wait' : 'pointer', opacity: checkoutLoading ? 0.6 : 1 }}
+            >
+              {checkoutLoading ? 'Φόρτωση...' : 'Μπαίνω στο πρόγραμμα'}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ΦΑΝΤΑΣΟΥ ΤΟΝ ΕΑΥΤΟ ΣΟΥ */}
+      <section className="py-12 px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Φαντάσου τον εαυτό σου σε 63 μέρες</p>
+          <div className="text-gray-700 leading-relaxed space-y-3 text-center">
+            <p>Φαντάσου να ξυπνάς με καθαρό μυαλό.</p>
+            <p>Να ξέρεις τι κάνεις κάθε μέρα – και γιατί.</p>
+            <p>Να σταματήσει η υπερανάλυση.</p>
+            <p>Να μπορείς να λες &ldquo;όχι&rdquo;.</p>
+            <p>Να μη σε κυβερνά η γνώμη των άλλων.</p>
+            <p>Να νιώθεις ξανά τον έλεγχο.</p>
+            <p>Να έχεις ρυθμό.</p>
+            <p>Να έχεις κατεύθυνση.</p>
+            <p className="font-semibold text-lg pt-2" style={{ fontFamily: 'Georgia, serif' }}>Να έχεις εσένα.</p>
+          </div>
+          <p className="text-center text-gray-500 mt-8 italic">Αυτό είναι το αποτέλεσμα των 63 Μερών Ζωής.</p>
+        </div>
+      </section>
+
+      {/* ΤΙ ΑΛΛΑΖΕΙ ΣΕ ΣΕΝΑ */}
+      <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι αλλάζει σε σένα</p>
+          <p className="text-gray-700 mb-6 text-center">Μετά τις 63 μέρες:</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               'Η υπερανάλυση κοπάζει',
@@ -255,8 +372,9 @@ function PageContent() {
               'Βάζεις όρια χωρίς φόβο',
               'Η γνώμη των άλλων δεν σε ορίζει',
               'Η παρουσία σου δυναμώνει',
-              'Η σχέση με τον εαυτό σου αλλάζει',
-              'Νιώθεις ξανά τον έλεγχο',
+              'Η σχέση σου με τον εαυτό σου αλλάζει',
+              'Μπορείς να ονειρευτείς ξανά',
+              'Νιώθεις ότι έχεις ξανά τον έλεγχο',
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-3 py-2">
                 <span className="text-gray-300 mt-0.5">—</span>
@@ -264,78 +382,150 @@ function PageContent() {
               </div>
             ))}
           </div>
+          <div className="mt-10 text-center space-y-2">
+            <p className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Αυτή είναι η αλλαγή ταυτότητας.</p>
+            <p className="text-gray-600">Ήρεμη. Βαθιά. Σταθερή.</p>
+          </div>
+          <div className="text-center pt-8">
+            <button
+              onClick={handleCheckout}
+              disabled={checkoutLoading}
+              className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: GOLD, cursor: checkoutLoading ? 'wait' : 'pointer', opacity: checkoutLoading ? 0.6 : 1 }}
+            >
+              {checkoutLoading ? 'Φόρτωση...' : 'Ναι θέλω αυτή την αλλαγή'}
+            </button>
+          </div>
         </div>
       </section>
 
       {/* WITHIN PATH */}
-      <section className="py-6 px-6 bg-white">
+      <section className="py-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">The Within Path</p>
-          <p className="text-gray-500 text-sm mb-8">Η μέθοδος που μέχρι τώρα υπήρχε μόνο στο 1-1 coaching. Τώρα σε μορφή συστήματος.</p>
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">The Within Path™</p>
+          <div className="text-gray-700 leading-relaxed space-y-2 mb-10">
+            <p>Η μέθοδος που μέχρι τώρα υπήρχε μόνο στο 1-1 coaching.</p>
+            <p>Τώρα σε μορφή συστήματος.</p>
+            <p className="font-semibold pt-4" style={{ fontFamily: 'Georgia, serif' }}>5 στάδια → 63 πράξεις → 1 νέα ταυτότητα.</p>
+          </div>
           <div className="flex flex-col gap-4 max-w-sm mx-auto text-left">
             {[
-              { stage: 'AWAKE', desc: 'Βλέπεις καθαρά' },
-              { stage: 'PAUSE', desc: 'Σταματάς τον νοητικό θόρυβο' },
-              { stage: 'REMEMBER', desc: 'Επανασυνδέεσαι με αυτό που είσαι' },
-              { stage: 'ALIGN', desc: 'Ευθυγραμμίζεσαι με ό,τι έχει νόημα' },
-              { stage: 'EMBODY', desc: 'Ζεις τη νέα σου εκδοχή' },
+              { stage: 'AWAKE', desc: 'Βλέπεις καθαρά.' },
+              { stage: 'PAUSE', desc: 'Σταματάς το νοητικό θόρυβο.' },
+              { stage: 'REMEMBER', desc: 'Επανασυνδέεσαι με αυτό που είσαι.' },
+              { stage: 'ALIGN', desc: 'Ευθυγραμμίζεσαι με ό,τι έχει νόημα.' },
+              { stage: 'EMBODY', desc: 'Ζεις τη νέα σου εκδοχή.' },
             ].map((item, i) => (
               <div key={i} className="flex items-baseline gap-3">
-                <span className="text-xs font-semibold tracking-widest" style={{ color: GOLD, minWidth: 80 }}>{item.stage}</span>
+                <span className="text-xs font-semibold tracking-widest" style={{ color: GOLD, minWidth: 90 }}>{item.stage}</span>
                 <span className="text-gray-600 text-sm">{item.desc}</span>
               </div>
             ))}
+          </div>
+          <p className="text-gray-500 text-sm mt-8 italic">Απλό. Καθαρό. Μεταμορφωτικό.</p>
+        </div>
+      </section>
+
+      {/* VIBER CHANNEL */}
+      <section className="py-12 px-6 bg-gray-50">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Viber broadcast channel</p>
+          <div className="text-gray-700 leading-relaxed space-y-3 mb-8 text-center">
+            <p className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Δεν θα πορευτείς μόνος σου.</p>
+            <p>Μπαίνεις σε ένα ιδιωτικό κανάλι όπου λαμβάνεις:</p>
+          </div>
+          <div className="space-y-2 text-gray-600 text-sm max-w-md mx-auto mb-8">
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Καθημερινές υπενθυμίσεις</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μικρά ηχητικά</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Νοητικές άγκυρες</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Καθοδήγηση για να μην βγεις από τροχιά</span></div>
+          </div>
+          <p className="text-center text-gray-700 font-medium mb-10">Αυτό αυξάνει τη συνέπεια ×10.</p>
+          <Carousel images={broadcastImages} />
+        </div>
+      </section>
+
+      {/* ΤΕΛΕΤΗ ΑΠΟΦΟΙΤΗΣΗΣ */}
+      <section className="py-12 px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τελετή αποφοίτησης</p>
+          <div className="text-gray-700 leading-relaxed space-y-4 mb-8 text-center">
+            <p>Στο τέλος του προγράμματος υπάρχει online τελετή αποφοίτησης.</p>
+          </div>
+          <div>
+            <p className="text-gray-700 font-medium mb-4">Είναι η στιγμή που:</p>
+            <div className="space-y-2 text-gray-600 text-sm">
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κλείνεις έναν κύκλο</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Βλέπεις τη μεταμόρφωση καθαρά</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Αναγνωρίζεις τον νέο σου εαυτό</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μπαίνεις στην επόμενη φάση της ζωής σου</span></div>
+            </div>
+          </div>
+          <div className="mt-8 space-y-2 text-gray-700">
+            <p>Είναι η απόδειξη ότι ολοκλήρωσες κάτι δύσκολο.</p>
+            <p className="font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Και κανείς δεν μπορεί να στο πάρει.</p>
           </div>
         </div>
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-6 px-6 bg-gray-50">
+      <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Αυτοί το έζησαν</p>
           <Carousel images={testimonialImages} />
         </div>
       </section>
 
-      {/* CTA 2 - ΚΕΝΤΡΙΚΟ */}
-      <section className="py-6 px-6 bg-white">
-        <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-3xl font-semibold mb-4" style={{ fontFamily: 'Georgia, serif' }}>Η απόφαση</h2>
-          <p className="text-gray-500 mb-8">
-            Η αναβολή είναι η πρώτη σκέψη που πρέπει να νικήσεις.
-          </p>
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
-        </div>
-      </section>
-
-      {/* BROADCAST CHANNEL */}
-      <section className="py-6 px-6 bg-gray-50">
+      {/* ΓΙΑ ΠΟΙΟΝ ΕΙΝΑΙ */}
+      <section className="py-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Μέσα στο broadcast channel</p>
-          <Carousel images={broadcastImages} />
+          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Για ποιον είναι</p>
+          <p className="text-gray-700 mb-6 text-center font-medium">Για σένα που:</p>
+          <div className="space-y-2 text-gray-600 text-sm max-w-md mx-auto mb-8">
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Θέλεις πίσω την ψυχική ηρεμία</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Θέλεις να σταματήσει η υπερανάλυση</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Θέλεις να βάζεις όρια</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Θέλεις πειθαρχία χωρίς πίεση</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Έχεις κουραστεί να ξεκινάς και να σταματάς</span></div>
+            <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Ψάχνεις μια καθαρή, σταθερή αλλαγή</span></div>
+          </div>
+          <div className="text-center space-y-1 text-gray-700">
+            <p>Αν αυτό σε περιγράφει,</p>
+            <p className="font-semibold" style={{ fontFamily: 'Georgia, serif' }}>οι 63 μέρες Ζωής είναι για εσένα.</p>
+          </div>
         </div>
       </section>
 
-      {/* CTA 3 */}
-      <section className="py-6 px-6 bg-white">
+      {/* Η ΑΠΟΦΑΣΗ */}
+      <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-xl mx-auto text-center">
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
+          <h2 className="text-3xl font-semibold mb-8" style={{ fontFamily: 'Georgia, serif' }}>Η απόφαση</h2>
+          <div className="text-gray-700 leading-relaxed space-y-3 mb-10">
+            <p>Το πρόγραμμα ξεκινάει στις 12 Μαΐου.</p>
+            <p>Από εκεί και πέρα δεν υπάρχει δυνατότητα συμμετοχής.</p>
+            <p>Οι θέσεις είναι περιορισμένες.</p>
+            <p className="pt-2">Αν θέλεις να μπεις, η στιγμή είναι τώρα.</p>
+            <p className="font-semibold pt-2" style={{ fontFamily: 'Georgia, serif' }}>Η αναβολή είναι η πρώτη σκέψη που πρέπει να νικήσεις.</p>
+          </div>
+          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Θέλω να κατοχυρώσω τη θέση μου" />
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="py-6 px-6 bg-gray-50">
+      <section className="py-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Συχνές ερωτήσεις</p>
           <div className="space-y-0">
             {[
-              { q: 'Πόσο χρόνο χρειάζεται καθημερινά;', a: '1-2 λεπτά. Η μικρή πράξη νικά την υπερανάλυση.' },
               { q: 'Τι γίνεται αν χάσω μία μέρα;', a: 'Συνεχίζεις κανονικά. Δεν αναπληρώνεις. Η κατεύθυνση μετράει.' },
+              { q: 'Πόσο χρόνο χρειάζεται καθημερινά;', a: '1-2 λεπτά. Η μικρή πράξη νικά την υπερανάλυση.' },
               { q: 'Τι γίνεται αν δεν έχω διάθεση;', a: 'Το πρόγραμμα δουλεύει χωρίς διάθεση. Οι πράξεις εκτελούνται πριν αντισταθεί το μυαλό.' },
-              { q: 'Είναι 1-1;', a: 'Όχι. Είναι group σύστημα αλλά η πορεία είναι 100% προσωπική.' },
-              { q: 'Θα χρειαστεί να μιλήσω σε άλλους;', a: 'Όχι. Το broadcast channel είναι μονόδρομο. Λαμβάνεις, δεν εκτίθεσαι.' },
-              { q: 'Χρειάζεται εμπειρία σε αυτοβελτίωση;', a: 'Όχι. Κάθε μέρα ένα ξεκάθαρο βήμα. Τίποτα να σκέφτεσαι.' },
-              { q: 'Τι αλλάζει σε 63 μέρες;', a: 'Σκέψη, συμπεριφορά, ταυτότητα. Βήμα βήμα, πράξη πράξη.' },
+              { q: 'Τι γίνεται αν δεν ξέρω από αυτοβελτίωση;', a: 'Δεν χρειάζεται εμπειρία. Κάθε μέρα ένα ξεκάθαρο βήμα. Τίποτα να σκέφτεσαι.' },
+              { q: 'Θα χρειαστεί να μιλήσω σε άλλους;', a: 'Όχι. Το Viber channel είναι μονόδρομο. Λαμβάνεις, δεν εκτίθεσαι.' },
+              { q: 'Τι γίνεται αν χάσω την τελετή αποφοίτησης;', a: 'Θα έχεις πρόσβαση στην καταγραφή.' },
+              { q: 'Θα έχω υποστήριξη σε όλη τη διάρκεια;', a: 'Ναι. Καθημερινή παρουσία στο Viber channel και εβδομαδιαία καθοδήγηση.' },
+              { q: 'Πόσο δύσκολο είναι;', a: 'Μία πράξη 1-2 λεπτών τη μέρα. Το πλαίσιο κάνει τη δουλειά, όχι η θέλησή σου.' },
+              { q: 'Τι ακριβώς αλλάζει σε 63 μέρες;', a: 'Σκέψη, συμπεριφορά, ταυτότητα. Βήμα βήμα, πράξη πράξη.' },
             ].map((item, i) => (
               <details key={i} className="border-b border-gray-200 group">
                 <summary className="py-4 cursor-pointer flex items-center justify-between text-sm font-medium text-gray-800 hover:text-black">
@@ -346,6 +536,17 @@ function PageContent() {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-16 px-6 bg-gray-50">
+        <div className="max-w-xl mx-auto text-center">
+          <h2 className="text-2xl font-semibold mb-8" style={{ fontFamily: 'Georgia, serif' }}>Κατοχύρωση θέσης</h2>
+          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Κατοχύρωσε τη θέση σου" />
+          <p className="text-xs text-gray-400 mt-8">
+            Για οποιαδήποτε απορία ή διευκρίνιση μη διστάσετε να επικοινωνήσετε μαζί μας στο hello@withinsuccess.gr
+          </p>
         </div>
       </section>
 
