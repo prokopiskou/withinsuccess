@@ -71,7 +71,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <a href="https://app.withinsuccess.gr/63days" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                63 Μέρες της Ζωής σου →
+                Άλλαξε τη ζωή σου σε 63 μέρες →
               </a>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
