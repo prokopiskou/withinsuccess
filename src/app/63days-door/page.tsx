@@ -186,36 +186,21 @@ function PageContent() {
     <main className="min-h-screen bg-white text-black font-sans">
       <style>{`html { scroll-behavior: smooth; }`}</style>
 
-      {/* HERO — DOOR STORY */}
-      <section className="pt-16 pb-12 px-6 max-w-3xl mx-auto text-center">
-        <p className="text-xs font-medium tracking-[0.3em] uppercase mb-8" style={{ color: GOLD }}>63 Μέρες της Ζωής σου</p>
+      {/* HERO — DOOR REFRAME */}
+      <section className="pt-20 pb-16 px-6 max-w-3xl mx-auto text-center">
+        <p className="text-xs font-medium tracking-[0.3em] uppercase mb-10" style={{ color: GOLD }}>63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-12" style={{ fontFamily: 'Georgia, serif' }}>
-          Δεν θα ανοίξει η πόρτα.
+          Σταμάτα να κοιτάς<br />την πόρτα.
         </h1>
 
-        <div className="text-lg text-gray-700 leading-loose space-y-5 max-w-xl mx-auto text-left mb-12">
-          <p>Όλη σου τη ζωή περίμενες κάποιον να μπει.</p>
-          <p>Να σε δει. Να σε καταλάβει. Να σου πει μπράβο. Να σου δώσει την άδεια να ξεκουραστείς, να πεις όχι, να ζήσεις τη ζωή που ήθελες.</p>
-          <p>Δεν θα έρθει.</p>
-          <p>Όχι επειδή δεν σε αγαπάνε.</p>
-          <p>Επειδή δεν μπορούν να σου δώσουν αυτό που δεν έχουν δώσει στον εαυτό τους.</p>
-          <p className="pt-4 text-xl font-semibold" style={{ fontFamily: 'Georgia, serif' }}>
-            Η άδεια που χρειάζεσαι ήταν δική σου από την αρχή.
-          </p>
-          <p>Απλά κανείς δεν σου είπε ποτέ ότι την είχες ήδη.</p>
-        </div>
+        <p className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-16" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>
+          Γύρνα μέσα.
+        </p>
 
-        {/* REFRAME */}
-        <div className="bg-gray-50 rounded-2xl p-10 max-w-xl mx-auto mb-12">
-          <p className="text-2xl md:text-3xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
-            Σταμάτα να κοιτάς την πόρτα.
-          </p>
-          <p className="text-2xl md:text-3xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>
-            Γύρνα μέσα.
-          </p>
-          <p className="text-gray-600 leading-relaxed">
-            Δώσε στον εαυτό σου όλα αυτά που δεν πήρες.
-          </p>
+        <div className="text-lg text-gray-700 leading-relaxed space-y-3 max-w-xl mx-auto mb-16">
+          <p>Δώσε στον εαυτό σου όλα αυτά που δεν πήρες.</p>
+          <p>Όλα.</p>
+          <p>Χωρίς εξαιρέσεις. Χωρίς δικαιολογίες. Χωρίς να ζητήσεις την άδεια κανενός.</p>
         </div>
 
         <div className="inline-block bg-gray-50 rounded-2xl px-8 py-6 mb-8">
