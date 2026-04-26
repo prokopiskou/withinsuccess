@@ -197,16 +197,17 @@ function PageContent() {
           Γύρνα μέσα.
         </p>
 
-        <div className="text-lg text-gray-700 leading-relaxed space-y-3 max-w-xl mx-auto mb-16">
-          <p>Δώσε στον εαυτό σου όλα αυτά που δεν πήρες.</p>
-          <p>Όλα.</p>
-          <p>Χωρίς εξαιρέσεις. Χωρίς δικαιολογίες. Χωρίς να ζητήσεις την άδεια κανενός.</p>
-        </div>
-
-        <div className="inline-block bg-gray-50 rounded-2xl px-8 py-6 mb-8">
+        <div className="inline-block bg-gray-50 rounded-2xl px-8 py-6 mb-12">
           <p className="text-xs tracking-widest text-gray-400 uppercase mb-2">Έναρξη</p>
           <p className="text-2xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>12 Μαΐου</p>
           <p className="text-xs text-gray-500">Μετά δεν υπάρχει δυνατότητα εισόδου</p>
+        </div>
+
+        <div className="text-base text-gray-600 leading-relaxed space-y-2 max-w-md mx-auto mb-8">
+          <p>Δώσε στον εαυτό σου</p>
+          <p>όλα αυτά που δεν πήρες.</p>
+          <p className="text-gray-500 pt-2">Χωρίς εξαιρέσεις. Χωρίς δικαιολογίες.</p>
+          <p className="text-gray-500">Χωρίς να ζητήσεις την άδεια κανενός.</p>
         </div>
 
         <p className="text-sm text-gray-400">Δες πως λειτουργεί παρακάτω ↓</p>
