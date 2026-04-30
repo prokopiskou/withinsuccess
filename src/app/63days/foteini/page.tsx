@@ -67,7 +67,7 @@ function PricingBlock({ onCheckout, loading }: { onCheckout: () => void; loading
     <div className="text-center">
       <p className="text-5xl font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>{price}€</p>
       <p className="text-xs text-gray-400 mb-6">
-        {next ? `Μετά τις ${deadline}: ${next}€` : `Τελευταία ευκαιρία μέχρι ${deadline}`}
+        {next ? <span className="underline">{`Μετά τις ${deadline}: ${next}€`}</span> : `Τελευταία ευκαιρία μέχρι ${deadline}`}
       </p>
       <button
         onClick={onCheckout}

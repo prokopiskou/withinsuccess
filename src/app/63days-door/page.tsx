@@ -82,7 +82,7 @@ function PricingBlock({ onCheckout, loading, ctaLabel = 'Κατοχύρωσε τ
       <p className="text-xs tracking-widest text-gray-400 uppercase mb-4">Επένδυση</p>
       <p className="text-6xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>{price}€</p>
       <p className="text-xs text-gray-400 mb-8">
-        {next ? `Μετά τις ${deadline}: ${next}€` : `Τελευταία ευκαιρία μέχρι ${deadline}`}
+        {next ? <span className="underline">{`Μετά τις ${deadline}: ${next}€`}</span> : `Τελευταία ευκαιρία μέχρι ${deadline}`}
       </p>
       <button
         onClick={onCheckout}
