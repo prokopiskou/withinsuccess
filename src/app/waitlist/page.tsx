@@ -90,7 +90,7 @@ export default function Waitlist() {
       <footer className="py-12 px-6 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-6 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{fontFamily: 'Georgia, serif'}}>WithinSuccess</span>
-          <p className="text-xs text-gray-400">© 2026 WithinSuccess · Προκόπης Κούκης</p>
+          <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>
       </footer>
     </main>

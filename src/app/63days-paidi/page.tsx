@@ -616,7 +616,7 @@ function PageContent() {
       <footer className="py-12 px-6 bg-gray-50 border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>WithinSuccess</span>
-          <p className="text-xs text-gray-400">© 2026 WithinSuccess · Προκόπης Κούκης</p>
+          <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
           <p className="text-xs text-gray-400">hello@withinsuccess.gr</p>
         </div>
       </footer>

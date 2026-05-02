@@ -77,7 +77,7 @@ export default function Insights() {
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>
             <a href="/terms" className="hover:text-black transition-colors">Όροι Χρήσης</a>
           </div>
-          <p className="text-xs text-gray-400">© 2026 WithinSuccess · Προκόπης Κούκης</p>
+          <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>
       </footer>
 

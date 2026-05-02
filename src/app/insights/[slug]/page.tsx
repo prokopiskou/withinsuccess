@@ -121,7 +121,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
             <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
-          <p className="text-xs text-gray-400">© 2026 WithinSuccess · Προκόπης Κούκης</p>
+          <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>
       </footer>
     </main>
