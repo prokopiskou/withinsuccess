@@ -4,10 +4,10 @@ import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
 import MetaPixel from "@/components/MetaPixel";
 
-const SEMINAR1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar1_compressed.mp4";
-const SEMINAR2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/seminar2_compressed.mp4";
-const TESTIMONIAL1 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial1.mp4";
-const TESTIMONIAL2 = "https://lfexi0dp6vzacawb.public.blob.vercel-storage.com/testimonial2.mp4";
+const SEMINAR1 = "https://videos.withinsuccess.gr/seminar1_compressed.mp4";
+const SEMINAR2 = "https://videos.withinsuccess.gr/seminar2_compressed.mp4";
+const TESTIMONIAL1 = "https://videos.withinsuccess.gr/testimonial1.mp4";
+const TESTIMONIAL2 = "https://videos.withinsuccess.gr/testimonial2.mp4";
 const GOLD = '#C9A96E';
 
 const reviews = [
