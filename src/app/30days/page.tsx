@@ -14,6 +14,30 @@ export default function ThirtyDays() {
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: "30-Day Program | WithinSuccess",
+            description:
+              "Δομημένο πρόγραμμα 30 ημερών για αλλαγή νοοτροπίας και συνηθειών.",
+            provider: {
+              "@type": "Person",
+              name: "Προκόπης Κούκης",
+              url: "https://app.withinsuccess.gr",
+            },
+            offers: {
+              "@type": "Offer",
+              price: "15",
+              priceCurrency: "EUR",
+              availability: "https://schema.org/InStock",
+            },
+            url: "https://app.withinsuccess.gr/30days",
+          }),
+        }}
+      />
       <MetaPixel />
 
       {/* NAV */}
