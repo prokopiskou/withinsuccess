@@ -26,7 +26,7 @@ export function LazyVideo({ src, className }: LazyVideoProps) {
           }
         });
       },
-      { root: null, rootMargin: "200px", threshold: 0 }
+      { root: null, rootMargin: "500px 0px", threshold: 0 }
     );
 
     observer.observe(root);
