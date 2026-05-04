@@ -6,11 +6,11 @@ import MetaPixel from "@/components/MetaPixel";
 export const metadata: Metadata = {
   title: "Insights — Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
   description: "Άρθρα για αλλαγή νοοτροπίας, διαχείριση άγχους, αυτογνωσία και προσωπική ανάπτυξη από τον Προκόπη Κούκη.",
-  alternates: { canonical: "https://withinsuccess.gr/insights" },
+  alternates: { canonical: "https://app.withinsuccess.gr/insights" },
   openGraph: {
     title: "Insights | WithinSuccess",
     description: "Άρθρα για αλλαγή νοοτροπίας, διαχείριση άγχους και προσωπική ανάπτυξη.",
-    url: "https://withinsuccess.gr/insights",
+    url: "https://app.withinsuccess.gr/insights",
   },
 };
 
@@ -71,7 +71,7 @@ export default function Insights() {
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <div className="flex gap-4 text-xs text-gray-400">
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>

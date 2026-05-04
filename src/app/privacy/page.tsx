@@ -22,7 +22,7 @@ export default function Privacy() {
             <h2 className="text-xl font-semibold text-black mt-4">5. Τα δικαιώματά σας</h2>
             <p>Έχετε δικαίωμα πρόσβασης, διόρθωσης, διαγραφής, εναντίωσης και φορητότητας των δεδομένων σας.</p>
             <h2 className="text-xl font-semibold text-black mt-4">6. Επικοινωνία</h2>
-            <p>Προκόπιος Κούκης · Ηρακλείου 4, Γλυφάδα 16675<br />Email: hello@withinsuccess.gr · Τηλ: +30 210 9627352</p>
+            <p>Προκόπιος Κούκης · Ηρακλείου 4, Γλυφάδα 16675<br />Email: hello@app.withinsuccess.gr · Τηλ: +30 210 9627352</p>
             <h2 className="text-xl font-semibold text-black mt-4">7. Εποπτική Αρχή</h2>
             <p>Αρχή Προστασίας Δεδομένων — <a href="https://www.dpa.gr" className="underline">www.dpa.gr</a></p>
           </div>

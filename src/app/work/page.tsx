@@ -90,7 +90,7 @@ export default function Work() {
               <p>✓ Ιδιωτικό Viber broadcast channel</p>
               <p>✓ Online τελετή αποφοίτησης</p>
             </div>
-            <a href="https://withinsuccess.gr/63days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+            <a href="https://app.withinsuccess.gr/63days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
               Κατοχύρωσε τη θέση σου — από 69€ →
             </a>
           </div>
@@ -236,7 +236,7 @@ export default function Work() {
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <div className="flex gap-4 text-xs text-gray-400">
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>

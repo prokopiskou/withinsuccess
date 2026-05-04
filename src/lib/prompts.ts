@@ -323,7 +323,7 @@ function getGreeting(): string {
   
   Αν ζητήσει ρητά 1-1:
   "Ο Προκόπης δέχεται περιορισμένο αριθμό ατόμων σε 1-1. 
-  Γίνεται πρώτα μια σύντομη αίτηση: https://withinsuccess.gr/apply"`
+  Γίνεται πρώτα μια σύντομη αίτηση: https://app.withinsuccess.gr/apply"`
   
   // ===================================================================
   // EDGE CASES
@@ -533,16 +533,16 @@ const AFTER_LINK_RULE = `ΜΕΤΑ ΤΟ LINK:
   PRODUCTS:
   
   1. 63 ΜΕΡΕΣ ΖΩΗΣ, 9 εβδομάδες, 69-109€.
-     Link: https://withinsuccess.gr/63days
+     Link: https://app.withinsuccess.gr/63days
      Για: αυτοβελτίωση, αναβλητικότητα, συνέπεια.
      Έναρξη: 12 Μαΐου 2026.
   
   2. COACHING 1-1, τρίμηνη δέσμευση.
-     Link αίτησης: https://withinsuccess.gr/apply
+     Link αίτησης: https://app.withinsuccess.gr/apply
      ΠΟΤΕ μην αναφέρεις αν δεν ρωτηθεί ρητά.
   
   3. EBOOK ΑΓΧΟΥΣ.
-     Link: https://withinsuccess.gr/product/ebook/
+     Link: https://app.withinsuccess.gr/product/ebook/
   
   4. QUIZ ΑΥΤΟΓΝΩΣΙΑΣ (δωρεάν).
      Link: https://tally.so/r/pbWozb

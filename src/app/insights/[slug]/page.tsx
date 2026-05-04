@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.title,
     description: article.excerpt,
     keywords: article.keywords,
-    authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
-    alternates: { canonical: `https://withinsuccess.gr/insights/${article.slug}` },
+    authors: [{ name: "Προκόπης Κούκης", url: "https://app.withinsuccess.gr" }],
+    alternates: { canonical: `https://app.withinsuccess.gr/insights/${article.slug}` },
     openGraph: {
       title: article.title,
       description: article.excerpt,
-      url: `https://withinsuccess.gr/insights/${article.slug}`,
+      url: `https://app.withinsuccess.gr/insights/${article.slug}`,
       type: "article",
       publishedTime: article.date,
       authors: ["Προκόπης Κούκης"],
@@ -43,17 +43,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     author: {
       "@type": "Person",
       name: "Προκόπης Κούκης",
-      url: "https://withinsuccess.gr",
+      url: "https://app.withinsuccess.gr",
     },
     publisher: {
       "@type": "Organization",
       name: "WithinSuccess",
-      url: "https://withinsuccess.gr",
+      url: "https://app.withinsuccess.gr",
     },
     datePublished: article.date,
     keywords: article.keywords.join(", "),
     inLanguage: "el",
-    mainEntityOfPage: `https://withinsuccess.gr/insights/${article.slug}`,
+    mainEntityOfPage: `https://app.withinsuccess.gr/insights/${article.slug}`,
   };
 
   return (
@@ -119,7 +119,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>

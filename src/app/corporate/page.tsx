@@ -7,7 +7,7 @@ export default function Corporate() {
       <MetaPixel />
 
       {/* NAV */}
-      <SiteNav active="corporate" ctaHref="mailto:hello@withinsuccess.gr" ctaLabel="Επικοινωνία →" />
+      <SiteNav active="corporate" ctaHref="mailto:hello@app.withinsuccess.gr" ctaLabel="Επικοινωνία →" />
 
       {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-4xl mx-auto">
@@ -135,8 +135,8 @@ export default function Corporate() {
             Ας μιλήσουμε.
           </h2>
           <p className="text-gray-500 mb-8">Κάθε πρόγραμμα σχεδιάζεται εξατομικευμένα για τις ανάγκες της ομάδας σου.</p>
-          <a href="mailto:hello@withinsuccess.gr" className="inline-block bg-black text-white px-10 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
-            hello@withinsuccess.gr →
+          <a href="mailto:hello@app.withinsuccess.gr" className="inline-block bg-black text-white px-10 py-4 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+            hello@app.withinsuccess.gr →
           </a>
         </div>
       </section>
@@ -148,7 +148,7 @@ export default function Corporate() {
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <div className="flex gap-4 text-xs text-gray-400">
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>

@@ -12,7 +12,7 @@ export default function ThankYouPage() {
         <p className="text-gray-500 leading-relaxed mb-8">
           Ξεκινάμε 12 Μαΐου.
         </p>
-        <p className="text-xs text-gray-400">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
+        <p className="text-xs text-gray-400">Για οποιαδήποτε απορία: hello@app.withinsuccess.gr</p>
       </div>
     </main>
   )

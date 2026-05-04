@@ -57,7 +57,7 @@ async function sendMetaPurchaseEvent(params: {
             event_time: Math.floor(Date.now() / 1000),
             event_id: params.eventId, // για deduplication με client pixel
             action_source: 'website',
-            event_source_url: params.eventSourceUrl || 'https://withinsuccess.gr/63days',
+            event_source_url: params.eventSourceUrl || 'https://app.withinsuccess.gr/63days',
             user_data: userData,
             custom_data: {
               currency: 'EUR',
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
       phone,
       amount,
       eventId: session.id, // Stripe session ID ως event_id για deduplication
-      eventSourceUrl: 'https://withinsuccess.gr/63days'
+      eventSourceUrl: 'https://app.withinsuccess.gr/63days'
     })
 
     // 2. Update Supabase (μόνο αν έχουμε subscriberId από DM agent)

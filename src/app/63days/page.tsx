@@ -610,7 +610,7 @@ function PageContent() {
           <h2 className="text-3xl font-semibold mb-10" style={{ fontFamily: 'Georgia, serif' }}>Κατοχύρωση θέσης</h2>
           <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Κατοχύρωσε τη θέση σου" />
           <p className="text-xs text-gray-400 mt-10">
-            Για οποιαδήποτε απορία μη διστάσεις να επικοινωνήσεις μαζί μας στο hello@withinsuccess.gr
+            Για οποιαδήποτε απορία μη διστάσεις να επικοινωνήσεις μαζί μας στο hello@app.withinsuccess.gr
           </p>
         </div>
       </section>
@@ -620,7 +620,7 @@ function PageContent() {
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>WithinSuccess</span>
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
-          <p className="text-xs text-gray-400">hello@withinsuccess.gr</p>
+          <p className="text-xs text-gray-400">hello@app.withinsuccess.gr</p>
         </div>
       </footer>
     </main>
