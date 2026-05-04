@@ -26,7 +26,7 @@ export default function ThirtyDays() {
             provider: {
               "@type": "Person",
               name: "Προκόπης Κούκης",
-              url: "https://app.withinsuccess.gr",
+              url: "https://withinsuccess.gr",
             },
             offers: {
               "@type": "Offer",
@@ -34,7 +34,7 @@ export default function ThirtyDays() {
               priceCurrency: "EUR",
               availability: "https://schema.org/InStock",
             },
-            url: "https://app.withinsuccess.gr/30days",
+            url: "https://withinsuccess.gr/30days",
           }),
         }}
       />

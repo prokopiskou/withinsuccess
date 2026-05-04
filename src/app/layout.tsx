@@ -180,8 +180,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Προκόπης Κούκης",
-              url: "https://app.withinsuccess.gr",
-              image: "https://app.withinsuccess.gr/prokopis_about.webp",
+              url: "https://withinsuccess.gr",
+              image: "https://withinsuccess.gr/prokopis_about.webp",
               sameAs: [
                 "https://www.instagram.com/withinsuccess/",
                 "https://www.youtube.com/@Prokopiskoukis",

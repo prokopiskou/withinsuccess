@@ -70,7 +70,7 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <a href="https://app.withinsuccess.gr/63days" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+              <a href="https://withinsuccess.gr/63days" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
                 Άλλαξε τη ζωή σου σε 63 μέρες →
               </a>
             </div>
@@ -269,7 +269,7 @@ export default function Home() {
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">63 Μέρες</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>63 Μέρες της Ζωής σου</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Ένα σύστημα που σε κρατάει σε πορεία. Κάθε μέρα μία πράξη. Έναρξη 12 Μαΐου.</p>
-              <a href="https://app.withinsuccess.gr/63days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κατοχύρωσε →</a>
+              <a href="https://withinsuccess.gr/63days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κατοχύρωσε →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
