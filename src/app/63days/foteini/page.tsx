@@ -409,7 +409,7 @@ function PageContent() {
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>WithinSuccess</span>
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
-          <p className="text-xs text-gray-400">hello@app.withinsuccess.gr</p>
+          <p className="text-xs text-gray-400">hello@withinsuccess.gr</p>
         </div>
       </footer>
     </main>

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/api/',
     },
-    sitemap: 'https://app.withinsuccess.gr/sitemap.xml',
+    sitemap: 'https://withinsuccess.gr/sitemap.xml',
   }
 }

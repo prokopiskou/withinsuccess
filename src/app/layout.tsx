@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 const META_PIXEL_ID = "1653590555890252";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://app.withinsuccess.gr"),
+  metadataBase: new URL("https://withinsuccess.gr"),
   title: {
     default: "Προκόπης Κούκης | Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
     template: "%s | WithinSuccess",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     "ψυχική ευεξία",
     "Προκόπης Κούκης",
   ],
-  authors: [{ name: "Προκόπης Κούκης", url: "https://app.withinsuccess.gr" }],
+  authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
   creator: "Προκόπης Κούκης",
   icons: {
     icon: [
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "el_GR",
-    url: "https://app.withinsuccess.gr",
+    url: "https://withinsuccess.gr",
     siteName: "WithinSuccess",
     title: "Προκόπης Κούκης | Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
     description:
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
   alternates: {
-    canonical: "https://app.withinsuccess.gr",
+    canonical: "https://withinsuccess.gr",
   },
 };
 
@@ -86,10 +86,10 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://app.withinsuccess.gr/#person",
+      "@id": "https://withinsuccess.gr/#person",
       name: "Προκόπης Κούκης",
-      url: "https://app.withinsuccess.gr",
-      image: "https://app.withinsuccess.gr/prokopis_about.webp",
+      url: "https://withinsuccess.gr",
+      image: "https://withinsuccess.gr/prokopis_about.webp",
       sameAs: [
         "https://www.instagram.com/withinsuccess/",
         "https://www.youtube.com/@Prokopiskoukis",
@@ -107,11 +107,11 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      "@id": "https://app.withinsuccess.gr/#organization",
+      "@id": "https://withinsuccess.gr/#organization",
       name: "WithinSuccess",
-      url: "https://app.withinsuccess.gr",
-      logo: "https://app.withinsuccess.gr/logo.png",
-      founder: { "@id": "https://app.withinsuccess.gr/#person" },
+      url: "https://withinsuccess.gr",
+      logo: "https://withinsuccess.gr/logo.png",
+      founder: { "@id": "https://withinsuccess.gr/#person" },
       sameAs: [
         "https://www.instagram.com/withinsuccess/",
         "https://www.youtube.com/@Prokopiskoukis",
@@ -119,10 +119,10 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": "https://app.withinsuccess.gr/#website",
-      url: "https://app.withinsuccess.gr",
+      "@id": "https://withinsuccess.gr/#website",
+      url: "https://withinsuccess.gr",
       name: "WithinSuccess",
-      publisher: { "@id": "https://app.withinsuccess.gr/#organization" },
+      publisher: { "@id": "https://withinsuccess.gr/#organization" },
       inLanguage: "el",
     },
   ],
@@ -180,8 +180,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Προκόπης Κούκης",
-              url: "https://app.withinsuccess.gr",
-              image: "https://app.withinsuccess.gr/prokopis_about.webp",
+              url: "https://withinsuccess.gr",
+              image: "https://withinsuccess.gr/prokopis_about.webp",
               sameAs: [
                 "https://www.instagram.com/withinsuccess/",
                 "https://www.youtube.com/@Prokopiskoukis",

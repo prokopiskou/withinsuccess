@@ -147,7 +147,7 @@ export default function Philosophy() {
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>

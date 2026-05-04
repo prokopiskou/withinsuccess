@@ -50,7 +50,7 @@ async function sendMetaInitiateCheckout(params: {
             event_time: Math.floor(Date.now() / 1000),
             event_id: params.eventId,
             action_source: 'website',
-            event_source_url: params.sourceUrl || 'https://app.withinsuccess.gr/63days',
+            event_source_url: params.sourceUrl || 'https://withinsuccess.gr/63days',
             user_data: userData,
             custom_data: {
               currency: 'EUR',
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
       eventId: session.id,
       fbp,
       fbc,
-      sourceUrl: 'https://app.withinsuccess.gr/63days'
+      sourceUrl: 'https://withinsuccess.gr/63days'
     })
 
     return NextResponse.json({ url: session.url, sessionId: session.id })

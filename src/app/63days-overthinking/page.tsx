@@ -582,7 +582,7 @@ function PageContent() {
           <p className="text-gray-600 mb-12">Γι' αυτό η απόφαση δεν παίρνεται με σκέψη.</p>
           <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Είμαι μέσα" />
           <p className="text-xs text-gray-400 mt-10">
-            Για οποιαδήποτε απορία μη διστάσεις να επικοινωνήσεις μαζί μας στο hello@app.withinsuccess.gr
+            Για οποιαδήποτε απορία μη διστάσεις να επικοινωνήσεις μαζί μας στο hello@withinsuccess.gr
           </p>
         </div>
       </section>
@@ -592,7 +592,7 @@ function PageContent() {
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-4 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif' }}>WithinSuccess</span>
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
-          <p className="text-xs text-gray-400">hello@app.withinsuccess.gr</p>
+          <p className="text-xs text-gray-400">hello@withinsuccess.gr</p>
         </div>
       </footer>
     </main>

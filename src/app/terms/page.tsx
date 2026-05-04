@@ -20,7 +20,7 @@ export default function Terms() {
             <h2 className="text-xl font-semibold text-black mt-4">4. Ευθύνη</h2>
             <p>Η WithinSuccess δεν φέρει ευθύνη για αποτελέσματα που δεν επιτεύχθηκαν λόγω μη εφαρμογής. Τα αποτελέσματα εξαρτώνται από την προσωπική προσπάθεια.</p>
             <h2 className="text-xl font-semibold text-black mt-4">5. Επικοινωνία</h2>
-            <p>Email: <a href="mailto:hello@app.withinsuccess.gr" className="underline">hello@app.withinsuccess.gr</a></p>
+            <p>Email: <a href="mailto:hello@withinsuccess.gr" className="underline">hello@withinsuccess.gr</a></p>
           </div>
         </div>
       </main>

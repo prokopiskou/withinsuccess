@@ -26,7 +26,7 @@ export default function ThirtyDays() {
             provider: {
               "@type": "Person",
               name: "Προκόπης Κούκης",
-              url: "https://app.withinsuccess.gr",
+              url: "https://withinsuccess.gr",
             },
             offers: {
               "@type": "Offer",
@@ -34,7 +34,7 @@ export default function ThirtyDays() {
               priceCurrency: "EUR",
               availability: "https://schema.org/InStock",
             },
-            url: "https://app.withinsuccess.gr/30days",
+            url: "https://withinsuccess.gr/30days",
           }),
         }}
       />
@@ -205,7 +205,7 @@ export default function ThirtyDays() {
           <a href={stripeLink} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors">
             Ξεκίνα τώρα — 15€ →
           </a>
-          <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@app.withinsuccess.gr</p>
+          <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
         </div>
       </section>
 
@@ -216,7 +216,7 @@ export default function ThirtyDays() {
           <div className="flex gap-6 text-sm text-gray-400">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
-            <a href="mailto:hello@app.withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
+            <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
           <div className="flex gap-4 text-xs text-gray-400">
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>
