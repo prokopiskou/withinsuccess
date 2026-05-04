@@ -82,7 +82,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-            <img src="/withinsuccess_head.webp" alt="Προκόπης Κούκης" className="w-full h-full object-cover object-center" />
+            <img src="/withinsuccess_head.webp" alt="Προκόπης Κούκης - Life Coach WithinSuccess" className="w-full h-full object-cover object-center" />
           </div>
         </div>
       </section>
@@ -148,7 +148,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-              <img src="/prokopis_about.webp" alt="Προκόπης Κούκης" className="w-full h-full object-cover object-[right_top]" />
+              <img src="/prokopis_about.webp" alt="Προκόπης Κούκης - Personal Development Coach Αθήνα" className="w-full h-full object-cover object-[right_top]" />
             </div>
             <div className="flex flex-col gap-6">
               <p className="text-sm font-medium tracking-widest text-gray-400 uppercase">Ο Προκοπης Κουκης</p>

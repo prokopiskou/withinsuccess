@@ -27,7 +27,7 @@ export default function About() {
         <div className="relative overflow-hidden" style={{height: '70vh'}}>
           <img
             src="/prokopis_stage.webp"
-            alt="Προκόπης Κούκης on stage"
+            alt="Προκόπης Κούκης στη σκηνή - Live Coaching και σεμινάριο WithinSuccess"
             className="w-full h-full object-cover object-[87%] md:object-center"
           />
         </div>
@@ -86,13 +86,13 @@ export default function About() {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <div className="rounded-xl overflow-hidden">
-                <img src="/prokopis_elaiotrivio.webp" alt="Ελαιοτριβείο" className="w-full object-cover" />
+                <img src="/prokopis_elaiotrivio.webp" alt="Προκόπης Κούκης στο ελαιοτριβείο - προσωπική ιστορία πίσω από το WithinSuccess" className="w-full object-cover" />
               </div>
               <p className="text-xs text-gray-400 text-center italic">Εγώ στο ελαιοτριβείο, Δεκέμβριος 2019</p>
             </div>
             <div className="flex flex-col gap-2">
               <div className="rounded-xl overflow-hidden">
-                <img src="/prokopis_begin.webp" alt="Polaroid με ελιά" className="w-full object-cover" />
+                <img src="/prokopis_begin.webp" alt="Προκόπης Κούκης - polaroid με ελιά, οι ρίζες της διαδρομής coaching WithinSuccess" className="w-full object-cover" />
               </div>
               <p className="text-xs text-gray-400 text-center italic">Εγώ με μια ελιά, Εύβοια 2019</p>
             </div>
@@ -108,7 +108,7 @@ export default function About() {
             </div>
             <div className="flex flex-col gap-2 flex-shrink-0 w-32">
               <div className="rounded-xl overflow-hidden h-full">
-                <img src="/yiayia.webp" alt="Γιαγιά με ελιές" className="w-full h-full object-cover" />
+                <img src="/yiayia.webp" alt="Η γιαγιά του Προκόπη Κούκη με ελιές - έμπνευση για τη φιλοσοφία WithinSuccess" className="w-full h-full object-cover" />
               </div>
               <p className="text-xs text-gray-400 text-center italic">Η γιαγιά μου, Εύβοια 2019</p>
             </div>
@@ -121,10 +121,10 @@ export default function About() {
       <section className="py-8 px-6">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <img src="/prokopis_audience.webp" alt="Κοινό seminar" className="w-full h-full object-cover" />
+            <img src="/prokopis_audience.webp" alt="Κοινό σε σεμινάριο personal development του Προκόπη Κούκη, WithinSuccess" className="w-full h-full object-cover" />
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <img src="/prokopis_corporate.webp" alt="Seminar" className="w-full h-full object-cover" />
+            <img src="/prokopis_corporate.webp" alt="Προκόπης Κούκης σε corporate εκδήλωση coaching WithinSuccess" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>

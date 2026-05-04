@@ -119,10 +119,10 @@ export default function Corporate() {
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <img src="/prokopis_workshop.webp" alt="Workshop" className="w-full h-full object-cover object-[50%_25%]" />
+              <img src="/prokopis_workshop.webp" alt="Βιωματικό corporate workshop WithinSuccess για εταιρικές ομάδες" className="w-full h-full object-cover object-[50%_25%]" />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <img src="/prokopis_team.webp" alt="Team" className="w-full h-full object-cover object-[50%_25%]" />
+              <img src="/prokopis_team.webp" alt="Ομάδα WithinSuccess σε corporate coaching session" className="w-full h-full object-cover object-[50%_25%]" />
             </div>
           </div>
         </div>

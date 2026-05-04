@@ -62,7 +62,7 @@ export default function Work() {
             </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-            <img src="/prokopis_seminar.webp" alt="Coaching" className="w-full h-full object-cover" />
+            <img src="/prokopis_seminar.webp" alt="Προκόπης Κούκης σε Live Seminar" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
@@ -95,7 +95,7 @@ export default function Work() {
             </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <img src="/prokopis_stage.webp" alt="63 Μέρες" className="w-full h-full object-cover" />
+            <img src="/prokopis_stage.webp" alt="Προκόπης Κούκης στη σκηνή" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
@@ -135,7 +135,7 @@ export default function Work() {
           <div className="mb-12">
             <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">Τι λενε οσοι ηταν εκει</p>
             <div className="relative rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center" style={{minHeight: '400px'}}>
-              <img src={`/seminar_testimonial${current + 1}.webp`} alt={`Testimonial ${current + 1}`} className="max-w-full max-h-[500px] object-contain" />
+              <img src={`/seminar_testimonial${current + 1}.webp`} alt={`Μαρτυρία συμμετέχοντος σε σεμινάριο WithinSuccess — ${current + 1}`} className="max-w-full max-h-[500px] object-contain" />
             </div>
             <div className="flex items-center justify-center gap-4 mt-6">
               <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
@@ -183,7 +183,7 @@ export default function Work() {
             </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <img src="/prokopis_audience.webp" alt="Program" className="w-full h-full object-cover" />
+            <img src="/prokopis_audience.webp" alt="Κοινό σεμιναρίου WithinSuccess Αθήνα" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
@@ -214,10 +214,10 @@ export default function Work() {
           </div>
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <img src="/prokopis_workshop.webp" alt="Workshop" className="w-full h-full object-cover object-[50%_25%]" />
+              <img src="/prokopis_workshop.webp" alt="Βιωματικό Workshop WithinSuccess" className="w-full h-full object-cover object-[50%_25%]" />
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <img src="/prokopis_team.webp" alt="Team" className="w-full h-full object-cover object-[50%_25%]" />
+              <img src="/prokopis_team.webp" alt="Team WithinSuccess" className="w-full h-full object-cover object-[50%_25%]" />
             </div>
           </div>
           <div className="text-center">

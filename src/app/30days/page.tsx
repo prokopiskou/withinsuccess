@@ -160,7 +160,7 @@ export default function ThirtyDays() {
           <div className="relative rounded-2xl overflow-hidden bg-white flex items-center justify-center" style={{minHeight: '400px'}}>
             <img
               src={`/program_testimonial${testimonialOrder[current]}.webp`}
-              alt={`Testimonial ${current + 1}`}
+              alt={`Μαρτυρία συμμετέχοντος στο πρόγραμμα 30 ημερών WithinSuccess — ${current + 1}`}
               className="max-w-full max-h-[500px] object-contain"
             />
           </div>
