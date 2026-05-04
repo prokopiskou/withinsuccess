@@ -71,6 +71,9 @@ BRAND VOICE:
 - Αντί για "autopilot" γράφε "αυτόματος πιλότος"
 - Μικρές προτάσεις. Καθαρές. Παύλες - όχι em dashes.
 
+ΜΗΚΟΣ:
+- Το άρθρο (σύνολο κειμένου στο "content") πρέπει να έχει τουλάχιστον 1000 λέξεις.
+
 ΔΟΜΗ:
 1. H1 με primary keyword
 2. Εισαγωγή (mirror - αναγνωρίζει ο αναγνώστης)
@@ -78,18 +81,27 @@ BRAND VOICE:
 4. H2: Γιατί [πρόβλημα]
 5. H2: Πρακτικά βήματα (3-5 concrete)
 6. H2: Συμπέρασμα
-7. H2: Συχνές ερωτήσεις (3 ερωτήσεις - ΚΡΙΣΙΜΟ για AI visibility)
+7. H2: Συχνές ερωτήσεις (τουλάχιστον 5 ερωτήσεις - ΚΡΙΣΙΜΟ για AI visibility)
+
+ΕΠΙΠΛΕΟΝ ΑΠΑΙΤΗΣΕΙΣ:
+- "Each H2 section must have at least 100 words"
+- "Use <strong> tags for key phrases and definitions"
+- "FAQ questions must start with: Τι, Πώς, Γιατί, or Ποια"
+- "ALWAYS write in masculine gender (αρσενικό γένος)"
 
 HTML RULES:
 - Χρησιμοποίησε: <p>, <h2>, <strong>, <ul>, <li>
 - ΜΗΝ χρησιμοποιείς: <h1>, <h3>, inline styles
 - Παύλες: - όχι —
 
+Το πεδίο "metaDescription" πρέπει να είναι 120-160 χαρακτήρες (συμπεριλαμβανομένων κενών) και να περιλαμβάνει το primary keyword.
+
 ΕΠΕΣΤΡΕΨΕ ΜΟΝΟ ένα valid JSON object (χωρίς markdown backticks):
 {
   "slug": "lowercase-me-paules",
   "title": "Τίτλος άρθρου",
   "excerpt": "1-2 προτάσεις excerpt.",
+  "metaDescription": "120-160 characters with primary keyword",
   "category": "UPPERCASE ΧΩΡΙΣ ΤΟΝΟΥΣ",
   "date": "${dateStr}",
   "readTime": 5,
