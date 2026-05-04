@@ -75,10 +75,10 @@ export default function Home() {
               </a>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
-              <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-400 mt-1">Ατομα</p></div>
+              <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-400 mt-1">Άτομα</p></div>
               <div><span className="text-2xl font-semibold">10.000+</span><p className="text-xs text-gray-400 mt-1">Community</p></div>
               <div><span className="text-2xl font-semibold">173k</span><p className="text-xs text-gray-400 mt-1">Instagram</p></div>
-              <div><span className="text-2xl font-semibold">7+</span><p className="text-xs text-gray-400 mt-1">Χρονια</p></div>
+              <div><span className="text-2xl font-semibold">7+</span><p className="text-xs text-gray-400 mt-1">Χρόνια</p></div>
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
