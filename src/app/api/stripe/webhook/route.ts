@@ -103,7 +103,7 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
   const contactId = contact?.id
 
   // Create notice (απόδειξη)
-  await fetch(`${baseUrl}/notices`, {
+  const noticeRes = await fetch(`${baseUrl}/notices`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${OXYGEN_API_KEY}`,
@@ -122,6 +122,23 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
       ],
     }),
   })
+
+  const notice = await noticeRes.json()
+  const noticeId = notice?.data?.id || notice?.id
+
+  // Send email to customer
+  if (noticeId && customerEmail) {
+    await fetch(`${baseUrl}/notices/${noticeId}/send`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OXYGEN_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: customerEmail,
+      }),
+    })
+  }
 }
 
 export async function POST(req: NextRequest) {
