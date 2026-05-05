@@ -81,6 +81,47 @@ async function sendMetaPurchaseEvent(params: {
   }
 }
 
+async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string) {
+  const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
+  if (!OXYGEN_API_KEY) return
+
+  const baseUrl = 'https://api.oxygen.gr/v1'
+
+  // Create or find contact
+  const contactRes = await fetch(`${baseUrl}/contacts`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OXYGEN_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: customerName,
+      email: customerEmail,
+    }),
+  })
+  const contact = await contactRes.json()
+  const contactId = contact?.id
+
+  // Create notice (απόδειξη)
+  await fetch(`${baseUrl}/notices`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OXYGEN_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contact_id: contactId,
+      items: [
+        {
+          description: productName,
+          quantity: 1,
+          price: amount / 100,
+        }
+      ],
+    }),
+  })
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const sig = req.headers.get('stripe-signature')!
@@ -158,6 +199,15 @@ export async function POST(req: NextRequest) {
         console.error('MailerLite fetch failed:', err)
       }
     }
+
+    const cleanName = (session.customer_details?.name || '').trim()
+    const customerEmail = session.customer_email || session.customer_details?.email || ''
+    await createOxygenInvoice(
+      cleanName,
+      customerEmail,
+      session.amount_total || 0,
+      session.metadata?.product_name || 'WithinSuccess Program'
+    )
 
     return NextResponse.json({ received: true, processed: 'purchase' })
   }
