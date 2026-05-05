@@ -116,6 +116,7 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
           description: productName,
           quantity: 1,
           price: amount / 100,
+          tax_id: "331db5c0-d118-11f0-8710-fa163eb3df25"
         }
       ],
     }),
