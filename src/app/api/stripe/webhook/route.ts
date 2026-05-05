@@ -111,6 +111,7 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     },
     body: JSON.stringify({
       contact_id: contactId,
+      numbering_sequence_id: "33212260-d118-11f0-8710-fa163eb3df25",
       items: [
         {
           description: productName,
