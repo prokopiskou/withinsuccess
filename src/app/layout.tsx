@@ -186,29 +186,6 @@ export default function RootLayout({
         </noscript>
       </head>
       <body className="min-h-full flex flex-col">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              name: "Προκόπης Κούκης",
-              url: "https://withinsuccess.gr",
-              image: "https://withinsuccess.gr/prokopis_about.webp",
-              sameAs: [
-                "https://www.instagram.com/withinsuccess/",
-                "https://www.youtube.com/@Prokopiskoukis",
-              ],
-              jobTitle: "Life Coach & Personal Development Expert",
-              worksFor: {
-                "@type": "Organization",
-                name: "WithinSuccess",
-              },
-              description:
-                "Life coach και εμπειρογνώμονας προσωπικής ανάπτυξης με 7+ χρόνια εμπειρία. Βοήθησε 900+ ανθρώπους να αλλάξουν ζωή.",
-            }),
-          }}
-        />
         <ConditionalHeader />
         {children}
       </body>
