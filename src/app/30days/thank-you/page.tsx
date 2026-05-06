@@ -19,10 +19,7 @@ export default function ThankYouPage() {
         <p className="text-gray-400 text-sm mb-12">
           Αν δεν το βρεις στα εισερχόμενα, έλεγξε τα spam.
         </p>
-        
-          href="/30days"
-          className="text-sm tracking-widest uppercase text-[#0D0D0D] border-b border-[#0D0D0D] pb-1 hover:text-[#C9A96E] hover:border-[#C9A96E] transition-colors"
-        >
+        <a href="/30days" className="text-sm tracking-widest uppercase text-[#0D0D0D] border-b border-[#0D0D0D] pb-1 hover:text-[#C9A96E] hover:border-[#C9A96E] transition-colors">
           Επιστροφή στο πρόγραμμα
         </a>
       </div>
