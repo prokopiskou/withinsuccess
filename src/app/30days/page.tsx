@@ -5,7 +5,7 @@ import MetaPixel, { trackEvent } from "@/components/MetaPixel";
 const testimonialOrder = [5, 1, 2, 3, 4];
 
 export default function ThirtyDays() {
-  const stripeLink = "https://buy.stripe.com/4gM28sdbFczj7iV00N4ZG1M";
+  const stripeLink = "https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N";
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);

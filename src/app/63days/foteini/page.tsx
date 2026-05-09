@@ -12,10 +12,8 @@ function getPricingInfo() {
   const month = greece.getMonth() + 1
   const day = greece.getDate()
 
-  if ((month === 4) || (month === 5 && day <= 4)) return { price: 89, next: 109, deadline: '4 Μαΐου' }
-  if (month === 5 && day <= 8) return { price: 109, next: 129, deadline: '8 Μαΐου' }
-  if (month === 5 && day <= 12) return { price: 129, next: null, deadline: '12 Μαΐου' }
-  return { price: 129, next: null, deadline: '12 Μαΐου' }
+  if (month === 5 && day <= 12) return { price: 89, next: null, deadline: '12 Μαΐου' }
+  return { price: 89, next: null, deadline: '12 Μαΐου' }
 }
 
 const DEFAULTS = {
