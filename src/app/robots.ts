@@ -8,6 +8,18 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/api/', '/30days/thank-you'],
       },
+      {
+        userAgent: 'GPTBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'Claude-Web',
+        allow: '/',
+      },
+      {
+        userAgent: 'CCBot',
+        disallow: '/',
+      },
     ],
     sitemap: 'https://withinsuccess.gr/sitemap.xml',
     host: 'https://withinsuccess.gr',
