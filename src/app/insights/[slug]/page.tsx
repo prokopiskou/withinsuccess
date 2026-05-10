@@ -56,6 +56,61 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     mainEntityOfPage: `https://withinsuccess.gr/insights/${article.slug}`,
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Αρχική",
+        item: "https://withinsuccess.gr",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Σκέψεις",
+        item: "https://withinsuccess.gr/insights",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: `https://withinsuccess.gr/insights/${article.slug}`,
+      },
+    ],
+  };
+
+  const faqMatch = article.content.match(
+    /<h2>\s*Συχνές ερωτήσεις\s*<\/h2>([\s\S]*)/
+  );
+  const faqItems: { question: string; answer: string }[] = [];
+  if (faqMatch) {
+    const qaRegex =
+      /<p>\s*<strong>([\s\S]*?)<\/strong>\s*<\/p>\s*<p>([\s\S]*?)<\/p>/g;
+    let m: RegExpExecArray | null;
+    while ((m = qaRegex.exec(faqMatch[1])) !== null) {
+      const question = m[1].replace(/<[^>]+>/g, "").trim();
+      const answer = m[2].replace(/<[^>]+>/g, "").trim();
+      if (question && answer) faqItems.push({ question, answer });
+    }
+  }
+  const faqLd =
+    faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: f.answer,
+            },
+          })),
+        }
+      : null;
+
   return (
     <main className="min-h-screen bg-white font-sans">
       <script
@@ -124,6 +179,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
         </div>
       </footer>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      )}
     </main>
   );
 }
