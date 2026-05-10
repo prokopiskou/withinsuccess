@@ -39,9 +39,12 @@ export const metadata: Metadata = {
   authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
   creator: "Προκόπης Κούκης",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
-    shortcut: "/favicon.png",
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '256x256', type: 'image/x-icon' },
+    ],
+    apple: '/logo.png',
+    shortcut: '/logo.png',
   },
   other: {
     "facebook-domain-verification": "irchrcs50cp19rnfgafr8j067xor89",
