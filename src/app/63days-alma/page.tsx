@@ -201,12 +201,9 @@ function PageContent() {
           </p>
         </div>
 
-        <div className="border-t border-gray-100 pt-10 mb-12 max-w-md mx-auto">
-          <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-            Το <span className="font-semibold">63 Μέρες Ζωής</span> είναι ένα βιωματικό σύστημα επανασύνδεσης με τον εαυτό σου.
-          </p>
-          <p className="text-base md:text-lg text-gray-700 leading-relaxed mt-3">
-            Μέσω καθημερινής δράσης σε βάζει σε ρυθμό και αλλάζει τον τρόπο που σκέφτεσαι και λειτουργείς.
+        <div className="bg-gray-50 rounded-2xl p-8 mb-10 text-left max-w-xl mx-auto">
+          <p className="text-gray-700 leading-relaxed">
+            Το 63 Μέρες Ζωής είναι ένα βιωματικό σύστημα επανασύνδεσης με τον εαυτό σου, μέσω καθημερινής δράσης σε βάζει σε ρυθμό και αλλάζει τον τρόπο που σκέφτεσαι και λειτουργείς.
           </p>
         </div>
 
