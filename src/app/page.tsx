@@ -75,10 +75,10 @@ export default function Home() {
               </a>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
-              <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-400 mt-1">Άτομα</p></div>
-              <div><span className="text-2xl font-semibold">10.000+</span><p className="text-xs text-gray-400 mt-1">Community</p></div>
-              <div><span className="text-2xl font-semibold">173k</span><p className="text-xs text-gray-400 mt-1">Instagram</p></div>
-              <div><span className="text-2xl font-semibold">7+</span><p className="text-xs text-gray-400 mt-1">Χρόνια</p></div>
+              <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-500 mt-1">Άτομα</p></div>
+              <div><span className="text-2xl font-semibold">10.000+</span><p className="text-xs text-gray-500 mt-1">Community</p></div>
+              <div><span className="text-2xl font-semibold">173k</span><p className="text-xs text-gray-500 mt-1">Instagram</p></div>
+              <div><span className="text-2xl font-semibold">7+</span><p className="text-xs text-gray-500 mt-1">Χρόνια</p></div>
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
@@ -117,7 +117,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">The Within Path</p>
+            <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">The Within Path</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Η αλλαγή έχει δρόμο.
             </h2>
@@ -151,7 +151,7 @@ export default function Home() {
               <img src="/prokopis_about.webp" alt="Προκόπης Κούκης - Personal Development Coach Αθήνα" className="w-full h-full object-cover object-[right_top]" />
             </div>
             <div className="flex flex-col gap-6">
-              <p className="text-sm font-medium tracking-widest text-gray-400 uppercase">Ο Προκοπης Κουκης</p>
+              <p className="text-sm font-medium tracking-widest text-gray-500 uppercase">Ο Προκοπης Κουκης</p>
               <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
                 Δεν το επέλεξα.
               </h2>
@@ -172,7 +172,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">Live Experience</p>
+            <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Live Experience</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Δες τι συμβαίνει σε ένα seminar.
             </h2>
@@ -193,7 +193,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">Αυτοι το εζησαν</p>
+            <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Αυτοι το εζησαν</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Πραγματικές ιστορίες.
             </h2>
@@ -215,7 +215,7 @@ export default function Home() {
                   <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{background: review.color}}>G</div>
                   <p className="text-sm font-medium text-gray-900">{review.name}</p>
                 </div>
-                <p className="text-xs text-gray-400">{review.sub}</p>
+                <p className="text-xs text-gray-500">{review.sub}</p>
               </div>
             ))}
           </div>
@@ -227,18 +227,18 @@ export default function Home() {
                 <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{background: reviews[current].color}}>G</div>
                 <p className="text-sm font-medium text-gray-900">{reviews[current].name}</p>
               </div>
-              <p className="text-xs text-gray-400">{reviews[current].sub}</p>
+              <p className="text-xs text-gray-500">{reviews[current].sub}</p>
             </div>
             <p className="text-center text-xs text-gray-300 mt-3">← σύρε για περισσότερα →</p>
           </div>
           <div className="flex items-center justify-center gap-4 mt-8">
-            <button onClick={prev} className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
+            <button onClick={prev} aria-label="Προηγούμενη μαρτυρία" className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
             <div className="flex gap-2">
               {reviews.map((_, i) => (
-                <button key={i} onClick={() => setCurrent(i)} className={`h-1.5 rounded-full transition-all ${current === i ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
+                <button key={i} onClick={() => setCurrent(i)} aria-label={`Μαρτυρία ${i + 1}`} className={`h-1.5 rounded-full transition-all ${current === i ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
               ))}
             </div>
-            <button onClick={next} className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">→</button>
+            <button onClick={next} aria-label="Επόμενη μαρτυρία" className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">→</button>
           </div>
         </div>
       </section>
@@ -247,7 +247,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
-            <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-3">Πως δουλευουμε μαζι</p>
+            <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Πως δουλευουμε μαζι</p>
             <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
               Διάλεξε το επόμενο βήμα σου.
             </h2>
@@ -284,7 +284,7 @@ export default function Home() {
       {/* EMAIL OPT-IN */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-4">Within Assessment</p>
+          <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-4">Within Assessment</p>
           <h2 className="text-3xl md:text-4xl font-semibold leading-tight mb-4" style={{fontFamily: 'Georgia, serif'}}>
             Ανακάλυψε σε ποιο στάδιο βρίσκεσαι.
           </h2>
@@ -294,7 +294,7 @@ export default function Home() {
           <a href="/assessment" className="inline-block text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
             Κάνε το assessment →
           </a>
-          <p className="text-xs text-gray-400 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>
+          <p className="text-xs text-gray-500 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>
         </div>
       </section>
 
@@ -302,16 +302,16 @@ export default function Home() {
       <footer className="py-12 px-6 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-6 text-center">
           <span className="text-lg font-semibold tracking-tight" style={{fontFamily: 'Georgia, serif'}}>WithinSuccess</span>
-          <div className="flex gap-6 text-sm text-gray-400">
+          <div className="flex gap-6 text-sm text-gray-500">
             <a href="https://www.instagram.com/withinsuccess/" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">Instagram</a>
             <a href="https://www.youtube.com/@Prokopiskoukis" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">YouTube</a>
             <a href="mailto:hello@withinsuccess.gr" className="hover:text-black transition-colors">Email</a>
           </div>
-          <div className="flex gap-4 text-xs text-gray-400">
+          <div className="flex gap-4 text-xs text-gray-500">
             <a href="/privacy" className="hover:text-black transition-colors">Πολιτική Απορρήτου</a>
             <a href="/terms" className="hover:text-black transition-colors">Όροι Χρήσης</a>
           </div>
-          <p className="text-xs text-gray-400">© 2026 WithinSuccess</p>
+          <p className="text-xs text-gray-500">© 2026 WithinSuccess</p>
         </div>
       </footer>
 

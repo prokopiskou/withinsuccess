@@ -19,6 +19,7 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
         <div className="flex md:hidden items-center justify-between">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Άνοιγμα μενού"
             className="flex flex-col gap-1.5 p-1 w-8"
           >
             <span className="w-6 h-px bg-black block"></span>
