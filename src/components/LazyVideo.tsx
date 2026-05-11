@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type LazyVideoProps = {
   src: string;
   className?: string;
+  children?: ReactNode;
 };
 
-export function LazyVideo({ src, className }: LazyVideoProps) {
+export function LazyVideo({ src, className, children }: LazyVideoProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [activeSrc, setActiveSrc] = useState<string | null>(null);
@@ -57,7 +58,9 @@ export function LazyVideo({ src, className }: LazyVideoProps) {
         loop
         playsInline
         preload="none"
-      />
+      >
+        {children}
+      </video>
     </div>
   );
 }

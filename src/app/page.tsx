@@ -180,10 +180,14 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <LazyVideo src={SEMINAR1} className="w-full h-full object-cover" />
+              <LazyVideo src={SEMINAR1} className="w-full h-full object-cover">
+                <track kind="captions" srcLang="el" label="Ελληνικά" default />
+              </LazyVideo>
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <LazyVideo src={SEMINAR2} className="w-full h-full object-cover" />
+              <LazyVideo src={SEMINAR2} className="w-full h-full object-cover">
+                <track kind="captions" srcLang="el" label="Ελληνικά" default />
+              </LazyVideo>
             </div>
           </div>
         </div>
@@ -200,10 +204,14 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:gap-8 mb-16">
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <LazyVideo src={TESTIMONIAL1} className="w-full h-full object-cover" />
+              <LazyVideo src={TESTIMONIAL1} className="w-full h-full object-cover">
+                <track kind="captions" srcLang="el" label="Ελληνικά" default />
+              </LazyVideo>
             </div>
             <div className="relative rounded-2xl overflow-hidden aspect-[9/16]">
-              <LazyVideo src={TESTIMONIAL2} className="w-full h-full object-cover" />
+              <LazyVideo src={TESTIMONIAL2} className="w-full h-full object-cover">
+                <track kind="captions" srcLang="el" label="Ελληνικά" default />
+              </LazyVideo>
             </div>
           </div>
           <div className="hidden md:grid md:grid-cols-3 gap-8">
