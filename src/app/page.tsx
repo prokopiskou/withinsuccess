@@ -82,7 +82,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-            <img src="/withinsuccess_head.webp" alt="Προκόπης Κούκης - Life Coach WithinSuccess" className="w-full h-full object-cover object-center" />
+            <img src="/withinsuccess_head.webp" alt="Προκόπης Κούκης - Life Coach WithinSuccess" className="w-full h-full object-cover object-center" fetchPriority="high" loading="eager"/>
           </div>
         </div>
       </section>
