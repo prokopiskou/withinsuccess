@@ -156,11 +156,12 @@ async function main() {
     slug: "${newArticle.slug}",
     title: "${newArticle.title}",
     excerpt: "${newArticle.excerpt}",
+    metaDescription: "${newArticle.metaDescription}",
     category: "${newArticle.category}",
     date: "${newArticle.date}",
     readTime: ${newArticle.readTime},
     keywords: ${JSON.stringify(newArticle.keywords)},
-    content: \`${newArticle.content}\`
+    content: \`${newArticle.content.replace(/`/g, "'")}\`
   }`;
 
   const updatedFile = currentFile.replace(
