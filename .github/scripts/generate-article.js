@@ -181,7 +181,7 @@ HTML RULES:
 <TITLE>Τίτλος άρθρου</TITLE>
 <EXCERPT>1-2 προτάσεις excerpt.</EXCERPT>
 <META>120-160 chars meta description με το keyword</META>
-<CATEGORY>UPPERCASE ΧΩΡΙΣ ΤΟΝΟΥΣ</CATEGORY>
+<CATEGORY>ΕΛΛΗΝΙΚΟΙ ΚΕΦΑΛΑΙΟΙ ΧΑΡΑΚΤΗΡΕΣ ΧΩΡΙΣ ΤΟΝΟΥΣ - πχ "ΠΡΟΣΩΠΙΚΗ ΑΝΑΠΤΥΞΗ" ή "ΨΥΧΟΛΟΓΙΑ" ή "ΑΥΤΟΒΕΛΤΙΩΣΗ" - ΟΧΙ transliteration σε Latin (όχι "PROSOPIKI ANAPTYXI")</CATEGORY>
 <KEYWORDS>keyword1,keyword2,keyword3</KEYWORDS>
 <CONTENT>
 HTML content εδώ...
