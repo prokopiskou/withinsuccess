@@ -161,8 +161,12 @@ async function main() {
     date: "${newArticle.date}",
     readTime: ${newArticle.readTime},
     keywords: ${JSON.stringify(newArticle.keywords)},
-    content: \`${newArticle.content.replace(/`/g, "'")}\`
+    content: \`${newArticle.content.replace(/`/g, "'").replace(/\\/g, '\\\\')}\`
   }`;
+
+  if (!currentFile.match(/\];\s*$/)) {
+    throw new Error('Could not find end of articles array in articles.ts');
+  }
 
   const updatedFile = currentFile.replace(
     /\];\s*$/,
