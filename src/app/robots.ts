@@ -22,6 +22,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: 'https://withinsuccess.gr/sitemap.xml',
-    host: 'https://withinsuccess.gr',
   }
 }
