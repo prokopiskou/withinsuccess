@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Image from 'next/image'
 import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
 import MetaPixel from "@/components/MetaPixel";
@@ -82,7 +83,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-            <img src="/withinsuccess_head.webp" alt="Προκόπης Κούκης - Life Coach WithinSuccess" className="w-full h-full object-cover object-center" fetchPriority="high" loading="eager"/>
+            <Image src="/withinsuccess_head.webp" alt="Προκόπης Κούκης - Life Coach WithinSuccess" className="w-full h-full object-cover object-center" fill priority sizes="(max-width: 768px) 100vw, 50vw"/>
           </div>
         </div>
       </section>
@@ -148,7 +149,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-              <img src="/prokopis_about.webp" alt="Προκόπης Κούκης - Personal Development Coach Αθήνα" className="w-full h-full object-cover object-[right_top]" />
+              <Image src="/prokopis_about.webp" alt="Προκόπης Κούκης - Personal Development Coach Αθήνα" className="w-full h-full object-cover object-[right_top]" fill sizes="(max-width: 768px) 100vw, 50vw"/>
             </div>
             <div className="flex flex-col gap-6">
               <p className="text-sm font-medium tracking-widest text-gray-500 uppercase">Ο Προκοπης Κουκης</p>
