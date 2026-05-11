@@ -114,9 +114,23 @@ HTML RULES:
 
   const data = await response.json();
   let text = data.content[0].text.trim();
-  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-  const article = JSON.parse(text);
-  return article;
+  try {
+    // Remove any backtick fences
+    text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    
+    // Extract just the JSON object
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found');
+    text = jsonMatch[0];
+    
+    // Replace backticks inside content field with single quotes
+    text = text.replace(/`/g, "'");
+    
+    const article = JSON.parse(text);
+    return article;
+  } catch (e) {
+    throw new Error('JSON parse failed: ' + e.message);
+  }
 }
 
 async function main() {
