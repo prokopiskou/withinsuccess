@@ -13,6 +13,88 @@ const KEYWORDS = [
   "καθοδήγηση ζωής"
 ];
 
+// ============================================================
+// SANITIZATION - Strip invisible/problematic Unicode characters
+// ============================================================
+function sanitizeText(text) {
+  if (typeof text !== 'string') return text;
+  return text
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')   // Zero-width chars + BOM
+    .replace(/[\u201C\u201D]/g, '"')          // Smart double quotes
+    .replace(/[\u2018\u2019]/g, "'")          // Smart single quotes
+    .replace(/\u037E/g, ';')                  // Greek question mark
+    .replace(/\u00A0/g, ' ')                  // Non-breaking space
+    .replace(/^\uFEFF/, '');                  // BOM at start
+}
+
+function sanitizeArticle(article) {
+  return {
+    slug: sanitizeText(article.slug),
+    title: sanitizeText(article.title),
+    excerpt: sanitizeText(article.excerpt),
+    metaDescription: sanitizeText(article.metaDescription),
+    category: sanitizeText(article.category),
+    date: article.date,
+    readTime: article.readTime,
+    keywords: article.keywords.map(sanitizeText),
+    content: sanitizeText(article.content)
+  };
+}
+
+// ============================================================
+// DUPLICATE DETECTION
+// ============================================================
+function extractExistingArticles(fileContent) {
+  const slugs = [];
+  const titles = [];
+  const keywords = [];
+
+  const slugMatches = fileContent.matchAll(/slug:\s*["']([^"']+)["']/g);
+  for (const m of slugMatches) slugs.push(m[1]);
+
+  const titleMatches = fileContent.matchAll(/title:\s*["']([^"']+)["']/g);
+  for (const m of titleMatches) titles.push(m[1]);
+
+  const kwMatches = fileContent.matchAll(/keywords:\s*\[([^\]]+)\]/g);
+  for (const m of kwMatches) {
+    const kws = m[1].match(/["']([^"']+)["']/g) || [];
+    kws.forEach(k => keywords.push(k.replace(/["']/g, '')));
+  }
+
+  return { slugs, titles, keywords };
+}
+
+function similarity(s1, s2) {
+  const set1 = new Set(s1.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+  const set2 = new Set(s2.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+  if (set1.size === 0 || set2.size === 0) return 0;
+  const intersection = new Set([...set1].filter(x => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
+  return intersection.size / union.size;
+}
+
+function checkDuplicate(existing, newArticle) {
+  if (existing.slugs.includes(newArticle.slug)) {
+    return `Slug "${newArticle.slug}" already exists`;
+  }
+  for (const t of existing.titles) {
+    const sim = similarity(t, newArticle.title);
+    if (sim > 0.6) {
+      return `Title too similar: "${t}" (${Math.round(sim * 100)}% match)`;
+    }
+  }
+  for (const s of existing.slugs) {
+    const sim = similarity(s.replace(/-/g, ' '), newArticle.slug.replace(/-/g, ' '));
+    if (sim > 0.7) {
+      return `Slug too similar: "${s}"`;
+    }
+  }
+  return null;
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
 function getDateString() {
   const today = new Date();
   const months = ["Ιανουαρίου","Φεβρουαρίου","Μαρτίου","Απριλίου","Μαΐου","Ιουνίου","Ιουλίου","Αυγούστου","Σεπτεμβρίου","Οκτωβρίου","Νοεμβρίου","Δεκεμβρίου"];
@@ -42,7 +124,11 @@ async function getTrendingTopic() {
   }
 }
 
-async function generateArticle(trendingContext, keyword, dateStr) {
+async function generateArticle(trendingContext, keyword, dateStr, existingTitles) {
+  const avoidTopics = existingTitles.length > 0
+    ? `\n\nΣΗΜΑΝΤΙΚΟ - ΥΠΑΡΧΟΥΝ ΗΔΗ ΤΑ ΕΞΗΣ ΑΡΘΡΑ:\n${existingTitles.map(t => `- ${t}`).join('\n')}\n\nΤο νέο άρθρο πρέπει να έχει ΔΙΑΦΟΡΕΤΙΚΗ γωνία/προσέγγιση από τα παραπάνω. Όχι ίδιο topic.`
+    : '';
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -60,13 +146,20 @@ async function generateArticle(trendingContext, keyword, dateStr) {
 TRENDING CONTEXT: ${trendingContext}
 ΣΗΜΕΡΙΝΗ ΗΜΕΡΟΜΗΝΙΑ: ${dateStr}
 
-Γράψε ένα άρθρο για το blog withinsuccess.gr με primary keyword: "${keyword}"
+Γράψε ένα άρθρο για το blog withinsuccess.gr με primary keyword: "${keyword}"${avoidTopics}
 
 BRAND VOICE:
 - Γράφεις σε απλά ελληνικά, αρσενικό γένος
 - Τόνος: άμεσος, καθαρός, χωρίς κλισέ αυτοβελτίωσης
 - Ποτέ "πειθαρχία" ή "συνέπεια" - πάντα "ταυτότητα" και "εσωτερική ιστορία"
 - Μικρές προτάσεις. Καθαρές. Παύλες - όχι em dashes.
+
+CRITICAL - ΧΑΡΑΚΤΗΡΕΣ:
+- ΧΡΗΣΙΜΟΠΟΙΗΣΕ ΜΟΝΟ regular ASCII quotes (") και (')
+- ΟΧΙ smart quotes
+- ΟΧΙ em-dashes, χρησιμοποίησε regular dash (-)
+- ΟΧΙ zero-width spaces ή invisible Unicode
+- Χρησιμοποίησε regular semicolon (;) όχι ελληνικό ερωτηματικό
 
 ΜΗΚΟΣ: τουλάχιστον 1000 λέξεις στο content.
 
@@ -119,26 +212,27 @@ HTML content εδώ...
   };
 }
 
+// ============================================================
+// MAIN
+// ============================================================
 async function main() {
   const dateStr = getDateString();
 
-  // Διάβασε το υπάρχον articles.ts πρώτα
   const currentFile = fs.readFileSync('src/app/insights/articles.ts', 'utf8');
+  const existing = extractExistingArticles(currentFile);
 
-  // Βρες keywords που έχουν ήδη χρησιμοποιηθεί
-  const usedKeywords = [];
-  const matches = currentFile.match(/"keywords":\s*\[([^\]]+)\]/g) || [];
-  matches.forEach(m => {
-    const kws = m.match(/"([^"]+)"/g) || [];
-    kws.forEach(k => usedKeywords.push(k.replace(/"/g, '')));
-  });
-  console.log('Used keywords:', usedKeywords);
+  console.log(`Existing: ${existing.slugs.length} slugs, ${existing.titles.length} titles`);
+  console.log('Used keywords:', existing.keywords);
 
-  // Επέλεξε keyword που δεν έχει χρησιμοποιηθεί
-  const availableKeywords = KEYWORDS.filter(k => !usedKeywords.includes(k));
-  const keyword = availableKeywords.length > 0
-    ? availableKeywords[Math.floor(Math.random() * availableKeywords.length)]
-    : KEYWORDS[Math.floor(Math.random() * KEYWORDS.length)];
+  // Skip if all keywords used (no random fallback that creates duplicates)
+  const availableKeywords = KEYWORDS.filter(k => !existing.keywords.includes(k));
+
+  if (availableKeywords.length === 0) {
+    console.log('All keywords used. Skipping generation. Add more topics to KEYWORDS array.');
+    process.exit(0);
+  }
+
+  const keyword = availableKeywords[Math.floor(Math.random() * availableKeywords.length)];
 
   console.log('Date:', dateStr);
   console.log('Keyword:', keyword);
@@ -148,33 +242,69 @@ async function main() {
   console.log('Trending:', trending);
 
   console.log('Generating article...');
-  const newArticle = await generateArticle(trending, keyword, dateStr);
+  let newArticle = await generateArticle(trending, keyword, dateStr, existing.titles);
+
+  // SANITIZE - Remove invisible Unicode chars
+  newArticle = sanitizeArticle(newArticle);
+
   console.log('Article generated:', newArticle.title);
   console.log('Slug:', newArticle.slug);
 
+  // DUPLICATE CHECK
+  const duplicate = checkDuplicate(existing, newArticle);
+  if (duplicate) {
+    console.log(`DUPLICATE DETECTED: ${duplicate}`);
+    console.log('Skipping. Will retry next Monday.');
+    process.exit(0);
+  }
+
+  console.log('No duplicates. Adding article...');
+
+  // Safe content escaping for template literal
+  const safeContent = newArticle.content
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, "'")
+    .replace(/\$\{/g, '\\${');
+
+  // Use JSON.stringify for safe string fields
   const articleEntry = `  {
-    slug: "${newArticle.slug}",
-    title: "${newArticle.title}",
-    excerpt: "${newArticle.excerpt}",
-    metaDescription: "${newArticle.metaDescription}",
-    category: "${newArticle.category}",
-    date: "${newArticle.date}",
+    slug: ${JSON.stringify(newArticle.slug)},
+    title: ${JSON.stringify(newArticle.title)},
+    excerpt: ${JSON.stringify(newArticle.excerpt)},
+    metaDescription: ${JSON.stringify(newArticle.metaDescription)},
+    category: ${JSON.stringify(newArticle.category)},
+    date: ${JSON.stringify(newArticle.date)},
     readTime: ${newArticle.readTime},
     keywords: ${JSON.stringify(newArticle.keywords)},
-    content: \`${newArticle.content.replace(/`/g, "'").replace(/\\/g, '\\\\')}\`
+    content: \`${safeContent}\`
   }`;
 
   if (!currentFile.match(/\];\s*$/)) {
-    throw new Error('Could not find end of articles array in articles.ts');
+    throw new Error('Could not find end of articles array');
   }
 
-  const marker = '];\n';
+  // Find last `];` and insert before it
+  const marker = '];';
   const lastIndex = currentFile.lastIndexOf(marker);
   if (lastIndex === -1) throw new Error('Cannot find end of articles array');
-  const updatedFile = currentFile.slice(0, lastIndex) + `,\n${articleEntry}\n` + marker;
+
+  const beforeMarker = currentFile.slice(0, lastIndex).trimEnd();
+  const needsComma = beforeMarker.endsWith('}');
+
+  let updatedFile = beforeMarker
+    + (needsComma ? ',' : '')
+    + '\n' + articleEntry + '\n'
+    + marker + '\n';
+
+  // Final sanity sanitization on whole file
+  updatedFile = sanitizeText(updatedFile);
 
   fs.writeFileSync('src/app/insights/articles.ts', updatedFile);
   console.log('articles.ts updated successfully!');
+  console.log(`Added: "${newArticle.title}"`);
 }
 
-main().catch(console.error);
+main().catch(err => {
+  console.error('FAILED:', err.message);
+  process.exit(1);
+});
