@@ -7,16 +7,6 @@ const nextConfig: NextConfig = {
     },
     optimizePackageImports: ['react', 'react-dom'],
   },
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.withinsuccess.gr' }],
-        destination: 'https://withinsuccess.gr/:path*',
-        permanent: true,
-      },
-    ]
-  },
 };
 
 export default nextConfig;
