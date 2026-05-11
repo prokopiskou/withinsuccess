@@ -13,6 +13,12 @@ const KEYWORDS = [
   "καθοδήγηση ζωής"
 ];
 
+const CATEGORIES = [
+  "ΠΡΟΣΩΠΙΚΗ ΑΝΑΠΤΥΞΗ",
+  "ΨΥΧΟΛΟΓΙΑ",
+  "COACHING"
+];
+
 // ============================================================
 // SANITIZATION - Strip invisible/problematic Unicode characters
 // ============================================================
@@ -181,7 +187,7 @@ HTML RULES:
 <TITLE>Τίτλος άρθρου</TITLE>
 <EXCERPT>1-2 προτάσεις excerpt.</EXCERPT>
 <META>120-160 chars meta description με το keyword</META>
-<CATEGORY>ΕΛΛΗΝΙΚΟΙ ΚΕΦΑΛΑΙΟΙ ΧΑΡΑΚΤΗΡΕΣ ΧΩΡΙΣ ΤΟΝΟΥΣ - πχ "ΠΡΟΣΩΠΙΚΗ ΑΝΑΠΤΥΞΗ" ή "ΨΥΧΟΛΟΓΙΑ" ή "ΑΥΤΟΒΕΛΤΙΩΣΗ" - ΟΧΙ transliteration σε Latin (όχι "PROSOPIKI ANAPTYXI")</CATEGORY>
+<CATEGORY>Διάλεξε ΑΚΡΙΒΩΣ ΜΙΑ από αυτές τις 3 κατηγορίες - όχι κάτι άλλο: ΠΡΟΣΩΠΙΚΗ ΑΝΑΠΤΥΞΗ, ΨΥΧΟΛΟΓΙΑ, COACHING. Επέστρεψε ΜΟΝΟ τη μία λέξη/φράση χωρίς εισαγωγικά.</CATEGORY>
 <KEYWORDS>keyword1,keyword2,keyword3</KEYWORDS>
 <CONTENT>
 HTML content εδώ...
