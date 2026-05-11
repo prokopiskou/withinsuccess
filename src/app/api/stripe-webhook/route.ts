@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const META_PIXEL_ID = '1653590555890252'
 
 // ============================================================
-// PRODUCT CONFIGURATION
+// PRODUCT CONFIGURATION — Routing based on amount/metadata
 // ============================================================
 type ProductConfig = {
   name: string
@@ -22,7 +22,6 @@ type ProductConfig = {
 function getProductConfig(amount: number, metadata?: Record<string, string>): ProductConfig {
   const productName = metadata?.product_name?.toLowerCase() || ''
   
-  // Match by metadata first (most reliable), then by amount
   if (productName.includes('63') || amount === 89) {
     return {
       name: '63 Μέρες Ζωής',
@@ -40,7 +39,6 @@ function getProductConfig(amount: number, metadata?: Record<string, string>): Pr
     }
   }
   
-  // Fallback: log warning, default to 63days group (safest for ad tracking)
   console.warn(`Unknown product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63days group')
   return {
     name: 'WithinSuccess Program',
@@ -49,10 +47,94 @@ function getProductConfig(amount: number, metadata?: Record<string, string>): Pr
   }
 }
 
-/**
- * Στέλνει Purchase event στο Meta Conversions API.
- * Δουλεύει server-side, άρα δεν χάνει data από ad blockers.
- */
+// ============================================================
+// NAME FIXER — Greek vocative case (κλητική) via Claude Haiku
+// "ΠΡΟΚΟΠΗΣ ΚΟΥΚΗΣ" → "Προκόπη" (για να φωνάζεις τον πελάτη σε email)
+// ============================================================
+async function fixName(rawName: string): Promise<string> {
+  if (!rawName || !rawName.trim()) return ''
+  
+  // Fallback if no API key
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return rawName.split(/\s+/)[0]
+  }
+  
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 50,
+        messages: [{
+          role: 'user',
+          content: `Δίνεται όνομα πελάτη από φόρμα αγοράς: "${rawName}"
+
+Επέστρεψε ΜΟΝΟ το μικρό όνομα στην ΚΛΗΤΙΚΗ ΠΤΩΣΗ (όπως θα φωνάξεις το άτομο σε email), με σωστή κεφαλαία στο πρώτο γράμμα, ΧΩΡΙΣ εισαγωγικά, ΧΩΡΙΣ εξήγηση, ΜΟΝΟ μια λέξη.
+
+Παραδείγματα:
+"ΠΡΟΚΟΠΗΣ ΚΟΥΚΗΣ" → Προκόπη
+"prokopis koukis" → Προκόπη
+"Νίκος Παπαδόπουλος" → Νίκο
+"Πέτρος" → Πέτρο
+"Παύλος" → Παύλο
+"Γιώργος" → Γιώργο
+"Στέλιος" → Στέλιο
+"Χρήστος" → Χρήστο
+"Δημήτρης Σταυρόπουλος" → Δημήτρη
+"Μιχάλης" → Μιχάλη
+"Γιάννης" → Γιάννη
+"Παναγιώτης" → Παναγιώτη
+"Αντώνης" → Αντώνη
+"Θανάσης" → Θανάση
+"Νικόλας" → Νικόλα
+"Κώστας" → Κώστα
+"Μαρία Παπαδοπούλου" → Μαρία
+"Ελένη" → Ελένη
+"Αλεξάνδρα" → Αλεξάνδρα
+"Σοφία" → Σοφία
+"John Smith" → John
+"Maria Costa" → Maria
+"Anna" → Anna
+
+Κανόνες κλητικής (φιλική/καθημερινή χρήση):
+- Αρσενικά σε -ης → -η (Προκόπης→Προκόπη, Δημήτρης→Δημήτρη)
+- Αρσενικά σε -ος → -ο (Νίκος→Νίκο, Πέτρος→Πέτρο, Παύλος→Παύλο, Στέλιος→Στέλιο)
+- Αρσενικά σε -ας → -α (Νικόλας→Νικόλα, Κώστας→Κώστα)
+- Θηλυκά → αμετάβλητα
+- Ξενόγλωσσα → αμετάβλητα`
+        }]
+      })
+    })
+    
+    if (!response.ok) {
+      console.error(`Claude name fix error (${response.status})`)
+      return rawName.split(/\s+/)[0]
+    }
+    
+    const data = await response.json()
+    const fixed = data.content?.[0]?.text?.trim() || ''
+    
+    // Safety: if fixed is empty or too long, fallback to raw first word
+    if (!fixed || fixed.length > 30 || fixed.split(/\s+/).length > 2) {
+      console.warn(`fixName returned suspicious result: "${fixed}" - using fallback`)
+      return rawName.split(/\s+/)[0]
+    }
+    
+    return fixed
+  } catch (err) {
+    console.error('fixName failed:', err)
+    return rawName.split(/\s+/)[0]
+  }
+}
+
+// ============================================================
+// META CONVERSIONS API
+// ============================================================
 async function sendMetaPurchaseEvent(params: {
   email: string | null | undefined
   phone?: string | null
@@ -122,6 +204,9 @@ async function sendMetaPurchaseEvent(params: {
   }
 }
 
+// ============================================================
+// OXYGEN INVOICING
+// ============================================================
 async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string) {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
   if (!OXYGEN_API_KEY) return
@@ -179,6 +264,9 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
   }
 }
 
+// ============================================================
+// MAILERLITE
+// ============================================================
 async function addToMailerLite(email: string, firstName: string, lastName: string, groupId: string) {
   try {
     const mlRes = await fetch('https://connect.mailerlite.com/api/subscribers', {
@@ -201,13 +289,16 @@ async function addToMailerLite(email: string, firstName: string, lastName: strin
     if (!mlRes.ok) {
       console.error(`MailerLite error (${mlRes.status}):`, await mlRes.text())
     } else {
-      console.log(`MailerLite: ${email} added to group ${groupId}`)
+      console.log(`MailerLite: ${email} (${firstName}) added to group ${groupId}`)
     }
   } catch (err) {
     console.error('MailerLite fetch failed:', err)
   }
 }
 
+// ============================================================
+// MAIN WEBHOOK HANDLER
+// ============================================================
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const sig = req.headers.get('stripe-signature')!
@@ -229,6 +320,7 @@ export async function POST(req: NextRequest) {
     const email = session.customer_email || session.customer_details?.email || null
     const phone = session.customer_details?.phone || null
     const amount = (session.amount_total || 0) / 100
+    const rawFullName = session.customer_details?.name || ''
 
     // Determine which product was purchased
     const product = getProductConfig(amount, session.metadata as Record<string, string>)
@@ -261,21 +353,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Add to MailerLite (correct group based on product)
+    // 3. Fix name to vocative case + add to MailerLite (correct group)
     if (email) {
-      const fullName = session.customer_details?.name || ''
-      const nameParts = fullName.trim().split(/\s+/)
-      const firstName = nameParts[0] || ''
+      const fixedFirstName = await fixName(rawFullName)
+      const nameParts = rawFullName.trim().split(/\s+/)
       const lastName = nameParts.slice(1).join(' ') || ''
       
-      await addToMailerLite(email, firstName, lastName, product.mailerLiteGroup)
+      await addToMailerLite(email, fixedFirstName, lastName, product.mailerLiteGroup)
     }
 
-    // 4. Create Oxygen invoice
-    const cleanName = (session.customer_details?.name || '').trim()
+    // 4. Create Oxygen invoice (use raw full name for legal/tax purposes)
     const customerEmail = session.customer_email || session.customer_details?.email || ''
     await createOxygenInvoice(
-      cleanName,
+      rawFullName.trim(),
       customerEmail,
       session.amount_total || 0,
       session.metadata?.product_name || product.name
