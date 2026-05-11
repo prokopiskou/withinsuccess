@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     staleTimes: {
       dynamic: 0,
     },
+    optimizePackageImports: ['react', 'react-dom'],
   },
 };
 
