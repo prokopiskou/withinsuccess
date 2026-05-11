@@ -168,10 +168,10 @@ async function main() {
     throw new Error('Could not find end of articles array in articles.ts');
   }
 
-  const updatedFile = currentFile.replace(
-    /\];\s*$/,
-    `,\n${articleEntry}\n];`
-  );
+  const marker = '];\n';
+  const lastIndex = currentFile.lastIndexOf(marker);
+  if (lastIndex === -1) throw new Error('Cannot find end of articles array');
+  const updatedFile = currentFile.slice(0, lastIndex) + `,\n${articleEntry}\n` + marker;
 
   fs.writeFileSync('src/app/insights/articles.ts', updatedFile);
   console.log('articles.ts updated successfully!');
