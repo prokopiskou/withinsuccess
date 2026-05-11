@@ -8,7 +8,7 @@ export type Article = {
   keywords: string[];
   metaDescription?: string;
   content: string;
-};
+} & Record<string, unknown>;
 
 export const articles: Article[] = [
   {
