@@ -3,6 +3,25 @@ import { articles } from "./articles";
 import SiteNav from "@/components/SiteNav";
 import MetaPixel from "@/components/MetaPixel";
 
+const greekMonths: Record<string, number> = {
+  'Ιανουαρίου': 0, 'Φεβρουαρίου': 1, 'Μαρτίου': 2, 'Απριλίου': 3,
+  'Μαΐου': 4, 'Ιουνίου': 5, 'Ιουλίου': 6, 'Αυγούστου': 7,
+  'Σεπτεμβρίου': 8, 'Οκτωβρίου': 9, 'Νοεμβρίου': 10, 'Δεκεμβρίου': 11,
+  'Μάιος': 4, 'Μάιου': 4,
+};
+
+function parseGreekDate(dateStr: string): number {
+  const parts = dateStr.trim().split(/\s+/);
+  const day = parseInt(parts[0]) || 0;
+  const month = greekMonths[parts[1]] ?? 0;
+  const year = parseInt(parts[2]) || 0;
+  return new Date(year, month, day).getTime();
+}
+
+const sortedArticles = [...articles].sort(
+  (a, b) => parseGreekDate(b.date) - parseGreekDate(a.date)
+);
+
 export const metadata: Metadata = {
   title: "Insights — Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
   description: "Άρθρα για αλλαγή νοοτροπίας, διαχείριση άγχους, αυτογνωσία και προσωπική ανάπτυξη από τον Προκόπη Κούκη.",
@@ -36,13 +55,13 @@ export default function Insights() {
       {/* ARTICLES GRID */}
       <section className="pb-24 px-6">
         <div className="max-w-4xl mx-auto">
-          {articles.length === 0 ? (
+          {sortedArticles.length === 0 ? (
             <div className="text-center py-24 text-gray-400">
               <p className="text-lg">Σύντομα νέα άρθρα.</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
-              {articles.map((article) => (
+              {sortedArticles.map((article) => (
                 <a key={article.slug} href={`/insights/${article.slug}`} className="group flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">{article.category}</span>
