@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { trackBeginCheckout } from '@/lib/analytics'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
@@ -130,18 +131,15 @@ function PageContent() {
 
   const handleCheckout = async () => {
     setCheckoutLoading(true)
-    
+
     const pricing = getPricingInfo()
-    
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'InitiateCheckout', {
-        value: pricing.price,
-        currency: 'EUR',
-        content_name: '63 Μέρες Ζωής',
-        content_type: 'product'
-      })
-    }
-    
+
+    trackBeginCheckout({
+      id: '63days-program',
+      name: '63 Μέρες Ζωής',
+      price: pricing.price
+    })
+
     if (!sid) { 
       window.location.href = STRIPE_LINK
       return 

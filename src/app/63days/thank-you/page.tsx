@@ -1,43 +1,21 @@
 'use client'
 
 import { useEffect } from 'react'
+import { trackPurchase } from '@/lib/analytics'
 
 const GOLD = '#C9A96E'
 
 export default function ThankYouPage() {
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    // Read session_id from URL directly (avoids useSearchParams Suspense requirement)
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get('session_id')
 
-    const eventId = `purchase_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
-
-    if ((window as any).fbq) {
-      ;(window as any).fbq('track', 'Purchase', {
-        value: 89,
-        currency: 'EUR',
-        content_name: '63 Μέρες Ζωής',
-        content_type: 'product',
-        content_ids: ['63days-program'],
-        content_category: 'Personal Development'
-      }, { eventID: eventId })
-
-      console.log('[Meta Pixel] Purchase event fired:', eventId)
-    }
-
-    if ((window as any).gtag) {
-      ;(window as any).gtag('event', 'purchase', {
-        transaction_id: eventId,
-        value: 89,
-        currency: 'EUR',
-        items: [{
-          item_id: '63days-program',
-          item_name: '63 Μέρες Ζωής',
-          price: 89,
-          quantity: 1
-        }]
-      })
-
-      console.log('[GA4] Purchase event fired:', eventId)
-    }
+    trackPurchase({
+      id: '63days-program',
+      name: '63 Μέρες Ζωής',
+      price: 89
+    }, sessionId || undefined)
   }, [])
 
   return (
