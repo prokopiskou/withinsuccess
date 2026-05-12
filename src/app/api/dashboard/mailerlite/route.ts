@@ -3,17 +3,6 @@ import { mailerLiteFetch } from '@/lib/mailerLiteClient'
 
 export const dynamic = 'force-dynamic'
 
-type SubscriberCountResponse = {
-  data: {
-    total: number
-    active: number
-    unsubscribed: number
-    unconfirmed: number
-    bounced: number
-    junk: number
-  }
-}
-
 type SubscribersListResponse = {
   data: Array<{
     id: string
@@ -22,46 +11,78 @@ type SubscribersListResponse = {
     subscribed_at: string | null
     created_at: string
   }>
-  meta: {
-    total: number
+  meta?: {
+    total?: number
+    count?: number
+    last?: number
+    current_page?: number
+  }
+}
+
+async function countByStatus(status: string): Promise<number> {
+  try {
+    const res = await mailerLiteFetch<SubscribersListResponse>('/subscribers', {
+      query: {
+        'filter[status]': status,
+        limit: 1,
+      },
+    })
+    return res.meta?.total ?? 0
+  } catch {
+    return 0
   }
 }
 
 export async function GET() {
   try {
-    // Get overall subscriber stats
-    const stats = await mailerLiteFetch<SubscriberCountResponse>(
-      '/subscribers/count'
-    ).catch(() => null)
+    // Parallel fetch all status counts
+    const [active, unsubscribed, unconfirmed, bounced, junk] = await Promise.all([
+      countByStatus('active'),
+      countByStatus('unsubscribed'),
+      countByStatus('unconfirmed'),
+      countByStatus('bounced'),
+      countByStatus('junk'),
+    ])
 
-    // Get last 7 days new subscribers
+    const total = active + unsubscribed + unconfirmed + bounced + junk
+
+    // New subscribers last 7 days
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split('T')[0]
-
-    const recentSubs = await mailerLiteFetch<SubscribersListResponse>(
-      '/subscribers',
-      {
-        query: {
-          'filter[status]': 'active',
-          limit: 100,
-        },
-      }
-    ).catch(() => null)
-
-    // Count new subscribers in last 7 days
     let newSubsLast7Days = 0
-    if (recentSubs?.data) {
-      const cutoff = new Date(sevenDaysAgo).getTime()
-      newSubsLast7Days = recentSubs.data.filter((s) => {
-        const subscribedAt = s.subscribed_at || s.created_at
-        return subscribedAt && new Date(subscribedAt).getTime() >= cutoff
-      }).length
+
+    try {
+      const recentSubs = await mailerLiteFetch<SubscribersListResponse>(
+        '/subscribers',
+        {
+          query: {
+            'filter[status]': 'active',
+            limit: 100,
+            sort: '-subscribed_at',
+          },
+        }
+      )
+
+      if (recentSubs.data) {
+        const cutoff = sevenDaysAgo.getTime()
+        newSubsLast7Days = recentSubs.data.filter((s) => {
+          const subscribedAt = s.subscribed_at || s.created_at
+          return subscribedAt && new Date(subscribedAt).getTime() >= cutoff
+        }).length
+      }
+    } catch {
+      // Continue if recent subs fetch fails
     }
 
     return NextResponse.json({
       success: true,
-      stats: stats?.data || null,
+      stats: {
+        total,
+        active,
+        unsubscribed,
+        unconfirmed,
+        bounced,
+        junk,
+      },
       newSubscribersLast7Days: newSubsLast7Days,
       timestamp: new Date().toISOString(),
     })
