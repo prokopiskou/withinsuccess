@@ -8,7 +8,6 @@ export async function GET() {
     const client = getGA4Client()
     const propertyPath = getPropertyPath()
 
-    // Simple test query: total metrics in last 7 days
     const [response] = await client.runReport({
       property: propertyPath,
       dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
@@ -35,13 +34,33 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     })
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err)
-    const stack = err instanceof Error ? err.stack : undefined
+    // Capture every possible field of the error for debugging
+    const errorObj: Record<string, unknown> = {}
+
+    if (err && typeof err === 'object') {
+      // Get all enumerable + own properties
+      const allProps = [
+        ...Object.getOwnPropertyNames(err),
+        ...Object.keys(err),
+      ]
+      for (const key of new Set(allProps)) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          errorObj[key] = (err as any)[key]
+        } catch {
+          errorObj[key] = '<unable to read>'
+        }
+      }
+    }
+
     return NextResponse.json(
       {
         success: false,
-        error: message,
-        stack: process.env.NODE_ENV === 'development' ? stack : undefined,
+        error_type: err?.constructor?.name || typeof err,
+        error_string: String(err),
+        error_message: err instanceof Error ? err.message : 'not an Error instance',
+        error_object: errorObj,
+        propertyPath: process.env.GA4_PROPERTY_ID || 'MISSING',
       },
       { status: 500 }
     )
