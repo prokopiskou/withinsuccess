@@ -108,7 +108,7 @@ function DashboardContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-xl shadow-sm max-w-sm w-full text-center">
           <h1 className="text-xl font-semibold mb-2">Πρόσβαση</h1>
-          <p className="text-sm text-gray-500">Προσθέστε το password στο URL: <br/><code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">/dashboard?pw=XXXXX</code></p>
+          <p className="text-sm text-gray-500">Προσθέστε το password στο URL: <br/><code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">/insta-dashboard?pw=XXXXX</code></p>
         </div>
       </div>
     )
