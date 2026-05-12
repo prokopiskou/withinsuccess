@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
+import { getStripeClient } from '@/lib/stripeClient'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia'
-})
+const stripe = getStripeClient()
 
 const META_PIXEL_ID = '1653590555890252'
 
