@@ -56,20 +56,18 @@ export function trackPurchase(product: ProductInfo, transactionId?: string) {
 
   const eventId = transactionId || generateEventId('purchase')
 
-  // GA4
-  if (hasStatisticsConsent()) {
-    window.gtag?.('event', 'purchase', {
-      transaction_id: eventId,
-      value: product.price,
-      currency: 'EUR',
-      items: [{
-        item_id: product.id,
-        item_name: product.name,
-        price: product.price,
-        quantity: 1
-      }]
-    })
-  }
+  // GA4 — Consent Mode v2 handles the cookieless/denied state automatically
+  window.gtag?.('event', 'purchase', {
+    transaction_id: eventId,
+    value: product.price,
+    currency: 'EUR',
+    items: [{
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      quantity: 1
+    }]
+  })
 
   // Meta Pixel
   if (hasMarketingConsent()) {
@@ -94,18 +92,16 @@ export function trackBeginCheckout(product: ProductInfo) {
   const eventId = generateEventId('checkout')
 
   // GA4 — NOT a key event, just for funnel analysis
-  if (hasStatisticsConsent()) {
-    window.gtag?.('event', 'begin_checkout', {
-      value: product.price,
-      currency: 'EUR',
-      items: [{
-        item_id: product.id,
-        item_name: product.name,
-        price: product.price,
-        quantity: 1
-      }]
-    })
-  }
+  window.gtag?.('event', 'begin_checkout', {
+    value: product.price,
+    currency: 'EUR',
+    items: [{
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      quantity: 1
+    }]
+  })
 
   // Meta Pixel — InitiateCheckout (standard event for ads optimization)
   if (hasMarketingConsent()) {
@@ -137,12 +133,10 @@ export function trackLead(category: LeadCategory, source?: string) {
   const eventSource = source || category
 
   // GA4 — event with custom parameter for segmentation
-  if (hasStatisticsConsent()) {
-    window.gtag?.('event', 'generate_lead', {
-      lead_type: category,
-      source: eventSource
-    })
-  }
+  window.gtag?.('event', 'generate_lead', {
+    lead_type: category,
+    source: eventSource
+  })
 
   // Meta Pixel — Lead event with content_category for segmentation
   if (hasMarketingConsent()) {
@@ -167,9 +161,7 @@ export const trackNewsletterSignup = (location: string) => trackLead('newsletter
 export function trackEvent(eventName: string, params?: Record<string, any>) {
   if (typeof window === 'undefined') return
 
-  if (hasStatisticsConsent()) {
-    window.gtag?.('event', eventName, params || {})
-  }
+  window.gtag?.('event', eventName, params || {})
   console.log('[Analytics] Event:', eventName, params)
 }
 
