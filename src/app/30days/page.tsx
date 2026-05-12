@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import MetaPixel, { trackEvent } from "@/components/MetaPixel";
 import { trackBeginCheckout } from "@/lib/analytics";
+import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
@@ -10,6 +11,9 @@ export default function ThirtyDays() {
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);
+
+  useScrollDepth('30days');
+  const pricingRef = useViewPricing('30days');
 
   useEffect(() => { trackEvent("ViewContent", { content_name: "30days" }); }, []);
 
@@ -197,7 +201,7 @@ export default function ThirtyDays() {
       </section>
 
       {/* CTA ΤΕΛΙΚΟ */}
-      <section className="py-16 px-6 bg-black text-center">
+      <section ref={pricingRef} className="py-16 px-6 bg-black text-center">
         <div className="max-w-xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white" style={{fontFamily: 'Georgia, serif'}}>
             Έτοιμος να ξεκινήσεις;

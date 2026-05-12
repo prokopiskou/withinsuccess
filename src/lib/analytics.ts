@@ -138,3 +138,16 @@ export const trackAssessmentCompleted = () => trackEvent('assessment_completed')
 export const trackViberClick = () => trackEvent('viber_link_click')
 export const trackArticleToAssessment = (articleSlug: string) => 
   trackEvent('article_to_assessment', { article_slug: articleSlug })
+
+// ============================================================
+// VIEW PRICING — Fires when user sees pricing section
+// (high-intent signal in funnel)
+// ============================================================
+export const trackViewPricing = (page: string) =>
+  trackEvent('view_pricing', { page })
+
+// ============================================================
+// SCROLL DEPTH — Fires at 25%, 50%, 75%, 100% milestones
+// ============================================================
+export const trackScrollDepth = (depth: 25 | 50 | 75 | 100, page: string) =>
+  trackEvent('scroll_depth', { depth, page })

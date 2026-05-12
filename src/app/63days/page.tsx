@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { trackBeginCheckout } from '@/lib/analytics'
+import { useViewPricing, useScrollDepth } from '@/lib/hooks/useAnalyticsHooks'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
@@ -113,6 +114,9 @@ function PageContent() {
   const sid = searchParams.get('sid')
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+
+  useScrollDepth('63days')
+  const pricingRef = useViewPricing('63days')
 
   useEffect(() => {
     async function load() {
@@ -558,7 +562,7 @@ function PageContent() {
       </section>
 
       {/* Η ΑΠΟΦΑΣΗ */}
-      <section id="apofasi" className="py-20 px-6 bg-gray-50 scroll-mt-8">
+      <section id="apofasi" ref={pricingRef} className="py-20 px-6 bg-gray-50 scroll-mt-8">
         <div className="max-w-xl mx-auto text-center">
           <SectionLabel>Η απόφαση</SectionLabel>
           <h2 className="text-4xl md:text-5xl font-semibold mb-10" style={{ fontFamily: 'Georgia, serif' }}>Η στιγμή είναι τώρα.</h2>
