@@ -10,6 +10,33 @@ declare global {
   }
 }
 
+// Check if marketing consent is granted for Meta Pixel
+function hasMarketingConsent(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const raw = localStorage.getItem('ws_consent')
+    if (!raw) return false
+    const consent = JSON.parse(raw)
+    return consent.marketing === true
+  } catch {
+    return false
+  }
+}
+
+// Check if statistics consent is granted for GA4
+// Note: GA4 uses Consent Mode v2, but we still respect the user choice strictly
+function hasStatisticsConsent(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    const raw = localStorage.getItem('ws_consent')
+    if (!raw) return false
+    const consent = JSON.parse(raw)
+    return consent.statistics === true
+  } catch {
+    return false
+  }
+}
+
 type ProductInfo = {
   id: string
   name: string
@@ -30,26 +57,30 @@ export function trackPurchase(product: ProductInfo, transactionId?: string) {
   const eventId = transactionId || generateEventId('purchase')
 
   // GA4
-  window.gtag?.('event', 'purchase', {
-    transaction_id: eventId,
-    value: product.price,
-    currency: 'EUR',
-    items: [{
-      item_id: product.id,
-      item_name: product.name,
-      price: product.price,
-      quantity: 1
-    }]
-  })
+  if (hasStatisticsConsent()) {
+    window.gtag?.('event', 'purchase', {
+      transaction_id: eventId,
+      value: product.price,
+      currency: 'EUR',
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        quantity: 1
+      }]
+    })
+  }
 
   // Meta Pixel
-  window.fbq?.('track', 'Purchase', {
-    value: product.price,
-    currency: 'EUR',
-    content_name: product.name,
-    content_type: 'product',
-    content_ids: [product.id]
-  }, { eventID: eventId })
+  if (hasMarketingConsent()) {
+    window.fbq?.('track', 'Purchase', {
+      value: product.price,
+      currency: 'EUR',
+      content_name: product.name,
+      content_type: 'product',
+      content_ids: [product.id]
+    }, { eventID: eventId })
+  }
 
   console.log('[Analytics] Purchase tracked:', eventId, product)
 }
@@ -63,24 +94,28 @@ export function trackBeginCheckout(product: ProductInfo) {
   const eventId = generateEventId('checkout')
 
   // GA4 — NOT a key event, just for funnel analysis
-  window.gtag?.('event', 'begin_checkout', {
-    value: product.price,
-    currency: 'EUR',
-    items: [{
-      item_id: product.id,
-      item_name: product.name,
-      price: product.price,
-      quantity: 1
-    }]
-  })
+  if (hasStatisticsConsent()) {
+    window.gtag?.('event', 'begin_checkout', {
+      value: product.price,
+      currency: 'EUR',
+      items: [{
+        item_id: product.id,
+        item_name: product.name,
+        price: product.price,
+        quantity: 1
+      }]
+    })
+  }
 
   // Meta Pixel — InitiateCheckout (standard event for ads optimization)
-  window.fbq?.('track', 'InitiateCheckout', {
-    value: product.price,
-    currency: 'EUR',
-    content_name: product.name,
-    content_ids: [product.id]
-  }, { eventID: eventId })
+  if (hasMarketingConsent()) {
+    window.fbq?.('track', 'InitiateCheckout', {
+      value: product.price,
+      currency: 'EUR',
+      content_name: product.name,
+      content_ids: [product.id]
+    }, { eventID: eventId })
+  }
 
   console.log('[Analytics] Begin checkout tracked:', product.name)
 }
@@ -102,16 +137,20 @@ export function trackLead(category: LeadCategory, source?: string) {
   const eventSource = source || category
 
   // GA4 — event with custom parameter for segmentation
-  window.gtag?.('event', 'generate_lead', {
-    lead_type: category,
-    source: eventSource
-  })
+  if (hasStatisticsConsent()) {
+    window.gtag?.('event', 'generate_lead', {
+      lead_type: category,
+      source: eventSource
+    })
+  }
 
   // Meta Pixel — Lead event with content_category for segmentation
-  window.fbq?.('track', 'Lead', {
-    content_category: category,
-    content_name: eventSource
-  }, { eventID: eventId })
+  if (hasMarketingConsent()) {
+    window.fbq?.('track', 'Lead', {
+      content_category: category,
+      content_name: eventSource
+    }, { eventID: eventId })
+  }
 
   console.log(`[Analytics] Lead tracked: ${category} from ${eventSource}`)
 }
@@ -128,7 +167,9 @@ export const trackNewsletterSignup = (location: string) => trackLead('newsletter
 export function trackEvent(eventName: string, params?: Record<string, any>) {
   if (typeof window === 'undefined') return
 
-  window.gtag?.('event', eventName, params || {})
+  if (hasStatisticsConsent()) {
+    window.gtag?.('event', eventName, params || {})
+  }
   console.log('[Analytics] Event:', eventName, params)
 }
 
