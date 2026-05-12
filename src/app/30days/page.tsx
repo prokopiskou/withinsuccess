@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import MetaPixel, { trackEvent } from "@/components/MetaPixel";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
@@ -44,7 +45,7 @@ export default function ThirtyDays() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <a href={stripeLink} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all">
+          <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all">
             Αγόρασε τώρα — 15€
           </a>
         </div>
@@ -62,7 +63,7 @@ export default function ThirtyDays() {
         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">
           Μικρές πράξεις που αλλάζουν τον τρόπο που βλέπεις τον εαυτό σου.
         </p>
-        <a href={stripeLink} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors">
+        <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors">
           Ξεκίνα τώρα — 15€ →
         </a>
         <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση. Ξεκινάς αύριο.</p>
@@ -202,7 +203,7 @@ export default function ThirtyDays() {
             Έτοιμος να ξεκινήσεις;
           </h2>
           <p className="text-gray-400 mb-8">30 emails. 30 ασκήσεις. Μία νέα εσωτερική ιστορία.</p>
-          <a href={stripeLink} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors">
+          <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors">
             Ξεκίνα τώρα — 15€ →
           </a>
           <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>

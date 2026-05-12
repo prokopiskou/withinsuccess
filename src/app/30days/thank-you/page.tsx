@@ -1,11 +1,21 @@
-import { Metadata } from 'next'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Ευχαριστούμε | 30-Day Program | WithinSuccess',
-  robots: { index: false, follow: false },
-}
+import { useEffect } from 'react'
+import { trackPurchase } from '@/lib/analytics'
 
 export default function ThankYouPage() {
+  useEffect(() => {
+    // Read session_id from URL directly (avoids useSearchParams Suspense requirement)
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get('session_id')
+
+    trackPurchase({
+      id: '30days-program',
+      name: '30 Μέρες',
+      price: 15
+    }, sessionId || undefined)
+  }, [])
+
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-24">
       <div className="max-w-lg text-center">
