@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import ConditionalHeader from "@/components/ConditionalHeader";
+import CookieBanner from "@/components/CookieBanner";
+import CookieTrigger from "@/components/CookieTrigger";
+import ConsentInitializer from "@/components/ConsentInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -148,6 +151,26 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <Script id="google-consent-mode-default" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+
+            // Default: deny all (Google Consent Mode v2)
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied',
+              'functionality_storage': 'granted',
+              'personalization_storage': 'denied',
+              'security_storage': 'granted',
+              'wait_for_update': 500,
+            });
+
+            gtag('set', 'ads_data_redaction', true);
+          `}
+        </Script>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-QH4S5H2Z4K"
           strategy="lazyOnload"
@@ -175,7 +198,8 @@ export default function RootLayout({
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '${META_PIXEL_ID}');
-              fbq('track', 'PageView');
+              fbq('consent', 'revoke');
+              // PageView will fire after consent is granted
             `,
           }}
         />
@@ -190,8 +214,11 @@ export default function RootLayout({
         </noscript>
       </head>
       <body className="min-h-full flex flex-col">
+        <ConsentInitializer />
         <ConditionalHeader />
         {children}
+        <CookieBanner />
+        <CookieTrigger />
       </body>
     </html>
   );
