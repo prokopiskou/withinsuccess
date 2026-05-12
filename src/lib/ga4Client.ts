@@ -1,13 +1,13 @@
-import { google } from 'googleapis'
-import { BetaAnalyticsDataClient } from '@google-analytics/data'
+import { google, analyticsdata_v1beta } from 'googleapis'
 
-let cachedClient: BetaAnalyticsDataClient | null = null
+let cachedClient: analyticsdata_v1beta.Analyticsdata | null = null
 
 /**
- * Get a configured GA4 Data API client using OAuth refresh token.
- * Cached singleton for performance.
+ * Get a configured GA4 Data API client using googleapis library with OAuth2.
+ * Uses googleapis instead of @google-analytics/data because OAuth2 integration
+ * is more reliable with this approach.
  */
-export function getGA4Client(): BetaAnalyticsDataClient {
+export function getGA4Client(): analyticsdata_v1beta.Analyticsdata {
   if (cachedClient) return cachedClient
 
   const clientId = process.env.GOOGLE_CLIENT_ID
@@ -23,22 +23,29 @@ export function getGA4Client(): BetaAnalyticsDataClient {
   const oauth2Client = new google.auth.OAuth2(clientId, clientSecret)
   oauth2Client.setCredentials({ refresh_token: refreshToken })
 
-  cachedClient = new BetaAnalyticsDataClient({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    authClient: oauth2Client as any,
+  cachedClient = google.analyticsdata({
+    version: 'v1beta',
+    auth: oauth2Client,
   })
 
   return cachedClient
 }
 
 /**
- * Get the GA4 property path required by the Data API.
- * Format: properties/{property_id}
+ * Get the GA4 property ID (numeric).
  */
-export function getPropertyPath(): string {
+export function getPropertyId(): string {
   const propertyId = process.env.GA4_PROPERTY_ID
   if (!propertyId) {
     throw new Error('Missing GA4_PROPERTY_ID env var')
   }
-  return `properties/${propertyId}`
+  return propertyId
+}
+
+/**
+ * Get the GA4 property path for Data API requests.
+ * Format: properties/{property_id}
+ */
+export function getPropertyPath(): string {
+  return `properties/${getPropertyId()}`
 }

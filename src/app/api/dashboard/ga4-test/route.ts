@@ -8,18 +8,20 @@ export async function GET() {
     const client = getGA4Client()
     const propertyPath = getPropertyPath()
 
-    const [response] = await client.runReport({
+    const response = await client.properties.runReport({
       property: propertyPath,
-      dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-      metrics: [
-        { name: 'activeUsers' },
-        { name: 'sessions' },
-        { name: 'screenPageViews' },
-        { name: 'engagementRate' },
-      ],
+      requestBody: {
+        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'sessions' },
+          { name: 'screenPageViews' },
+          { name: 'engagementRate' },
+        ],
+      },
     })
 
-    const metrics = response.rows?.[0]?.metricValues || []
+    const metrics = response.data.rows?.[0]?.metricValues || []
 
     return NextResponse.json({
       success: true,
@@ -30,37 +32,20 @@ export async function GET() {
         engagementRate: metrics[3]?.value || '0',
       },
       propertyPath,
-      rowCount: response.rowCount || 0,
+      rowCount: response.data.rowCount || 0,
       timestamp: new Date().toISOString(),
     })
   } catch (err) {
-    // Capture every possible field of the error for debugging
-    const errorObj: Record<string, unknown> = {}
-
-    if (err && typeof err === 'object') {
-      // Get all enumerable + own properties
-      const allProps = [
-        ...Object.getOwnPropertyNames(err),
-        ...Object.keys(err),
-      ]
-      for (const key of new Set(allProps)) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          errorObj[key] = (err as any)[key]
-        } catch {
-          errorObj[key] = '<unable to read>'
-        }
-      }
-    }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const e = err as any
     return NextResponse.json(
       {
         success: false,
-        error_type: err?.constructor?.name || typeof err,
-        error_string: String(err),
-        error_message: err instanceof Error ? err.message : 'not an Error instance',
-        error_object: errorObj,
-        propertyPath: process.env.GA4_PROPERTY_ID || 'MISSING',
+        error_type: e?.constructor?.name || typeof err,
+        error_message: e?.message || String(err),
+        error_code: e?.code,
+        error_response: e?.response?.data,
+        error_status: e?.response?.status,
       },
       { status: 500 }
     )
