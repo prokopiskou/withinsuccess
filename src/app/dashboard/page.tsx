@@ -81,7 +81,9 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/stripe?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
-          fetch('/api/dashboard/ga4-test').then((r) => r.json()),
+          fetch(
+            `/api/dashboard/ga4?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
           fetch('/api/dashboard/mailerlite').then((r) => r.json()),
         ])
 
@@ -138,9 +140,13 @@ export default function DashboardPage() {
         ) : (
           <>
             <section>
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                Stripe
-              </h2>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  SUMMARY
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
               {stripeData?.success ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-xl border border-gray-100 p-4">
@@ -174,9 +180,18 @@ export default function DashboardPage() {
                     'Δεν ήταν δυνατή η φόρτωση Stripe.'}
                 </p>
               )}
+            </section>
 
+            <section>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  PRODUCTS
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
               {stripeData?.success ? (
-                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-3">
                   {(['63days', '30days', 'other'] as const).map((key) => (
                     <div
                       key={key}
@@ -195,9 +210,18 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : null}
+            </section>
 
+            <section>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  RECENT PURCHASES
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
               {stripeData?.success && stripeData.recent?.length ? (
-                <div className="mt-6 overflow-x-auto rounded-xl border border-gray-100">
+                <div className="overflow-x-auto rounded-xl border border-gray-100">
                   <table className="w-full min-w-[480px] text-left text-sm">
                     <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-gray-500">
                       <tr>
@@ -224,13 +248,19 @@ export default function DashboardPage() {
                     </tbody>
                   </table>
                 </div>
+              ) : stripeData?.success ? (
+                <p className="text-sm text-gray-400">Δεν υπάρχουν πρόσφατες πληρωμές.</p>
               ) : null}
             </section>
 
             <section>
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                GA4 (τελευταίες 7 ημέρες)
-              </h2>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  TRAFFIC
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
               {ga4Data?.success ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-xl border border-gray-100 p-4">
