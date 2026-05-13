@@ -115,21 +115,32 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-1">
-            {PRESETS.map((p) => (
-              <button
-                key={p.preset}
-                type="button"
-                onClick={() => setPreset(p.preset)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                  preset === p.preset
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex gap-1 flex-wrap">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.preset}
+                  onClick={() => setPreset(p.preset)}
+                  className={`px-4 py-2 text-sm rounded-full transition-colors ${
+                    preset === p.preset
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={async () => {
+                await fetch('/api/dashboard/auth/logout', { method: 'POST' })
+                window.location.href = '/dashboard/login'
+              }}
+              className="text-xs text-gray-400 hover:text-black transition-colors ml-2"
+              title="Logout"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </header>
