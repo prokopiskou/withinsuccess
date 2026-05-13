@@ -8,6 +8,7 @@ import {
 } from '@/lib/dashboard/dateRanges'
 import RevenueChart from './components/RevenueChart'
 import KPICard from './components/KPICard'
+import TrafficSources from './components/TrafficSources'
 
 type StripeData = {
   success: boolean
@@ -50,6 +51,22 @@ type MailerLiteData = {
   newSubscribersInRange: number
 }
 
+type TrafficData = {
+  success: boolean
+  totalSessions: number
+  sources: Array<{
+    sourceMedium: string
+    source: string
+    medium: string
+    sessions: number
+    users: number
+    transactions: number
+    revenue: number
+    sessionsPercent: number
+    conversionRate: number
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -64,6 +81,7 @@ export default function DashboardPage() {
   const [stripeData, setStripeData] = useState<StripeData | null>(null)
   const [ga4Data, setGa4Data] = useState<GA4Data | null>(null)
   const [mlData, setMlData] = useState<MailerLiteData | null>(null)
+  const [trafficData, setTrafficData] = useState<TrafficData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -76,7 +94,7 @@ export default function DashboardPage() {
         const startISO = range.start.toISOString()
         const endISO = range.end.toISOString()
 
-        const [stripe, ga4, ml] = await Promise.all([
+        const [stripe, ga4, ml, traffic] = await Promise.all([
           fetch(
             `/api/dashboard/stripe?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
@@ -86,11 +104,15 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/mailerlite?start=${startISO}&end=${endISO}`
           ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/ga4-traffic?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
         ])
 
         setStripeData(stripe)
         setGa4Data(ga4)
         setMlData(ml)
+        setTrafficData(traffic)
       } catch (err) {
         console.error('Dashboard fetch error:', err)
       } finally {
@@ -320,6 +342,24 @@ export default function DashboardPage() {
                   {(ga4Data as { error_message?: string })?.error_message ||
                     'Δεν ήταν δυνατή η φόρτωση GA4.'}
                 </p>
+              )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  TRAFFIC SOURCES
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {trafficData?.sources ? (
+                <TrafficSources
+                  sources={trafficData.sources}
+                  totalSessions={trafficData.totalSessions}
+                />
+              ) : (
+                <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
               )}
             </section>
 
