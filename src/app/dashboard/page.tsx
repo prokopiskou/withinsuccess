@@ -7,6 +7,7 @@ import {
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
 import RevenueChart from './components/RevenueChart'
+import KPICard from './components/KPICard'
 
 type StripeData = {
   success: boolean
@@ -46,15 +47,7 @@ type GA4Data = {
 
 type MailerLiteData = {
   success: boolean
-  newSubscribersLast7Days: number
-  stats?: {
-    total: number
-    active: number
-    unsubscribed: number
-    unconfirmed: number
-    bounced: number
-    junk: number
-  }
+  newSubscribersInRange: number
 }
 
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
@@ -90,7 +83,9 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/ga4?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
-          fetch('/api/dashboard/mailerlite').then((r) => r.json()),
+          fetch(
+            `/api/dashboard/mailerlite?start=${startISO}&end=${endISO}`
+          ).then((r) => r.json()),
         ])
 
         setStripeData(stripe)
@@ -329,39 +324,19 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                MailerLite
-              </h2>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  MailerLite
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
               {mlData?.success ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Νέοι (7 ημέρες)</p>
-                    <p className="mt-1 text-2xl font-semibold">
-                      {mlData.newSubscribersLast7Days}
-                    </p>
-                  </div>
-                  {mlData.stats ? (
-                    <>
-                      <div className="rounded-xl border border-gray-100 p-4">
-                        <p className="text-xs text-gray-500">Active</p>
-                        <p className="mt-1 text-2xl font-semibold">
-                          {mlData.stats.active}
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-gray-100 p-4">
-                        <p className="text-xs text-gray-500">Σύνολο</p>
-                        <p className="mt-1 text-2xl font-semibold">
-                          {mlData.stats.total}
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-gray-100 p-4">
-                        <p className="text-xs text-gray-500">Unsubscribed</p>
-                        <p className="mt-1 text-2xl font-semibold">
-                          {mlData.stats.unsubscribed}
-                        </p>
-                      </div>
-                    </>
-                  ) : null}
+                  <KPICard
+                    label="New Subscribers"
+                    value={`+${mlData.newSubscribersInRange}`}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-red-600">

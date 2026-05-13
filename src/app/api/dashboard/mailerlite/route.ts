@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { mailerLiteFetch } from '@/lib/mailerLiteClient'
 
 export const dynamic = 'force-dynamic'
@@ -13,77 +13,90 @@ type SubscribersListResponse = {
   }>
   meta?: {
     total?: number
-    count?: number
-    last?: number
-    current_page?: number
   }
 }
 
-async function countByStatus(status: string): Promise<number> {
+/**
+ * GET /api/dashboard/mailerlite?start=ISO&end=ISO
+ * 
+ * Returns MailerLite metrics for the date range:
+ * - newSubscribersInRange: count of subscribers created within the date range
+ */
+export async function GET(req: NextRequest) {
   try {
-    const res = await mailerLiteFetch<SubscribersListResponse>('/subscribers', {
-      query: {
-        'filter[status]': status,
-        limit: 1,
-      },
-    })
-    return res.meta?.total ?? 0
-  } catch {
-    return 0
-  }
-}
+    const searchParams = req.nextUrl.searchParams
+    const startStr = searchParams.get('start')
+    const endStr = searchParams.get('end')
 
-export async function GET() {
-  try {
-    // Parallel fetch all status counts
-    const [active, unsubscribed, unconfirmed, bounced, junk] = await Promise.all([
-      countByStatus('active'),
-      countByStatus('unsubscribed'),
-      countByStatus('unconfirmed'),
-      countByStatus('bounced'),
-      countByStatus('junk'),
-    ])
+    // Default: last 7 days
+    const end = endStr ? new Date(endStr) : new Date()
+    const start = startStr
+      ? new Date(startStr)
+      : new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-    const total = active + unsubscribed + unconfirmed + bounced + junk
+    const startTime = start.getTime()
+    const endTime = end.getTime()
 
-    // New subscribers last 7 days
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    let newSubsLast7Days = 0
+    // Fetch active subscribers sorted by most recent first
+    // We paginate until we get past the start date
+    let newSubsInRange = 0
+    let pageCursor: string | undefined
+    let pageCount = 0
+    const MAX_PAGES = 20 // Safety cap (20 * 100 = 2000 subscribers checked)
 
     try {
-      const recentSubs = await mailerLiteFetch<SubscribersListResponse>(
-        '/subscribers',
-        {
-          query: {
-            'filter[status]': 'active',
-            limit: 100,
-            sort: '-subscribed_at',
-          },
+      while (pageCount < MAX_PAGES) {
+        const query: Record<string, string | number> = {
+          'filter[status]': 'active',
+          limit: 100,
+          sort: '-subscribed_at',
         }
-      )
+        if (pageCursor) {
+          query.cursor = pageCursor
+        }
 
-      if (recentSubs.data) {
-        const cutoff = sevenDaysAgo.getTime()
-        newSubsLast7Days = recentSubs.data.filter((s) => {
-          const subscribedAt = s.subscribed_at || s.created_at
-          return subscribedAt && new Date(subscribedAt).getTime() >= cutoff
-        }).length
+        const res = await mailerLiteFetch<SubscribersListResponse & { meta?: { next_cursor?: string } }>(
+          '/subscribers',
+          { query }
+        )
+
+        if (!res.data || res.data.length === 0) break
+
+        let pageHasOlderThanStart = false
+
+        for (const sub of res.data) {
+          const subAt = sub.subscribed_at || sub.created_at
+          if (!subAt) continue
+          const subTime = new Date(subAt).getTime()
+
+          if (subTime >= startTime && subTime <= endTime) {
+            newSubsInRange++
+          } else if (subTime < startTime) {
+            pageHasOlderThanStart = true
+          }
+        }
+
+        // Stop if we've seen subscribers older than start
+        if (pageHasOlderThanStart) break
+
+        // Get next cursor for pagination
+        pageCursor = res.meta?.next_cursor
+        if (!pageCursor) break
+
+        pageCount++
       }
-    } catch {
-      // Continue if recent subs fetch fails
+    } catch (err) {
+      // If pagination fails, return what we have
+      console.error('[MailerLite] Pagination error:', err)
     }
 
     return NextResponse.json({
       success: true,
-      stats: {
-        total,
-        active,
-        unsubscribed,
-        unconfirmed,
-        bounced,
-        junk,
+      newSubscribersInRange: newSubsInRange,
+      dateRange: {
+        start: start.toISOString(),
+        end: end.toISOString(),
       },
-      newSubscribersLast7Days: newSubsLast7Days,
       timestamp: new Date().toISOString(),
     })
   } catch (err) {
