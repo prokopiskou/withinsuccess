@@ -6,6 +6,7 @@ import {
   formatDateRange,
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
+import RevenueChart from './components/RevenueChart'
 
 type StripeData = {
   success: boolean
@@ -20,6 +21,11 @@ type StripeData = {
     '30days': { count: number; revenue: number }
     other: { count: number; revenue: number }
   }
+  daily: Array<{
+    date: string
+    revenue: number
+    count: number
+  }>
   recent: Array<{
     id: string
     amount: number
@@ -190,6 +196,21 @@ export default function DashboardPage() {
                   {(stripeData as { error?: string })?.error ||
                     'Δεν ήταν δυνατή η φόρτωση Stripe.'}
                 </p>
+              )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex items-baseline gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  REVENUE TREND
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {stripeData?.daily ? (
+                <RevenueChart data={stripeData.daily} />
+              ) : (
+                <div className="h-64 animate-pulse rounded-2xl bg-gray-50" />
               )}
             </section>
 

@@ -108,6 +108,47 @@ export async function GET(req: NextRequest) {
             : 'other',
       }))
 
+    // Daily aggregation: group charges by date
+    const dailyMap = new Map<string, { revenue: number; count: number }>()
+
+    charges.forEach((c) => {
+      const date = new Date(c.created * 1000)
+      // Use YYYY-MM-DD in Athens TZ for consistency
+      const dateKey = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Athens',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(date)
+
+      const existing = dailyMap.get(dateKey) || { revenue: 0, count: 0 }
+      dailyMap.set(dateKey, {
+        revenue: existing.revenue + c.amount / 100,
+        count: existing.count + 1,
+      })
+    })
+
+    // Fill in missing days with 0
+    const dailyData: Array<{ date: string; revenue: number; count: number }> = []
+    const dayMs = 24 * 60 * 60 * 1000
+    const currentDay = new Date(start.getTime())
+    while (currentDay <= end) {
+      const dateKey = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Athens',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(currentDay)
+
+      const dayData = dailyMap.get(dateKey) || { revenue: 0, count: 0 }
+      dailyData.push({
+        date: dateKey,
+        revenue: Math.round(dayData.revenue * 100) / 100,
+        count: dayData.count,
+      })
+      currentDay.setTime(currentDay.getTime() + dayMs)
+    }
+
     return NextResponse.json({
       success: true,
       dateRange: {
@@ -134,6 +175,7 @@ export async function GET(req: NextRequest) {
           revenue: other.reduce((s, c) => s + c.amount, 0) / 100,
         },
       },
+      daily: dailyData,
       recent,
     })
   } catch (err) {
