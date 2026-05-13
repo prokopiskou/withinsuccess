@@ -67,7 +67,16 @@ export default function LinksPage() {
               fontStyle: 'italic',
             }}
           >
-            Η ζωή αλλάζει όταν αλλάζει η εσωτερική ιστορία.
+            Η ζωή αλλάζει όταν αλλάζει
+            <br />
+            <span 
+              style={{ 
+                color: '#1A1A1A',
+                fontWeight: 500,
+              }}
+            >
+              η εσωτερική ιστορία.
+            </span>
           </p>
         </header>
 
@@ -85,7 +94,7 @@ export default function LinksPage() {
             href="/insights"
             title="Σκέψεις & άρθρα"
             subtitle="Νέο άρθρο κάθε εβδομάδα"
-            symbol="◇"
+            symbol="✎"
             destination="insights"
           />
           
@@ -101,7 +110,7 @@ export default function LinksPage() {
             href="/work"
             title="1-on-1 Coaching"
             subtitle="Προσωπική διαδικασία · με αίτηση"
-            symbol="◆"
+            symbol="⊙"
             destination="coaching"
           />
         </div>
