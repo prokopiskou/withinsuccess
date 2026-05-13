@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import {
   getDateRange,
+  getPreviousDateRange,
+  percentChange,
   formatDateRange,
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
@@ -82,6 +84,8 @@ export default function DashboardPage() {
   const [ga4Data, setGa4Data] = useState<GA4Data | null>(null)
   const [mlData, setMlData] = useState<MailerLiteData | null>(null)
   const [trafficData, setTrafficData] = useState<TrafficData | null>(null)
+  const [stripePrev, setStripePrev] = useState<StripeData | null>(null)
+  const [ga4Prev, setGa4Prev] = useState<GA4Data | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -94,7 +98,9 @@ export default function DashboardPage() {
         const startISO = range.start.toISOString()
         const endISO = range.end.toISOString()
 
-        const [stripe, ga4, ml, traffic] = await Promise.all([
+        const previousRange = getPreviousDateRange(preset, range)
+
+        const currentFetches = [
           fetch(
             `/api/dashboard/stripe?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
@@ -107,12 +113,38 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/ga4-traffic?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
-        ])
+        ]
+
+        const previousFetches = previousRange
+          ? [
+              fetch(
+                `/api/dashboard/stripe?start=${encodeURIComponent(
+                  previousRange.start.toISOString()
+                )}&end=${encodeURIComponent(previousRange.end.toISOString())}`
+              ).then((r) => r.json()),
+              fetch(
+                `/api/dashboard/ga4?start=${encodeURIComponent(
+                  previousRange.start.toISOString()
+                )}&end=${encodeURIComponent(previousRange.end.toISOString())}`
+              ).then((r) => r.json()),
+            ]
+          : []
+
+        const [stripe, ga4, ml, traffic, ...previousResults] =
+          await Promise.all([...currentFetches, ...previousFetches])
 
         setStripeData(stripe)
         setGa4Data(ga4)
         setMlData(ml)
         setTrafficData(traffic)
+
+        if (previousRange && previousResults.length === 2) {
+          setStripePrev(previousResults[0])
+          setGa4Prev(previousResults[1])
+        } else {
+          setStripePrev(null)
+          setGa4Prev(null)
+        }
       } catch (err) {
         console.error('Dashboard fetch error:', err)
       } finally {
@@ -183,30 +215,66 @@ export default function DashboardPage() {
               </div>
               {stripeData?.success ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Έσοδα</p>
-                    <p className="mt-1 text-2xl font-semibold">
-                      €{stripeData.summary.totalRevenue.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Πληρωμές</p>
-                    <p className="mt-1 text-2xl font-semibold">
-                      {stripeData.summary.purchaseCount}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">AOV</p>
-                    <p className="mt-1 text-2xl font-semibold">
-                      €{stripeData.summary.aov.toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Νόμισμα</p>
-                    <p className="mt-1 text-2xl font-semibold">
-                      {stripeData.summary.currency}
-                    </p>
-                  </div>
+                  <KPICard
+                    label="Έσοδα"
+                    value={`€${stripeData.summary.totalRevenue.toLocaleString(
+                      'el-GR',
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}`}
+                    change={
+                      stripeData && stripePrev
+                        ? percentChange(
+                            stripeData.summary.totalRevenue,
+                            stripePrev.summary.totalRevenue
+                          )
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="Πληρωμές"
+                    value={stripeData.summary.purchaseCount.toString()}
+                    change={
+                      stripeData && stripePrev
+                        ? percentChange(
+                            stripeData.summary.purchaseCount,
+                            stripePrev.summary.purchaseCount
+                          )
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="AOV"
+                    value={`€${stripeData.summary.aov.toFixed(2)}`}
+                    change={
+                      stripeData && stripePrev
+                        ? percentChange(
+                            stripeData.summary.aov,
+                            stripePrev.summary.aov
+                          )
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="Active users"
+                    value={
+                      ga4Data?.success
+                        ? Number(ga4Data.data.activeUsers).toLocaleString(
+                            'el-GR'
+                          )
+                        : '—'
+                    }
+                    change={
+                      ga4Data?.success && ga4Prev?.success
+                        ? percentChange(
+                            Number(ga4Data.data.activeUsers),
+                            Number(ga4Prev.data.activeUsers)
+                          )
+                        : undefined
+                    }
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-red-600">
@@ -311,31 +379,39 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {ga4Data?.success ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Active users</p>
-                    <p className="mt-1 text-xl font-semibold">
-                      {ga4Data.data.activeUsers}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Sessions</p>
-                    <p className="mt-1 text-xl font-semibold">
-                      {ga4Data.data.sessions}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Page views</p>
-                    <p className="mt-1 text-xl font-semibold">
-                      {ga4Data.data.pageViews}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 p-4">
-                    <p className="text-xs text-gray-500">Engagement rate</p>
-                    <p className="mt-1 text-xl font-semibold">
-                      {ga4Data.data.engagementRate}
-                    </p>
-                  </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <KPICard
+                    label="Sessions"
+                    value={Number(ga4Data.data.sessions).toLocaleString(
+                      'el-GR'
+                    )}
+                    change={
+                      ga4Data && ga4Prev?.success
+                        ? percentChange(
+                            Number(ga4Data.data.sessions),
+                            Number(ga4Prev.data.sessions)
+                          )
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="Page views"
+                    value={Number(ga4Data.data.pageViews).toLocaleString(
+                      'el-GR'
+                    )}
+                    change={
+                      ga4Data && ga4Prev?.success
+                        ? percentChange(
+                            Number(ga4Data.data.pageViews),
+                            Number(ga4Prev.data.pageViews)
+                          )
+                        : undefined
+                    }
+                  />
+                  <KPICard
+                    label="Engagement rate"
+                    value={ga4Data.data.engagementRate}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-red-600">
