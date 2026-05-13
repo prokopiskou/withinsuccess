@@ -203,7 +203,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {stripeData?.daily ? (
-                <RevenueChart data={stripeData.daily} />
+                <RevenueChart data={stripeData.daily} showYears={preset === 'all'} />
               ) : (
                 <div className="h-64 animate-pulse rounded-2xl bg-gray-50" />
               )}

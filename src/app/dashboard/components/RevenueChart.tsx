@@ -18,11 +18,18 @@ type DailyData = {
   count: number
 }
 
-type Props = {
-  data: DailyData[]
+type ChartDatum = DailyData & {
+  displayDate: string
+  year: string
+  showYear: boolean
 }
 
-export default function RevenueChart({ data }: Props) {
+type Props = {
+  data: DailyData[]
+  showYears?: boolean
+}
+
+export default function RevenueChart({ data, showYears = false }: Props) {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center text-gray-400 text-sm">
@@ -31,12 +38,17 @@ export default function RevenueChart({ data }: Props) {
     )
   }
 
-  // Format date for display (DD/MM)
-  const formattedData = data.map((d) => {
-    const [, month, day] = d.date.split('-')
+  // Format date for display (DD/MM) and tag year transitions
+  let previousYear: string | null = null
+  const formattedData: ChartDatum[] = data.map((d, idx) => {
+    const [year, month, day] = d.date.split('-')
+    const isYearTransition = idx === 0 || year !== previousYear
+    previousYear = year
     return {
       ...d,
       displayDate: `${day}/${month}`,
+      year,
+      showYear: showYears && isYearTransition,
     }
   })
 
@@ -64,7 +76,10 @@ export default function RevenueChart({ data }: Props) {
               Peak day
             </p>
             <p className="text-sm font-medium">
-              €{peak.revenue.toFixed(2)} <span className="text-gray-400">({peak.displayDate})</span>
+              €{peak.revenue.toFixed(2)}{' '}
+              <span className="text-gray-400">
+                ({peak.displayDate}{showYears ? `/${peak.date.split('-')[0]}` : ''})
+              </span>
             </p>
           </div>
         )}
@@ -112,6 +127,11 @@ export default function RevenueChart({ data }: Props) {
                 if (name === 'revenue')
                   return [`€${Number(value).toFixed(2)}`, 'Revenue']
                 return [value as string | number, name]
+              }}
+              labelFormatter={(label, items) => {
+                const item = items?.[0]?.payload as ChartDatum | undefined
+                if (!item) return label
+                return showYears ? `${item.displayDate}/${item.year}` : item.displayDate
               }}
             />
             <Area
