@@ -1,7 +1,9 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState, type RefObject } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { trackBeginCheckout } from '@/lib/analytics'
+import { useViewPricing } from '@/lib/hooks/useAnalyticsHooks'
 import { startCheckout } from '@/lib/checkout'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
@@ -89,6 +91,7 @@ function PageContent() {
   const [bullets, setBullets] = useState(DEFAULTS.bullets)
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const pricingRef = useViewPricing('63days-foteini')
 
   useEffect(() => {
     async function load() {
@@ -112,6 +115,12 @@ function PageContent() {
   }, [sid])
 
   const handleCheckout = async () => {
+    const pricing = getPricingInfo()
+    trackBeginCheckout({
+      id: '63days-program',
+      name: '63 Μέρες Ζωής',
+      price: pricing.price,
+    })
     if (!sid) {
       await startCheckout('63days', STRIPE_LINK)
       return
@@ -347,7 +356,7 @@ function PageContent() {
       </section>
 
       {/* CTA ΚΕΝΤΡΙΚΟ */}
-      <section className="py-16 px-6 bg-white">
+      <section ref={pricingRef as RefObject<HTMLElement>} className="py-16 px-6 bg-white">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif' }}>
             Η απόφαση

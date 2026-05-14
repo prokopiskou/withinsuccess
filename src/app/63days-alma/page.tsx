@@ -1,8 +1,10 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState, type RefObject } from 'react'
 import { useSearchParams } from 'next/navigation'
 import UTMCapture from '@/components/UTMCapture'
+import { trackBeginCheckout } from '@/lib/analytics'
+import { useViewPricing } from '@/lib/hooks/useAnalyticsHooks'
 import { startCheckout } from '@/lib/checkout'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
@@ -114,6 +116,7 @@ function PageContent() {
   const sid = searchParams.get('sid')
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const pricingRef = useViewPricing('63days-alma')
 
   useEffect(() => {
     async function load() {
@@ -134,7 +137,13 @@ function PageContent() {
     setCheckoutLoading(true)
     
     const pricing = getPricingInfo()
-    
+
+    trackBeginCheckout({
+      id: '63days-program',
+      name: '63 Μέρες Ζωής',
+      price: pricing.price,
+    })
+
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'InitiateCheckout', {
         value: pricing.price,
@@ -543,7 +552,7 @@ function PageContent() {
       </section>
 
       {/* Η ΑΠΟΦΑΣΗ */}
-      <section id="apofasi" className="py-20 px-6 bg-gray-50 scroll-mt-8">
+      <section id="apofasi" ref={pricingRef as RefObject<HTMLElement>} className="py-20 px-6 bg-gray-50 scroll-mt-8">
         <div className="max-w-xl mx-auto text-center">
           <SectionLabel>Η απόφαση</SectionLabel>
           <h2 className="text-4xl md:text-5xl font-semibold mb-10" style={{ fontFamily: 'Georgia, serif' }}>Η στιγμή είναι τώρα.</h2>
