@@ -11,6 +11,7 @@ import {
 import RevenueChart from './components/RevenueChart'
 import KPICard from './components/KPICard'
 import TrafficSources from './components/TrafficSources'
+import FunnelChart from './components/FunnelChart'
 
 type StripeData = {
   success: boolean
@@ -69,6 +70,15 @@ type TrafficData = {
   }>
 }
 
+type FunnelData = {
+  success: boolean
+  funnel: Array<{
+    stage: string
+    count: number
+    label: string
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -86,6 +96,7 @@ export default function DashboardPage() {
   const [trafficData, setTrafficData] = useState<TrafficData | null>(null)
   const [stripePrev, setStripePrev] = useState<StripeData | null>(null)
   const [ga4Prev, setGa4Prev] = useState<GA4Data | null>(null)
+  const [funnelData, setFunnelData] = useState<FunnelData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -113,6 +124,9 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/ga4-traffic?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/funnel?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
         ]
 
         const previousFetches = previousRange
@@ -130,13 +144,14 @@ export default function DashboardPage() {
             ]
           : []
 
-        const [stripe, ga4, ml, traffic, ...previousResults] =
+        const [stripe, ga4, ml, traffic, funnel, ...previousResults] =
           await Promise.all([...currentFetches, ...previousFetches])
 
         setStripeData(stripe)
         setGa4Data(ga4)
         setMlData(ml)
         setTrafficData(traffic)
+        setFunnelData(funnel)
 
         if (previousRange && previousResults.length === 2) {
           setStripePrev(previousResults[0])
@@ -332,49 +347,6 @@ export default function DashboardPage() {
             <section>
               <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                  RECENT PURCHASES
-                </p>
-                <p className="text-xs text-gray-300">·</p>
-                <p className="text-xs text-gray-400">{range.label}</p>
-              </div>
-              {stripeData?.success && stripeData.recent?.length ? (
-                <div className="overflow-hidden rounded-2xl bg-gray-50">
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[400px] text-left text-sm">
-                    <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-gray-500">
-                      <tr>
-                        <th className="px-4 py-2">Ημερομηνία</th>
-                        <th className="px-4 py-2">Προϊόν</th>
-                        <th className="px-4 py-2">Ποσό</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stripeData.recent.map((row) => (
-                        <tr
-                          key={row.id}
-                          className="border-b border-gray-50 last:border-0"
-                        >
-                          <td className="px-4 py-2 text-gray-700">
-                            {new Date(row.date).toLocaleString('el-GR')}
-                          </td>
-                          <td className="px-4 py-2">{row.product}</td>
-                          <td className="px-4 py-2 font-medium">
-                            €{row.amount.toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  </div>
-                </div>
-              ) : stripeData?.success ? (
-                <p className="text-sm text-gray-400">Δεν υπάρχουν πρόσφατες πληρωμές.</p>
-              ) : null}
-            </section>
-
-            <section>
-              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   TRAFFIC
                 </p>
                 <p className="text-xs text-gray-300">·</p>
@@ -449,6 +421,64 @@ export default function DashboardPage() {
               ) : (
                 <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
               )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  CONVERSION FUNNEL
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {funnelData?.funnel ? (
+                <FunnelChart funnel={funnelData.funnel} />
+              ) : (
+                <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
+              )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  RECENT PURCHASES
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {stripeData?.success && stripeData.recent?.length ? (
+                <div className="overflow-hidden rounded-2xl bg-gray-50">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[400px] text-left text-sm">
+                    <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-gray-500">
+                      <tr>
+                        <th className="px-4 py-2">Ημερομηνία</th>
+                        <th className="px-4 py-2">Προϊόν</th>
+                        <th className="px-4 py-2">Ποσό</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stripeData.recent.map((row) => (
+                        <tr
+                          key={row.id}
+                          className="border-b border-gray-50 last:border-0"
+                        >
+                          <td className="px-4 py-2 text-gray-700">
+                            {new Date(row.date).toLocaleString('el-GR')}
+                          </td>
+                          <td className="px-4 py-2">{row.product}</td>
+                          <td className="px-4 py-2 font-medium">
+                            €{row.amount.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              ) : stripeData?.success ? (
+                <p className="text-sm text-gray-400">Δεν υπάρχουν πρόσφατες πληρωμές.</p>
+              ) : null}
             </section>
 
             <section>
