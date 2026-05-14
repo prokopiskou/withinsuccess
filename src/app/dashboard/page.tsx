@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import {
   getDateRange,
   getPreviousDateRange,
@@ -226,12 +227,18 @@ export default function DashboardPage() {
                 </button>
               ))}
             </div>
+            <Link
+              href="/dashboard/paid"
+              className="text-xs text-gray-600 transition-colors hover:text-black px-3 py-1 border border-gray-200 rounded-full hover:border-black"
+            >
+              Paid Performance →
+            </Link>
             <button
               onClick={async () => {
                 await fetch('/api/dashboard/auth/logout', { method: 'POST' })
                 window.location.href = '/dashboard/login'
               }}
-              className="ml-2 shrink-0 text-xs text-gray-400 transition-colors hover:text-black"
+              className="ml-2 text-xs text-gray-400 transition-colors hover:text-black"
               title="Logout"
             >
               Logout
