@@ -2,38 +2,11 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { trackBeginCheckout } from '@/lib/analytics'
-import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from '@/lib/hooks/useAnalyticsHooks'
 import UTMCapture from '@/components/UTMCapture'
+import ClosedProgramCTA from '@/components/ClosedProgramCTA'
 
-const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
-
-function getPricingInfo() {
-  const now = new Date()
-  const greece = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Athens' }))
-  const month = greece.getMonth() + 1
-  const day = greece.getDate()
-
-  if (month === 5 && day <= 12) return { price: 89, next: null, deadline: '12 Μαΐου' }
-  return { price: 89, next: null, deadline: '12 Μαΐου' }
-}
-
-function getFbCookies(): { fbp: string; fbc: string } {
-  if (typeof document === 'undefined') return { fbp: '', fbc: '' }
-  
-  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split('=')
-    acc[key] = value
-    return acc
-  }, {} as Record<string, string>)
-  
-  return {
-    fbp: cookies._fbp || '',
-    fbc: cookies._fbc || ''
-  }
-}
 
 const broadcastImages = [
   '/broadcast.webp','/broadcast1.webp','/broadcast2.webp','/broadcast3.webp',
@@ -77,28 +50,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-function PricingBlock({ onCheckout, loading, ctaLabel = 'Κατοχύρωσε τη θέση σου' }: { onCheckout: () => void | Promise<void>; loading: boolean; ctaLabel?: string }) {
-  const { price, next, deadline } = getPricingInfo()
-  return (
-    <div className="text-center bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
-      <p className="text-xs tracking-widest text-gray-400 uppercase mb-4">Επένδυση</p>
-      <p className="text-6xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>{price}€</p>
-      <p className="text-xs text-gray-400 mb-8">
-        {next ? <span className="underline">{`Μετά τις ${deadline}: ${next}€`}</span> : `Τελευταία ευκαιρία μέχρι ${deadline}`}
-      </p>
-      <button
-        onClick={onCheckout}
-        disabled={loading}
-        className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg"
-        style={{ backgroundColor: GOLD, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.6 : 1 }}
-      >
-        {loading ? 'Φόρτωση...' : ctaLabel}
-      </button>
-      <p className="text-xs text-gray-400 mt-5">Περιορισμένες θέσεις · Έναρξη 12 Μαΐου</p>
-    </div>
-  )
-}
-
 function AnchorButton({ label, href = '#apofasi' }: { label: string; href?: string }) {
   return (
     <a
@@ -115,7 +66,6 @@ function PageContent() {
   const searchParams = useSearchParams()
   const sid = searchParams.get('sid')
   const [loading, setLoading] = useState(true)
-  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   useScrollDepth('63days')
   const pricingRef = useViewPricing('63days')
@@ -134,49 +84,6 @@ function PageContent() {
     }
     load()
   }, [sid])
-
-  const handleCheckout = async () => {
-    setCheckoutLoading(true)
-
-    const pricing = getPricingInfo()
-
-    trackBeginCheckout({
-      id: '63days-program',
-      name: '63 Μέρες Ζωής',
-      price: pricing.price
-    })
-
-    if (!sid) {
-      await startCheckout('63days', STRIPE_LINK)
-      setCheckoutLoading(false)
-      return
-    }
-    
-    const { fbp, fbc } = getFbCookies()
-    
-    try {
-      const res = await fetch('/api/stripe/create-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          subscriber_id: sid,
-          fbp,
-          fbc
-        })
-      })
-      const data = await res.json()
-      
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        window.location.href = STRIPE_LINK
-      }
-    } catch { 
-      window.location.href = STRIPE_LINK 
-    }
-    
-    setCheckoutLoading(false)
-  }
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -576,7 +483,7 @@ function PageContent() {
             <p>Οι θέσεις είναι περιορισμένες.</p>
             <p className="text-lg font-semibold pt-4" style={{ fontFamily: 'Georgia, serif' }}>Η αναβολή είναι η πρώτη σκέψη που πρέπει να νικήσεις.</p>
           </div>
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Θέλω να κατοχυρώσω τη θέση μου" />
+          <ClosedProgramCTA source="63days" />
         </div>
       </section>
 
@@ -612,7 +519,7 @@ function PageContent() {
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl font-semibold mb-10" style={{ fontFamily: 'Georgia, serif' }}>Κατοχύρωση θέσης</h2>
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} ctaLabel="Κατοχύρωσε τη θέση σου" />
+          <ClosedProgramCTA source="63days" />
           <p className="text-xs text-gray-400 mt-10">
             Για οποιαδήποτε απορία μη διστάσεις να επικοινωνήσεις μαζί μας στο hello@withinsuccess.gr
           </p>

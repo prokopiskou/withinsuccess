@@ -2,22 +2,10 @@
 
 import { Suspense, useEffect, useState, type RefObject } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { trackBeginCheckout } from '@/lib/analytics'
+import ClosedProgramCTA from '@/components/ClosedProgramCTA'
 import { useViewPricing } from '@/lib/hooks/useAnalyticsHooks'
-import { startCheckout } from '@/lib/checkout'
 
-const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
-
-function getPricingInfo() {
-  const now = new Date()
-  const greece = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Athens' }))
-  const month = greece.getMonth() + 1
-  const day = greece.getDate()
-
-  if (month === 5 && day <= 12) return { price: 89, next: null, deadline: '12 Μαΐου' }
-  return { price: 89, next: null, deadline: '12 Μαΐου' }
-}
 
 const DEFAULTS = {
   headline: 'Δεν θα σου διδάξει κάτι. Θα σου δώσει χρόνο.',
@@ -62,27 +50,6 @@ function Carousel({ images }: { images: string[] }) {
   )
 }
 
-function PricingBlock({ onCheckout, loading }: { onCheckout: () => void | Promise<void>; loading: boolean }) {
-  const { price, next, deadline } = getPricingInfo()
-  return (
-    <div className="text-center">
-      <p className="text-5xl font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>{price}€</p>
-      <p className="text-xs text-gray-400 mb-6">
-        {next ? <span className="underline">{`Μετά τις ${deadline}: ${next}€`}</span> : `Τελευταία ευκαιρία μέχρι ${deadline}`}
-      </p>
-      <button
-        onClick={onCheckout}
-        disabled={loading}
-        className="inline-block text-white px-10 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-        style={{ backgroundColor: GOLD, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.6 : 1 }}
-      >
-        {loading ? 'Φόρτωση...' : 'Κατοχύρωσε τη θέση σου'}
-      </button>
-      <p className="text-xs text-gray-400 mt-3">Περιορισμένες θέσεις. Έναρξη 12 Μαΐου.</p>
-    </div>
-  )
-}
-
 function PageContent() {
   const searchParams = useSearchParams()
   const sid = searchParams.get('sid')
@@ -90,7 +57,6 @@ function PageContent() {
   const [subheadline, setSubheadline] = useState(DEFAULTS.subheadline)
   const [bullets, setBullets] = useState(DEFAULTS.bullets)
   const [loading, setLoading] = useState(true)
-  const [checkoutLoading, setCheckoutLoading] = useState(false)
   const pricingRef = useViewPricing('63days-foteini')
 
   useEffect(() => {
@@ -113,30 +79,6 @@ function PageContent() {
     }
     load()
   }, [sid])
-
-  const handleCheckout = async () => {
-    const pricing = getPricingInfo()
-    trackBeginCheckout({
-      id: '63days-program',
-      name: '63 Μέρες Ζωής',
-      price: pricing.price,
-    })
-    if (!sid) {
-      await startCheckout('63days', STRIPE_LINK)
-      return
-    }
-    setCheckoutLoading(true)
-    try {
-      const res = await fetch('/api/stripe/create-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriber_id: sid })
-      })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-    } catch { window.location.href = STRIPE_LINK }
-    setCheckoutLoading(false)
-  }
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -364,7 +306,7 @@ function PageContent() {
           <p className="text-gray-500 mb-10 leading-relaxed">
             Η αναβολή είναι η πρώτη σκέψη που πρέπει να νικήσεις.
           </p>
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
+          <ClosedProgramCTA source="63days-foteini" />
         </div>
       </section>
 
@@ -411,7 +353,7 @@ function PageContent() {
           <p className="text-sm text-gray-400 mb-10 leading-relaxed">
             Αν όχι, αποθήκευσε αυτή τη σελίδα. Θα επιστρέψεις όταν έρθει η ώρα.
           </p>
-          <PricingBlock onCheckout={handleCheckout} loading={checkoutLoading} />
+          <ClosedProgramCTA source="63days-foteini" />
         </div>
       </section>
 
