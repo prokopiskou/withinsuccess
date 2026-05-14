@@ -57,7 +57,9 @@ export default function PerProductBreakdown({ products }: Props) {
                 {p.label}
               </h3>
               {p.price > 0 && (
-                <span className="text-xs text-gray-400">€{p.price}</span>
+                <span className="text-xs text-gray-400">
+                  {p.product === 'coaching' ? `~€${p.price.toFixed(0)} AOV` : `€${p.price}`}
+                </span>
               )}
             </div>
 

@@ -28,15 +28,44 @@ function detectProduct(amount: number, metadata: Record<string, string>): Produc
   const eur = amount / 100
   if (eur >= 85 && eur <= 99) return '63days'   // €89
   if (eur >= 14 && eur <= 19) return '30days'   // €15
-  if (eur >= 180 && eur <= 250) return 'coaching' // ~€200-240
+  if (eur >= 150 && eur <= 500) return 'coaching' // variable: €150-500 range for sessions/packages
   return 'other'
 }
 
 function matchCampaignToProduct(campaignName: string): ProductKey {
   const lower = campaignName.toLowerCase()
-  if (lower.includes('63days') || lower.includes('63 days') || lower.includes('63 μερες') || lower.includes('63μερες') || lower.includes('sales 63') || lower.includes('63_')) return '63days'
-  if (lower.includes('30days') || lower.includes('30 days') || lower.includes('30 μερες')) return '30days'
-  if (lower.includes('coaching') || lower.includes('mentor')) return 'coaching'
+  
+  // 63 days patterns
+  if (
+    lower.includes('63days') || 
+    lower.includes('63 days') || 
+    lower.includes('63 μερες') || 
+    lower.includes('63μερες') || 
+    lower.includes('sales 63') ||
+    lower.includes('63_')
+  ) return '63days'
+  
+  // 30 days patterns
+  if (
+    lower.includes('30days') || 
+    lower.includes('30 days') || 
+    lower.includes('30 μερες') ||
+    lower.includes('30_')
+  ) return '30days'
+  
+  // Coaching patterns (1-on-1, mentorship variations)
+  if (
+    lower.includes('coaching') || 
+    lower.includes('mentor') ||
+    lower.includes('1-1') ||
+    lower.includes('1on1') ||
+    lower.includes('1-on-1') ||
+    lower.includes('1 on 1') ||
+    lower.includes('συμβουλευτικ') ||  // συμβουλευτική / συμβουλευτικός
+    lower.includes('καθοδηγηση') ||
+    lower.includes('καθοδήγηση')
+  ) return 'coaching'
+  
   return 'other'
 }
 
@@ -50,7 +79,7 @@ const PRODUCT_LABELS: Record<ProductKey, string> = {
 const PRODUCT_PRICES: Record<ProductKey, number> = {
   '63days': 89,
   '30days': 15,
-  'coaching': 200,
+  'coaching': 0,  // variable — will calculate AOV from actual sales
   'other': 0,
 }
 
@@ -143,6 +172,12 @@ export async function GET(req: NextRequest) {
       p.cac = p.sales > 0 ? p.adSpend / p.sales : 0
       p.roas = p.adSpend > 0 ? p.revenue / p.adSpend : 0
       p.margin = p.revenue - p.adSpend
+      
+      // For coaching (variable pricing), calculate AOV dynamically from sales
+      if (p.product === 'coaching' && p.sales > 0 && p.price === 0) {
+        p.price = p.revenue / p.sales  // AOV becomes the "price"
+      }
+      
       return p
     })
 
