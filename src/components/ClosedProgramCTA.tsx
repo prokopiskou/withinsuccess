@@ -50,7 +50,7 @@ export default function ClosedProgramCTA({ source = '63days' }: Props) {
           Θα είσαι ο πρώτος που θα μάθει
         </p>
         <p className="text-sm text-gray-500">
-          Όταν ανοίξει ο επόμενος κύκλος, θα σε ειδοποιήσω με email.
+          Λίγο πριν ανοίξει ο επόμενος κύκλος θα ενημερωθείς με email.
         </p>
       </div>
     )
