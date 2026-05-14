@@ -44,9 +44,9 @@ export default function ClosedProgramCTA({ source = '63days' }: Props) {
 
   if (submitted) {
     return (
-      <div className="text-center bg-white rounded-3xl p-10 shadow-sm border border-gray-100 max-w-2xl mx-auto">
-        <p className="text-xs tracking-widest uppercase mb-4" style={{ color: GOLD }}>Είσαι μέσα στη waitlist</p>
-        <p className="text-2xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
+      <div className="text-center bg-white rounded-3xl px-8 py-6 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+        <p className="text-xs tracking-widest uppercase mb-2" style={{ color: GOLD }}>Είσαι μέσα στη waitlist</p>
+        <p className="text-xl sm:text-2xl font-semibold mb-2" style={{ fontFamily: 'Georgia, serif' }}>
           Θα είσαι ο πρώτος που θα μάθει
         </p>
         <p className="text-sm text-gray-500">
@@ -57,12 +57,12 @@ export default function ClosedProgramCTA({ source = '63days' }: Props) {
   }
 
   return (
-    <div className="text-center bg-white rounded-3xl p-10 shadow-sm border border-gray-100 max-w-2xl mx-auto">
-      <p className="text-xs tracking-widest uppercase mb-4" style={{ color: GOLD }}>Πρόγραμμα κλειστό</p>
-      <p className="text-3xl sm:text-4xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="text-center bg-white rounded-3xl px-8 py-6 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+      <p className="text-xs tracking-widest uppercase mb-2" style={{ color: GOLD }}>Πρόγραμμα κλειστό</p>
+      <p className="text-2xl sm:text-3xl font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
         Έκλεισε για αυτόν τον κύκλο
       </p>
-      <p className="text-sm text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto leading-relaxed">
         Άσε το email σου εδώ. Μόλις ανοίξει ο επόμενος κύκλος, θα μάθεις πρώτος.
       </p>
       
@@ -90,8 +90,8 @@ export default function ClosedProgramCTA({ source = '63days' }: Props) {
         <p className="text-xs text-red-600 mt-3">{error}</p>
       )}
 
-      <p className="text-xs text-gray-400 mt-5">
-        Καμία πληροφορία δεν δίνεται. Χωρίς spam.
+      <p className="text-xs text-gray-400 mt-3">
+        Τα δεδομένα σου είναι ασφαλή.
       </p>
     </div>
   )
