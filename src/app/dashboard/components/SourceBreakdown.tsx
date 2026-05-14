@@ -8,7 +8,7 @@ type Bucket = {
 }
 
 type ProductBreakdown = {
-  product: string
+  productId: string
   label: string
   total: { sales: number; revenue: number }
   buckets: {
@@ -140,7 +140,7 @@ export default function SourceBreakdown({ buckets, total, products }: Props) {
 
           <div className="divide-y divide-gray-100">
             {products.map((p) => (
-              <div key={p.product} className="px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
+              <div key={`${p.productId || 'unknown'}:${p.label}`} className="px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-baseline justify-between gap-3 mb-2 flex-wrap">
                   <p className="text-sm font-semibold" style={{ fontFamily: 'Georgia, serif' }}>
                     {p.label}

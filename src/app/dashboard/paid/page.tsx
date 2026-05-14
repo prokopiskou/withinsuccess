@@ -59,7 +59,7 @@ type AttributionData = {
 type PerProductData = {
   success: boolean
   products: Array<{
-    product: string
+    productId: string
     label: string
     price: number
     sales: number

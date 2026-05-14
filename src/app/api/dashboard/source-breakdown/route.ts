@@ -12,76 +12,30 @@ type BucketStats = {
   revenue: number
 }
 
+function classifyCharge(metadata: Record<string, string>): Bucket {
+  const utm_medium = (metadata.utm_medium || '').toLowerCase()
+  const utm_source = (metadata.utm_source || '').toLowerCase()
+  const hasAnyUtm = !!(metadata.utm_campaign || metadata.utm_source || metadata.utm_medium)
+
+  if (utm_medium === 'cpc' || utm_medium === 'paid') return 'paid'
+  if ((utm_source === 'fb' || utm_source === 'facebook' || utm_source === 'ig' || utm_source === 'instagram') && utm_medium === 'cpc') return 'paid'
+  
+  if (utm_medium === 'email' || utm_medium === 'newsletter') return 'newsletter'
+  if (utm_source === 'newsletter' || utm_source === 'mailerlite' || utm_source === 'email') return 'newsletter'
+
+  if (hasAnyUtm) return 'organic'
+  if (utm_source === 'instagram' || utm_source === 'ig' || utm_source === 'fb' || utm_source === 'facebook' || utm_source === 'tiktok' || utm_source === 'threads') return 'organic'
+
+  return 'unknown'
+}
+
 const BUCKET_LABELS: Record<Bucket, string> = {
-  paid: 'Paid ads',
+  paid: 'Paid Ads',
   organic: 'Organic',
   newsletter: 'Newsletter',
   unknown: 'Unknown',
 }
 
-const PRODUCT_LABELS: Record<string, string> = {
-  '63days': '63 Μέρες',
-  '30days': '30 Μέρες',
-  'coaching': '1-on-1 Coaching',
-  'other': 'Άλλο',
-}
-
-function detectProduct(amount: number, metadata: Record<string, string>): string {
-  if (metadata.product === '63days') return '63days'
-  if (metadata.product === '30days') return '30days'
-  if (metadata.product === 'coaching') return 'coaching'
-  const eur = amount / 100
-  if (eur >= 65 && eur <= 119) return '63days'
-  if (eur >= 13 && eur <= 19) return '30days'
-  if (eur >= 120 && eur <= 500) return 'coaching'
-  return 'other'
-}
-
-function classifyCharge(metadata: Record<string, string>): Bucket {
-  const campaign = (metadata.utm_campaign || '').trim().toLowerCase()
-  const source = (metadata.utm_source || '').trim().toLowerCase()
-  const medium = (metadata.utm_medium || '').trim().toLowerCase()
-
-  const hasAny = !!(campaign || source || medium)
-  if (!hasAny) return 'unknown'
-
-  const newsletter =
-    medium === 'email' ||
-    medium === 'newsletter' ||
-    source === 'newsletter' ||
-    source === 'mailerlite' ||
-    source.includes('mailerlite') ||
-    campaign.includes('newsletter')
-
-  if (newsletter) return 'newsletter'
-
-  const isPaid =
-    medium === 'cpc' ||
-    medium === 'paid' ||
-    source === 'fb' ||
-    source === 'ig' ||
-    source === 'facebook' ||
-    source === 'instagram'
-
-  if (isPaid && medium === 'cpc') return 'paid'
-  if (medium === 'paid') return 'paid'
-
-  return 'organic'
-}
-
-type ProductBucket = {
-  product: string
-  label: string
-  total: { sales: number; revenue: number }
-  buckets: Record<Bucket, { sales: number; revenue: number }>
-}
-
-/**
- * GET /api/dashboard/source-breakdown?start=ISO&end=ISO
- *
- * Stripe charges grouped by acquisition bucket (paid / organic / newsletter / unknown)
- * and per-product × bucket matrix.
- */
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams
@@ -97,92 +51,82 @@ export async function GET(req: NextRequest) {
     const endTs = Math.floor(end.getTime() / 1000)
 
     const stripe = getStripeClient()
-
     const buckets: Record<Bucket, BucketStats> = {
-      paid: { bucket: 'paid', label: BUCKET_LABELS.paid, sales: 0, revenue: 0 },
-      organic: { bucket: 'organic', label: BUCKET_LABELS.organic, sales: 0, revenue: 0 },
-      newsletter: {
-        bucket: 'newsletter',
-        label: BUCKET_LABELS.newsletter,
-        sales: 0,
-        revenue: 0,
-      },
-      unknown: { bucket: 'unknown', label: BUCKET_LABELS.unknown, sales: 0, revenue: 0 },
+      paid:       { bucket: 'paid',       label: BUCKET_LABELS.paid,       sales: 0, revenue: 0 },
+      organic:    { bucket: 'organic',    label: BUCKET_LABELS.organic,    sales: 0, revenue: 0 },
+      newsletter: { bucket: 'newsletter', label: BUCKET_LABELS.newsletter, sales: 0, revenue: 0 },
+      unknown:    { bucket: 'unknown',    label: BUCKET_LABELS.unknown,    sales: 0, revenue: 0 },
     }
 
-    // Per-product × bucket matrix
-    const productBucketMap: Record<string, ProductBucket> = {
-      '63days': {
-        product: '63days',
-        label: PRODUCT_LABELS['63days'],
-        total: { sales: 0, revenue: 0 },
-        buckets: {
-          paid: { sales: 0, revenue: 0 },
-          organic: { sales: 0, revenue: 0 },
-          newsletter: { sales: 0, revenue: 0 },
-          unknown: { sales: 0, revenue: 0 },
-        },
-      },
-      '30days': {
-        product: '30days',
-        label: PRODUCT_LABELS['30days'],
-        total: { sales: 0, revenue: 0 },
-        buckets: {
-          paid: { sales: 0, revenue: 0 },
-          organic: { sales: 0, revenue: 0 },
-          newsletter: { sales: 0, revenue: 0 },
-          unknown: { sales: 0, revenue: 0 },
-        },
-      },
-      coaching: {
-        product: 'coaching',
-        label: PRODUCT_LABELS['coaching'],
-        total: { sales: 0, revenue: 0 },
-        buckets: {
-          paid: { sales: 0, revenue: 0 },
-          organic: { sales: 0, revenue: 0 },
-          newsletter: { sales: 0, revenue: 0 },
-          unknown: { sales: 0, revenue: 0 },
-        },
-      },
-      other: {
-        product: 'other',
-        label: PRODUCT_LABELS['other'],
-        total: { sales: 0, revenue: 0 },
-        buckets: {
-          paid: { sales: 0, revenue: 0 },
-          organic: { sales: 0, revenue: 0 },
-          newsletter: { sales: 0, revenue: 0 },
-          unknown: { sales: 0, revenue: 0 },
-        },
-      },
+    // Per-product × bucket matrix (dynamic from Stripe product names)
+    type ProductBucket = {
+      productId: string
+      label: string
+      total: { sales: number; revenue: number }
+      buckets: Record<Bucket, { sales: number; revenue: number }>
     }
+    const productBucketMap = new Map<string, ProductBucket>()
 
     let hasMore = true
     let startingAfter: string | undefined
 
     while (hasMore) {
-      const batch = await stripe.charges.list({
+      const batch = await stripe.checkout.sessions.list({
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
+        expand: ['data.line_items', 'data.line_items.data.price.product'],
       })
 
-      for (const charge of batch.data) {
-        if (charge.status !== 'succeeded' || charge.refunded) continue
-        const meta = charge.metadata || {}
+      for (const session of batch.data) {
+        if (session.payment_status !== 'paid') continue
+        const meta = session.metadata || {}
         const bucket = classifyCharge(meta)
-        const amount = charge.amount / 100
 
-        buckets[bucket].sales += 1
-        buckets[bucket].revenue += amount
+        const lineItems = session.line_items?.data || []
+        for (const item of lineItems) {
+          const price = item.price
+          if (!price) continue
+          
+          const product = price.product
+          let productId = ''
+          let productName = '(unknown)'
+          
+          if (typeof product === 'string') {
+            productId = product
+            productName = `Product ${product}`
+          } else if (product && typeof product === 'object' && 'name' in product) {
+            productId = product.id
+            productName = product.name || `Product ${product.id}`
+          }
+          
+          const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
+          const itemSales = item.quantity || 1
 
-        const product = detectProduct(charge.amount, meta)
-        const pb = productBucketMap[product]
-        pb.total.sales += 1
-        pb.total.revenue += amount
-        pb.buckets[bucket].sales += 1
-        pb.buckets[bucket].revenue += amount
+          // Overall buckets
+          buckets[bucket].sales += itemSales
+          buckets[bucket].revenue += itemAmount
+
+          // Per-product
+          if (!productBucketMap.has(productName)) {
+            productBucketMap.set(productName, {
+              productId,
+              label: productName,
+              total: { sales: 0, revenue: 0 },
+              buckets: {
+                paid: { sales: 0, revenue: 0 },
+                organic: { sales: 0, revenue: 0 },
+                newsletter: { sales: 0, revenue: 0 },
+                unknown: { sales: 0, revenue: 0 },
+              },
+            })
+          }
+          const pb = productBucketMap.get(productName)!
+          pb.total.sales += itemSales
+          pb.total.revenue += itemAmount
+          pb.buckets[bucket].sales += itemSales
+          pb.buckets[bucket].revenue += itemAmount
+        }
       }
 
       hasMore = batch.has_more
@@ -191,14 +135,13 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const breakdown = (['paid', 'organic', 'newsletter', 'unknown'] as const).map((b) => buckets[b])
+    const breakdown = Object.values(buckets)
+    const total = breakdown.reduce((sum, b) => ({ 
+      sales: sum.sales + b.sales, 
+      revenue: sum.revenue + b.revenue 
+    }), { sales: 0, revenue: 0 })
 
-    const total = {
-      sales: breakdown.reduce((s, x) => s + x.sales, 0),
-      revenue: breakdown.reduce((s, x) => s + x.revenue, 0),
-    }
-
-    const products = Object.values(productBucketMap)
+    const products = Array.from(productBucketMap.values())
       .filter((p) => p.total.sales > 0)
       .sort((a, b) => b.total.revenue - a.total.revenue)
 
@@ -212,6 +155,9 @@ export async function GET(req: NextRequest) {
     })
   } catch (err) {
     const e = err as Error
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: e.message },
+      { status: 500 }
+    )
   }
 }

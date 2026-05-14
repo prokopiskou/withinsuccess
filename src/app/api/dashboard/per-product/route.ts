@@ -4,10 +4,8 @@ import { fetchMetaInsights } from '@/lib/metaAdsClient'
 
 export const dynamic = 'force-dynamic'
 
-type ProductKey = '63days' | '30days' | 'coaching' | 'other'
-
 type ProductStats = {
-  product: ProductKey
+  productId: string
   label: string
   price: number
   sales: number
@@ -16,71 +14,6 @@ type ProductStats = {
   cac: number
   roas: number
   margin: number
-}
-
-function detectProduct(amount: number, metadata: Record<string, string>): ProductKey {
-  // First, trust metadata if set
-  if (metadata.product === '63days') return '63days'
-  if (metadata.product === '30days') return '30days'
-  if (metadata.product === 'coaching') return 'coaching'
-
-  // Fallback: infer from amount
-  const eur = amount / 100
-  if (eur >= 85 && eur <= 99) return '63days'   // €89
-  if (eur >= 14 && eur <= 19) return '30days'   // €15
-  if (eur >= 150 && eur <= 500) return 'coaching' // variable: €150-500 range for sessions/packages
-  return 'other'
-}
-
-function matchCampaignToProduct(campaignName: string): ProductKey {
-  const lower = campaignName.toLowerCase()
-  
-  // 63 days patterns
-  if (
-    lower.includes('63days') || 
-    lower.includes('63 days') || 
-    lower.includes('63 μερες') || 
-    lower.includes('63μερες') || 
-    lower.includes('sales 63') ||
-    lower.includes('63_')
-  ) return '63days'
-  
-  // 30 days patterns
-  if (
-    lower.includes('30days') || 
-    lower.includes('30 days') || 
-    lower.includes('30 μερες') ||
-    lower.includes('30_')
-  ) return '30days'
-  
-  // Coaching patterns (1-on-1, mentorship variations)
-  if (
-    lower.includes('coaching') || 
-    lower.includes('mentor') ||
-    lower.includes('1-1') ||
-    lower.includes('1on1') ||
-    lower.includes('1-on-1') ||
-    lower.includes('1 on 1') ||
-    lower.includes('συμβουλευτικ') ||  // συμβουλευτική / συμβουλευτικός
-    lower.includes('καθοδηγηση') ||
-    lower.includes('καθοδήγηση')
-  ) return 'coaching'
-  
-  return 'other'
-}
-
-const PRODUCT_LABELS: Record<ProductKey, string> = {
-  '63days': '63 Μέρες Ζωής',
-  '30days': '30 Μέρες',
-  'coaching': '1-on-1 Coaching',
-  'other': 'Άλλο',
-}
-
-const PRODUCT_PRICES: Record<ProductKey, number> = {
-  '63days': 89,
-  '30days': 15,
-  'coaching': 0,  // variable — will calculate AOV from actual sales
-  'other': 0,
 }
 
 type MetaInsightRow = {
@@ -101,6 +34,30 @@ function toDate(d: Date): string {
   }).format(d)
 }
 
+// Match campaign name to product (using keyword matching)
+function matchCampaignToProduct(campaignName: string, productNames: string[]): string | null {
+  const lower = campaignName.toLowerCase()
+  
+  for (const productName of productNames) {
+    const pLower = productName.toLowerCase()
+    // Match if campaign contains words from product name
+    const words = pLower.split(/\s+/).filter(w => w.length >= 3)
+    for (const word of words) {
+      if (lower.includes(word)) return productName
+    }
+  }
+  
+  // Hard-coded fallbacks for common patterns
+  if (lower.includes('63days') || lower.includes('63 days') || lower.includes('63 μερες') || lower.includes('sales 63')) {
+    return productNames.find(n => n.toLowerCase().includes('63') || n.toLowerCase().includes('μερες')) || null
+  }
+  if (lower.includes('coaching') || lower.includes('mentor') || lower.includes('1-1') || lower.includes('1on1')) {
+    return productNames.find(n => n.toLowerCase().includes('coaching') || n.toLowerCase().includes('συνεδρ') || n.toLowerCase().includes('1-1')) || null
+  }
+  
+  return null
+}
+
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams
@@ -115,33 +72,62 @@ export async function GET(req: NextRequest) {
     const startTs = Math.floor(start.getTime() / 1000)
     const endTs = Math.floor(end.getTime() / 1000)
 
-    // STRIPE: aggregate revenue + sales per product
     const stripe = getStripeClient()
-    const productStats: Record<ProductKey, ProductStats> = {
-      '63days':   { product: '63days',   label: PRODUCT_LABELS['63days'],   price: PRODUCT_PRICES['63days'],   sales: 0, revenue: 0, adSpend: 0, cac: 0, roas: 0, margin: 0 },
-      '30days':   { product: '30days',   label: PRODUCT_LABELS['30days'],   price: PRODUCT_PRICES['30days'],   sales: 0, revenue: 0, adSpend: 0, cac: 0, roas: 0, margin: 0 },
-      'coaching': { product: 'coaching', label: PRODUCT_LABELS['coaching'], price: PRODUCT_PRICES['coaching'], sales: 0, revenue: 0, adSpend: 0, cac: 0, roas: 0, margin: 0 },
-      'other':    { product: 'other',    label: PRODUCT_LABELS['other'],    price: 0,                          sales: 0, revenue: 0, adSpend: 0, cac: 0, roas: 0, margin: 0 },
-    }
 
-    // List all charges in range
+    // Fetch all completed sessions in range with expanded line_items
+    const productStats = new Map<string, ProductStats>()
+
     let hasMore = true
     let startingAfter: string | undefined
 
     while (hasMore) {
-      const batch = await stripe.charges.list({
+      const batch = await stripe.checkout.sessions.list({
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
-        expand: ['data.payment_intent'],
+        expand: ['data.line_items', 'data.line_items.data.price.product'],
       })
 
-      for (const charge of batch.data) {
-        if (charge.status !== 'succeeded' || charge.refunded) continue
-        const meta = charge.metadata || {}
-        const product = detectProduct(charge.amount, meta)
-        productStats[product].sales += 1
-        productStats[product].revenue += charge.amount / 100
+      for (const session of batch.data) {
+        if (session.payment_status !== 'paid') continue
+        
+        const lineItems = session.line_items?.data || []
+        
+        for (const item of lineItems) {
+          const price = item.price
+          if (!price) continue
+          
+          const product = price.product
+          let productId = ''
+          let productName = '(unknown)'
+          
+          if (typeof product === 'string') {
+            productId = product
+            productName = `Product ${product}`
+          } else if (product && typeof product === 'object' && 'name' in product) {
+            productId = product.id
+            productName = product.name || `Product ${product.id}`
+          }
+          
+          if (!productStats.has(productName)) {
+            productStats.set(productName, {
+              productId,
+              label: productName,
+              price: (price.unit_amount || 0) / 100,
+              sales: 0,
+              revenue: 0,
+              adSpend: 0,
+              cac: 0,
+              roas: 0,
+              margin: 0,
+            })
+          }
+          
+          const stats = productStats.get(productName)!
+          const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
+          stats.sales += (item.quantity || 1)
+          stats.revenue += itemAmount
+        }
       }
 
       hasMore = batch.has_more
@@ -150,43 +136,43 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // META: aggregate spend per campaign, match to products
+    // Now try to attribute Meta spend to products by campaign name matching
     try {
       const since = toDate(start)
       const until = toDate(end)
       const metaResp = await fetchMetaInsights<MetaResponse>({ level: 'campaign', since, until })
 
+      const productNames = Array.from(productStats.keys())
+
       for (const row of metaResp.data || []) {
         const spend = parseFloat(row.spend || '0')
         const campaignName = row.campaign_name || ''
-        const product = matchCampaignToProduct(campaignName)
-        productStats[product].adSpend += spend
+        const matchedProduct = matchCampaignToProduct(campaignName, productNames)
+        
+        if (matchedProduct && productStats.has(matchedProduct)) {
+          productStats.get(matchedProduct)!.adSpend += spend
+        }
       }
     } catch (metaErr) {
       console.warn('Meta API failed in per-product:', metaErr)
-      // Continue with Stripe-only data
     }
 
-    // Calculate derived metrics
-    const products = Object.values(productStats).map((p) => {
+    // Calculate derived metrics + handle dynamic pricing (AOV for variable products)
+    const products = Array.from(productStats.values()).map((p) => {
       p.cac = p.sales > 0 ? p.adSpend / p.sales : 0
       p.roas = p.adSpend > 0 ? p.revenue / p.adSpend : 0
       p.margin = p.revenue - p.adSpend
       
-      // For coaching (variable pricing), calculate AOV dynamically from sales
-      if (p.product === 'coaching' && p.sales > 0 && p.price === 0) {
-        p.price = p.revenue / p.sales  // AOV becomes the "price"
+      // Calculate actual AOV (in case of variable pricing or quantity > 1)
+      if (p.sales > 0) {
+        p.price = p.revenue / p.sales
       }
       
       return p
     })
 
-    // Sort: products with sales/spend first, "other" last
-    products.sort((a, b) => {
-      if (a.product === 'other') return 1
-      if (b.product === 'other') return -1
-      return (b.revenue + b.adSpend) - (a.revenue + a.adSpend)
-    })
+    // Sort by revenue
+    products.sort((a, b) => b.revenue - a.revenue)
 
     return NextResponse.json({
       success: true,

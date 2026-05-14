@@ -111,7 +111,7 @@ type SourceBreakdownData = {
   }>
   total: { sales: number; revenue: number }
   products?: Array<{
-    product: string
+    productId: string
     label: string
     total: { sales: number; revenue: number }
     buckets: {
