@@ -49,18 +49,21 @@ export default function PerProductBreakdown({ products }: Props) {
         const hasSpend = p.adSpend > 0
         const roasStatus = statusForROAS(p.roas, hasSpend)
         const marginStatus = statusForMargin(p.margin, hasSpend)
-        const rowKey = `${p.productId || 'unknown'}:${p.label}`
-        const isCoachingLike = /coaching|1-1|1on1|συνεδρ|mentor/i.test(p.label)
+        const labelLower = p.label.toLowerCase()
+        const showCoachingAov =
+          labelLower.includes('coaching') ||
+          labelLower.includes('συνεδρ') ||
+          labelLower.includes('1-1')
 
         return (
-          <div key={rowKey} className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 transition-colors">
+          <div key={p.productId || p.label} className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 transition-colors">
             <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-base font-semibold" style={{ fontFamily: 'Georgia, serif' }}>
                 {p.label}
               </h3>
               {p.price > 0 && (
                 <span className="text-xs text-gray-400">
-                  {isCoachingLike ? `~€${p.price.toFixed(0)} AOV` : `€${p.price.toFixed(0)}`}
+                  {showCoachingAov ? `~€${p.price.toFixed(0)} AOV` : `€${p.price}`}
                 </span>
               )}
             </div>
