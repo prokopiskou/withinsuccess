@@ -411,8 +411,18 @@ export default function DashboardPage() {
                     }
                   />
                   <KPICard
-                    label="Engagement rate"
-                    value={ga4Data.data.engagementRate}
+                    label="Engagement Rate"
+                    value={
+                      ga4Data
+                        ? Number(ga4Data.data.engagementRate).toLocaleString(
+                            'el-GR',
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )
+                        : '—'
+                    }
                   />
                 </div>
               ) : (
