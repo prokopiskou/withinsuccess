@@ -13,6 +13,7 @@ import KPICard from './components/KPICard'
 import TrafficSources from './components/TrafficSources'
 import FunnelChart from './components/FunnelChart'
 import TopPages from './components/TopPages'
+import TrafficChart from './components/TrafficChart'
 
 type StripeData = {
   success: boolean
@@ -48,6 +49,12 @@ type GA4Data = {
     pageViews: string
     engagementRate: string
   }
+  daily?: Array<{
+    date: string
+    sessions: number
+    users: number
+    pageViews: number
+  }>
 }
 
 type MailerLiteData = {
@@ -420,6 +427,21 @@ export default function DashboardPage() {
                   {(ga4Data as { error_message?: string })?.error_message ||
                     'Δεν ήταν δυνατή η φόρτωση GA4.'}
                 </p>
+              )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  TRAFFIC TREND
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {ga4Data?.daily ? (
+                <TrafficChart data={ga4Data.daily} showYears={preset === 'all'} />
+              ) : (
+                <div className="h-72 animate-pulse rounded-2xl bg-gray-50" />
               )}
             </section>
 

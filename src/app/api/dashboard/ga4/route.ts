@@ -56,6 +56,47 @@ export async function GET(req: NextRequest) {
 
     const metrics = response.data.rows?.[0]?.metricValues || []
 
+    // Daily breakdown query
+    const dailyResponse = await client.properties.runReport({
+      property: propertyPath,
+      requestBody: {
+        dateRanges: [{ startDate, endDate }],
+        dimensions: [{ name: 'date' }],
+        metrics: [
+          { name: 'sessions' },
+          { name: 'activeUsers' },
+          { name: 'screenPageViews' },
+        ],
+        orderBys: [
+          {
+            dimension: { dimensionName: 'date' },
+            desc: false,
+          },
+        ],
+      },
+    })
+
+    const dailyData: Array<{
+      date: string
+      sessions: number
+      users: number
+      pageViews: number
+    }> = (dailyResponse.data.rows || []).map((row) => {
+      const dateStr = row.dimensionValues?.[0]?.value || ''
+      // GA4 returns date as YYYYMMDD, convert to YYYY-MM-DD
+      const formatted =
+        dateStr.length === 8
+          ? `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`
+          : dateStr
+
+      return {
+        date: formatted,
+        sessions: parseInt(row.metricValues?.[0]?.value || '0', 10),
+        users: parseInt(row.metricValues?.[1]?.value || '0', 10),
+        pageViews: parseInt(row.metricValues?.[2]?.value || '0', 10),
+      }
+    })
+
     return NextResponse.json({
       success: true,
       data: {
@@ -64,6 +105,7 @@ export async function GET(req: NextRequest) {
         pageViews: metrics[2]?.value || '0',
         engagementRate: metrics[3]?.value || '0',
       },
+      daily: dailyData,
       dateRange: { startDate, endDate },
       propertyPath,
       rowCount: response.data.rowCount || 0,
