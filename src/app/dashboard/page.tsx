@@ -141,6 +141,9 @@ export default function DashboardPage() {
   const [stripePrev, setStripePrev] = useState<StripeData | null>(null)
   const [ga4Prev, setGa4Prev] = useState<GA4Data | null>(null)
   const [funnelData, setFunnelData] = useState<FunnelData | null>(null)
+  const [funnelProduct, setFunnelProduct] = useState<
+    'all' | '63days' | '30days' | 'coaching'
+  >('all')
   const [contentData, setContentData] = useState<ContentData | null>(null)
   const [sourceBreakdownData, setSourceBreakdownData] =
     useState<SourceBreakdownData | null>(null)
@@ -172,9 +175,6 @@ export default function DashboardPage() {
             `/api/dashboard/ga4-traffic?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
           fetch(
-            `/api/dashboard/funnel?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
-          ).then((r) => r.json()),
-          fetch(
             `/api/dashboard/content?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
           fetch(
@@ -197,14 +197,13 @@ export default function DashboardPage() {
             ]
           : []
 
-        const [stripe, ga4, ml, traffic, funnel, content, sourceBreakdown, ...previousResults] =
+        const [stripe, ga4, ml, traffic, content, sourceBreakdown, ...previousResults] =
           await Promise.all([...currentFetches, ...previousFetches])
 
         setStripeData(stripe)
         setGa4Data(ga4)
         setMlData(ml)
         setTrafficData(traffic)
-        setFunnelData(funnel)
         setContentData(content)
         setSourceBreakdownData(sourceBreakdown)
 
@@ -223,6 +222,23 @@ export default function DashboardPage() {
     }
     fetchData()
   }, [preset])
+
+  useEffect(() => {
+    async function fetchFunnel() {
+      const range = getDateRange(preset)
+      const startISO = range.start.toISOString()
+      const endISO = range.end.toISOString()
+      try {
+        const funnel = await fetch(
+          `/api/dashboard/funnel?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}${funnelProduct !== 'all' ? `&product=${funnelProduct}` : ''}`
+        ).then((r) => r.json())
+        setFunnelData(funnel)
+      } catch (err) {
+        console.error('Funnel fetch error:', err)
+      }
+    }
+    fetchFunnel()
+  }, [preset, range.start.getTime(), range.end.getTime(), funnelProduct])
 
   return (
     <main className="min-h-screen bg-white">
@@ -519,17 +535,42 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                  CONVERSION FUNNEL
-                </p>
-                <p className="text-xs text-gray-300">·</p>
-                <p className="text-xs text-gray-400">{range.label}</p>
+              <div className="flex items-baseline justify-between mb-4 flex-wrap gap-3">
+                <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
+                  <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                    CONVERSION FUNNEL
+                  </p>
+                  <p className="text-xs text-gray-300">·</p>
+                  <p className="text-xs text-gray-400">{range.label}</p>
+                </div>
+                <div className="flex gap-1 flex-wrap">
+                  {(
+                    [
+                      { key: 'all', label: 'Όλα' },
+                      { key: '63days', label: '63 Μέρες' },
+                      { key: '30days', label: '30 Μέρες' },
+                      { key: 'coaching', label: '1-on-1' },
+                    ] as const
+                  ).map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setFunnelProduct(tab.key)}
+                      className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                        funnelProduct === tab.key
+                          ? 'bg-black text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
               </div>
               {funnelData?.funnel ? (
                 <FunnelChart funnel={funnelData.funnel} />
               ) : (
-                <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
+                <div className="h-96 bg-gray-50 rounded-2xl animate-pulse" />
               )}
             </section>
 
