@@ -191,10 +191,10 @@ export default function FunnelChart({ funnel }: Props) {
                     </div>
                     {stepConvRate !== null && (
                       <p className="text-xs mt-0.5" style={{ color: status?.color || '#737373' }}>
-                        {stepConvRate.toFixed(1)}% του προηγούμενου
+                        {stepConvRate.toFixed(1)}% συνέχισαν από προηγούμενο step
                         {dropOff > 0 && (
                           <span className="text-gray-400 ml-2">
-                            · −{dropOff.toLocaleString('el-GR')} drop
+                            · −{dropOff.toLocaleString('el-GR')} άτομα έφυγαν
                           </span>
                         )}
                       </p>
