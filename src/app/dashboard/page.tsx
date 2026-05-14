@@ -156,7 +156,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-white">
-      <header className="border-b border-gray-100 px-8 py-6">
+      <header className="border-b border-gray-100 px-4 py-4 sm:px-8 sm:py-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <div>
             <h1
@@ -170,13 +170,13 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex gap-1 flex-wrap">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-nowrap gap-1 overflow-x-auto -mx-2 px-2 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
               {PRESETS.map((p) => (
                 <button
                   key={p.preset}
                   onClick={() => setPreset(p.preset)}
-                  className={`px-4 py-2 text-sm rounded-full transition-colors ${
+                  className={`flex-shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
                     preset === p.preset
                       ? 'bg-black text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                 await fetch('/api/dashboard/auth/logout', { method: 'POST' })
                 window.location.href = '/dashboard/login'
               }}
-              className="text-xs text-gray-400 hover:text-black transition-colors ml-2"
+              className="ml-2 shrink-0 text-xs text-gray-400 transition-colors hover:text-black"
               title="Logout"
             >
               Logout
@@ -200,13 +200,13 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl space-y-8 px-8 py-8">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:space-y-12 sm:px-8 sm:py-8">
         {loading ? (
           <p className="text-sm text-gray-500">Φόρτωση…</p>
         ) : (
           <>
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   SUMMARY
                 </p>
@@ -214,7 +214,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {stripeData?.success ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                   <KPICard
                     label="Έσοδα"
                     value={`€${stripeData.summary.totalRevenue.toLocaleString(
@@ -285,7 +285,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   REVENUE TREND
                 </p>
@@ -300,7 +300,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   PRODUCTS
                 </p>
@@ -308,11 +308,11 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {stripeData?.success ? (
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                   {(['63days', '30days', 'other'] as const).map((key) => (
                     <div
                       key={key}
-                      className="rounded-xl border border-gray-100 p-4"
+                      className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-6"
                     >
                       <p className="text-xs font-medium uppercase text-gray-500">
                         {key}
@@ -330,7 +330,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   RECENT PURCHASES
                 </p>
@@ -338,8 +338,9 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {stripeData?.success && stripeData.recent?.length ? (
-                <div className="overflow-x-auto rounded-xl border border-gray-100">
-                  <table className="w-full min-w-[480px] text-left text-sm">
+                <div className="overflow-hidden rounded-2xl bg-gray-50">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[400px] text-left text-sm">
                     <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-gray-500">
                       <tr>
                         <th className="px-4 py-2">Ημερομηνία</th>
@@ -364,6 +365,7 @@ export default function DashboardPage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               ) : stripeData?.success ? (
                 <p className="text-sm text-gray-400">Δεν υπάρχουν πρόσφατες πληρωμές.</p>
@@ -371,7 +373,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   TRAFFIC
                 </p>
@@ -379,7 +381,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {ga4Data?.success ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                   <KPICard
                     label="Sessions"
                     value={Number(ga4Data.data.sessions).toLocaleString(
@@ -422,7 +424,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   TRAFFIC SOURCES
                 </p>
@@ -440,7 +442,7 @@ export default function DashboardPage() {
             </section>
 
             <section>
-              <div className="mb-4 flex items-baseline gap-3">
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
                   MailerLite
                 </p>
@@ -448,7 +450,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-gray-400">{range.label}</p>
               </div>
               {mlData?.success ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
                   <KPICard
                     label="New Subscribers"
                     value={`+${mlData.newSubscribersInRange}`}

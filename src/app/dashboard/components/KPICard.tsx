@@ -17,12 +17,12 @@ export default function KPICard({
   const changeColor = isUp ? '#0F766E' : '#B91C1C'
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-6 transition-colors hover:border-gray-200">
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 transition-colors hover:border-gray-200 sm:p-6">
       <p className="mb-2 text-xs uppercase tracking-wider text-gray-400">
         {label}
       </p>
       <p
-        className="text-3xl font-semibold tracking-tight"
+        className="text-2xl font-semibold tracking-tight sm:text-3xl"
         style={{ fontFamily: 'Georgia, serif' }}
       >
         {value}

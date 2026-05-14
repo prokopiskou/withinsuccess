@@ -60,7 +60,7 @@ export default function RevenueChart({ data, showYears = false }: Props) {
   )
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-6">
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-6">
       <div className="flex items-baseline justify-between mb-6">
         <div>
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
@@ -85,7 +85,7 @@ export default function RevenueChart({ data, showYears = false }: Props) {
         )}
       </div>
 
-      <div className="h-64">
+      <div className="h-56 sm:h-72">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={formattedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <defs>

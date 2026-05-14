@@ -61,8 +61,11 @@ export default function TrafficSources({ sources, totalSessions }: Props) {
 
       <div className="divide-y divide-gray-100">
         {topSources.map((s, idx) => (
-          <div key={s.sourceMedium} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-            <div className="flex items-baseline justify-between gap-4 mb-2">
+          <div
+            key={s.sourceMedium}
+            className="px-4 py-3 transition-colors hover:bg-gray-50 sm:px-6 sm:py-4"
+          >
+            <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2 sm:flex-nowrap sm:gap-4">
               <div className="flex items-baseline gap-3 min-w-0 flex-1">
                 <span className="text-xs text-gray-300 font-mono w-5">
                   {idx + 1}
