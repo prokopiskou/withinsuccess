@@ -12,6 +12,7 @@ import RevenueChart from './components/RevenueChart'
 import KPICard from './components/KPICard'
 import TrafficSources from './components/TrafficSources'
 import FunnelChart from './components/FunnelChart'
+import TopPages from './components/TopPages'
 
 type StripeData = {
   success: boolean
@@ -79,6 +80,18 @@ type FunnelData = {
   }>
 }
 
+type ContentData = {
+  success: boolean
+  pages: Array<{
+    pagePath: string
+    pageTitle: string
+    views: number
+    users: number
+    avgEngagementTime: number
+    bounceRate: number
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -97,6 +110,7 @@ export default function DashboardPage() {
   const [stripePrev, setStripePrev] = useState<StripeData | null>(null)
   const [ga4Prev, setGa4Prev] = useState<GA4Data | null>(null)
   const [funnelData, setFunnelData] = useState<FunnelData | null>(null)
+  const [contentData, setContentData] = useState<ContentData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -127,6 +141,9 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/funnel?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/content?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
         ]
 
         const previousFetches = previousRange
@@ -144,7 +161,7 @@ export default function DashboardPage() {
             ]
           : []
 
-        const [stripe, ga4, ml, traffic, funnel, ...previousResults] =
+        const [stripe, ga4, ml, traffic, funnel, content, ...previousResults] =
           await Promise.all([...currentFetches, ...previousFetches])
 
         setStripeData(stripe)
@@ -152,6 +169,7 @@ export default function DashboardPage() {
         setMlData(ml)
         setTrafficData(traffic)
         setFunnelData(funnel)
+        setContentData(content)
 
         if (previousRange && previousResults.length === 2) {
           setStripePrev(previousResults[0])
@@ -433,6 +451,21 @@ export default function DashboardPage() {
               </div>
               {funnelData?.funnel ? (
                 <FunnelChart funnel={funnelData.funnel} />
+              ) : (
+                <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
+              )}
+            </section>
+
+            <section>
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  TOP PAGES
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {contentData?.pages ? (
+                <TopPages pages={contentData.pages} />
               ) : (
                 <div className="h-96 animate-pulse rounded-2xl bg-gray-50" />
               )}
