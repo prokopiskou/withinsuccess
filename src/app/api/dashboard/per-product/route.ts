@@ -34,20 +34,17 @@ function toDate(d: Date): string {
   }).format(d)
 }
 
-// Match campaign name to product (using keyword matching)
 function matchCampaignToProduct(campaignName: string, productNames: string[]): string | null {
   const lower = campaignName.toLowerCase()
   
   for (const productName of productNames) {
     const pLower = productName.toLowerCase()
-    // Match if campaign contains words from product name
     const words = pLower.split(/\s+/).filter(w => w.length >= 3)
     for (const word of words) {
       if (lower.includes(word)) return productName
     }
   }
   
-  // Hard-coded fallbacks for common patterns
   if (lower.includes('63days') || lower.includes('63 days') || lower.includes('63 μερες') || lower.includes('sales 63')) {
     return productNames.find(n => n.toLowerCase().includes('63') || n.toLowerCase().includes('μερες')) || null
   }
@@ -74,7 +71,25 @@ export async function GET(req: NextRequest) {
 
     const stripe = getStripeClient()
 
-    // Fetch all completed sessions in range with expanded line_items
+    // STEP 1: Fetch all Stripe products once, build map productId → name
+    const productMap = new Map<string, string>()
+    let productHasMore = true
+    let productStartingAfter: string | undefined
+    while (productHasMore) {
+      const batch = await stripe.products.list({
+        limit: 100,
+        starting_after: productStartingAfter,
+      })
+      for (const p of batch.data) {
+        productMap.set(p.id, p.name || `Product ${p.id}`)
+      }
+      productHasMore = batch.has_more
+      if (batch.data.length > 0) {
+        productStartingAfter = batch.data[batch.data.length - 1].id
+      }
+    }
+
+    // STEP 2: List sessions with line_items expanded (within 4-level limit)
     const productStats = new Map<string, ProductStats>()
 
     let hasMore = true
@@ -85,7 +100,7 @@ export async function GET(req: NextRequest) {
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
-        expand: ['data.line_items', 'data.line_items.data.price.product'],
+        expand: ['data.line_items'],
       })
 
       for (const session of batch.data) {
@@ -97,17 +112,12 @@ export async function GET(req: NextRequest) {
           const price = item.price
           if (!price) continue
           
-          const product = price.product
-          let productId = ''
-          let productName = '(unknown)'
+          // price.product is the product ID (string)
+          const productId = typeof price.product === 'string' 
+            ? price.product 
+            : (price.product?.id || '')
           
-          if (typeof product === 'string') {
-            productId = product
-            productName = `Product ${product}`
-          } else if (product && typeof product === 'object' && 'name' in product) {
-            productId = product.id
-            productName = product.name || `Product ${product.id}`
-          }
+          const productName = productMap.get(productId) || `Product ${productId}` || '(unknown)'
           
           if (!productStats.has(productName)) {
             productStats.set(productName, {
@@ -136,7 +146,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Now try to attribute Meta spend to products by campaign name matching
+    // STEP 3: Match Meta spend to products
     try {
       const since = toDate(start)
       const until = toDate(end)
@@ -157,13 +167,11 @@ export async function GET(req: NextRequest) {
       console.warn('Meta API failed in per-product:', metaErr)
     }
 
-    // Calculate derived metrics + handle dynamic pricing (AOV for variable products)
     const products = Array.from(productStats.values()).map((p) => {
       p.cac = p.sales > 0 ? p.adSpend / p.sales : 0
       p.roas = p.adSpend > 0 ? p.revenue / p.adSpend : 0
       p.margin = p.revenue - p.adSpend
       
-      // Calculate actual AOV (in case of variable pricing or quantity > 1)
       if (p.sales > 0) {
         p.price = p.revenue / p.sales
       }
@@ -171,7 +179,6 @@ export async function GET(req: NextRequest) {
       return p
     })
 
-    // Sort by revenue
     products.sort((a, b) => b.revenue - a.revenue)
 
     return NextResponse.json({

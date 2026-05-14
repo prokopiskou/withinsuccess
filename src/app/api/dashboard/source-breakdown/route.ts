@@ -51,6 +51,25 @@ export async function GET(req: NextRequest) {
     const endTs = Math.floor(end.getTime() / 1000)
 
     const stripe = getStripeClient()
+
+    // Fetch all products once
+    const productMap = new Map<string, string>()
+    let productHasMore = true
+    let productStartingAfter: string | undefined
+    while (productHasMore) {
+      const batch = await stripe.products.list({
+        limit: 100,
+        starting_after: productStartingAfter,
+      })
+      for (const p of batch.data) {
+        productMap.set(p.id, p.name || `Product ${p.id}`)
+      }
+      productHasMore = batch.has_more
+      if (batch.data.length > 0) {
+        productStartingAfter = batch.data[batch.data.length - 1].id
+      }
+    }
+
     const buckets: Record<Bucket, BucketStats> = {
       paid:       { bucket: 'paid',       label: BUCKET_LABELS.paid,       sales: 0, revenue: 0 },
       organic:    { bucket: 'organic',    label: BUCKET_LABELS.organic,    sales: 0, revenue: 0 },
@@ -58,7 +77,6 @@ export async function GET(req: NextRequest) {
       unknown:    { bucket: 'unknown',    label: BUCKET_LABELS.unknown,    sales: 0, revenue: 0 },
     }
 
-    // Per-product × bucket matrix (dynamic from Stripe product names)
     type ProductBucket = {
       productId: string
       label: string
@@ -75,7 +93,7 @@ export async function GET(req: NextRequest) {
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
-        expand: ['data.line_items', 'data.line_items.data.price.product'],
+        expand: ['data.line_items'],
       })
 
       for (const session of batch.data) {
@@ -88,26 +106,18 @@ export async function GET(req: NextRequest) {
           const price = item.price
           if (!price) continue
           
-          const product = price.product
-          let productId = ''
-          let productName = '(unknown)'
+          const productId = typeof price.product === 'string' 
+            ? price.product 
+            : (price.product?.id || '')
           
-          if (typeof product === 'string') {
-            productId = product
-            productName = `Product ${product}`
-          } else if (product && typeof product === 'object' && 'name' in product) {
-            productId = product.id
-            productName = product.name || `Product ${product.id}`
-          }
+          const productName = productMap.get(productId) || `Product ${productId}` || '(unknown)'
           
           const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
           const itemSales = item.quantity || 1
 
-          // Overall buckets
           buckets[bucket].sales += itemSales
           buckets[bucket].revenue += itemAmount
 
-          // Per-product
           if (!productBucketMap.has(productName)) {
             productBucketMap.set(productName, {
               productId,
