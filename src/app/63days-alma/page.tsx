@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, type RefObject } from 'react'
 import { useSearchParams } from 'next/navigation'
 import UTMCapture from '@/components/UTMCapture'
 import ClosedProgramCTA from '@/components/ClosedProgramCTA'
+import ClosedBanner from '@/components/ClosedBanner'
 import { useViewPricing } from '@/lib/hooks/useAnalyticsHooks'
 
 const GOLD = '#C9A96E'
@@ -84,13 +85,18 @@ function PageContent() {
   }, [sid])
 
   if (loading) return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <>
+      <ClosedBanner />
+      <div className="min-h-screen bg-white flex items-center justify-center">
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ width: 40, height: 40, border: '2px solid #000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
     </div>
+    </>
   )
 
   return (
+    <>
+      <ClosedBanner />
     <main className="min-h-screen bg-white text-black font-sans">
       <UTMCapture />
       <style>{`html { scroll-behavior: smooth; }`}</style>
@@ -460,7 +466,9 @@ function PageContent() {
             <p>Οι θέσεις είναι περιορισμένες.</p>
             <p className="text-lg font-semibold pt-4" style={{ fontFamily: 'Georgia, serif' }}>Η αναβολή είναι η πρώτη σκέψη που πρέπει να νικήσεις.</p>
           </div>
-          <ClosedProgramCTA source="63days-alma" />
+          <div id="waitlist">
+            <ClosedProgramCTA source="63days-alma" />
+          </div>
         </div>
       </section>
 
@@ -512,6 +520,7 @@ function PageContent() {
         </div>
       </footer>
     </main>
+    </>
   )
 }
 
