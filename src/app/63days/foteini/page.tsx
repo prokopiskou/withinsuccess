@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { startCheckout } from '@/lib/checkout'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
@@ -59,7 +60,7 @@ function Carousel({ images }: { images: string[] }) {
   )
 }
 
-function PricingBlock({ onCheckout, loading }: { onCheckout: () => void; loading: boolean }) {
+function PricingBlock({ onCheckout, loading }: { onCheckout: () => void | Promise<void>; loading: boolean }) {
   const { price, next, deadline } = getPricingInfo()
   return (
     <div className="text-center">
@@ -111,7 +112,10 @@ function PageContent() {
   }, [sid])
 
   const handleCheckout = async () => {
-    if (!sid) { window.location.href = STRIPE_LINK; return }
+    if (!sid) {
+      await startCheckout('63days', STRIPE_LINK)
+      return
+    }
     setCheckoutLoading(true)
     try {
       const res = await fetch('/api/stripe/create-session', {

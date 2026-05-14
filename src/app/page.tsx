@@ -4,6 +4,7 @@ import Image from 'next/image'
 import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
 import MetaPixel from "@/components/MetaPixel";
+import UTMCapture from '@/components/UTMCapture';
 
 const SEMINAR1 = "https://videos.withinsuccess.gr/seminar1_compressed.mp4";
 const SEMINAR2 = "https://videos.withinsuccess.gr/seminar2_compressed.mp4";
@@ -56,6 +57,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans">
+      <UTMCapture />
       <MetaPixel />
 
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />

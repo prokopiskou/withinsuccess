@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Script from 'next/script'
 import { trackQuizLead } from '@/lib/analytics'
+import UTMCapture from '@/components/UTMCapture'
 
 const TALLY_FORM_ID = 'pbWozb'
 
@@ -37,6 +38,7 @@ export default function Assessment() {
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <UTMCapture />
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>

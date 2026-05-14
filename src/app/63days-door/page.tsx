@@ -2,6 +2,8 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import UTMCapture from '@/components/UTMCapture'
+import { startCheckout } from '@/lib/checkout'
 
 const STRIPE_LINK = 'https://book.stripe.com/00wdRadbFgPz1YBcNz4ZG1N'
 const GOLD = '#C9A96E'
@@ -73,7 +75,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-function PricingBlock({ onCheckout, loading, ctaLabel = 'Κατοχύρωσε τη θέση σου' }: { onCheckout: () => void; loading: boolean; ctaLabel?: string }) {
+function PricingBlock({ onCheckout, loading, ctaLabel = 'Κατοχύρωσε τη θέση σου' }: { onCheckout: () => void | Promise<void>; loading: boolean; ctaLabel?: string }) {
   const { price, next, deadline } = getPricingInfo()
   return (
     <div className="text-center bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
@@ -142,9 +144,10 @@ function PageContent() {
       })
     }
     
-    if (!sid) { 
-      window.location.href = STRIPE_LINK
-      return 
+    if (!sid) {
+      await startCheckout('63days', STRIPE_LINK)
+      setCheckoutLoading(false)
+      return
     }
     
     const { fbp, fbc } = getFbCookies()
@@ -182,6 +185,7 @@ function PageContent() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans">
+      <UTMCapture />
       <style>{`html { scroll-behavior: smooth; }`}</style>
 
       {/* HERO — DOOR REFRAME */}

@@ -7,6 +7,12 @@ const stripe = getStripeClient()
 
 const META_PIXEL_ID = '1653590555890252'
 
+const META_MAX = 500
+
+function clipMeta(v: string): string {
+  return v.length > META_MAX ? v.slice(0, META_MAX) : v
+}
+
 /**
  * Στέλνει InitiateCheckout event στο Meta server-side για deduplication.
  */
@@ -75,6 +81,17 @@ function getCurrentPriceId(): string {
   return process.env.STRIPE_PRICE_ID!
 }
 
+function getPriceIdForWebProduct(product: '63days' | '30days'): string {
+  if (product === '63days') {
+    const id = process.env.STRIPE_PRICE_ID
+    if (!id) throw new Error('Missing STRIPE_PRICE_ID')
+    return id
+  }
+  const id = process.env.STRIPE_PRICE_ID_30DAYS
+  if (!id) throw new Error('Missing STRIPE_PRICE_ID_30DAYS')
+  return id
+}
+
 function getCurrentAmount(): number {
   const now = new Date()
   const greece = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Athens' }))
@@ -86,14 +103,116 @@ function getCurrentAmount(): number {
   return 109
 }
 
+type UTMInput = {
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+  utm_content?: string
+  utm_term?: string
+  utm_captured_at?: string
+  utm_landing_path?: string
+}
+
+function metaString(v: unknown): string {
+  if (v === undefined || v === null) return ''
+  return String(v)
+}
+
+function normalizeUTM(utm: unknown): {
+  utm_source: string
+  utm_medium: string
+  utm_campaign: string
+  utm_content: string
+  utm_term: string
+  utm_captured_at: string
+  utm_landing_path: string
+} {
+  const u = (utm && typeof utm === 'object' ? utm : {}) as UTMInput
+  return {
+    utm_source: metaString(u.utm_source),
+    utm_medium: metaString(u.utm_medium),
+    utm_campaign: metaString(u.utm_campaign),
+    utm_content: metaString(u.utm_content),
+    utm_term: metaString(u.utm_term),
+    utm_captured_at: metaString(u.utm_captured_at),
+    utm_landing_path: metaString(u.utm_landing_path),
+  }
+}
+
+function webSessionMetadata(
+  product: '63days' | '30days',
+  utm: ReturnType<typeof normalizeUTM>
+): Record<string, string> {
+  return {
+    product: clipMeta(product),
+    utm_source: clipMeta(utm.utm_source),
+    utm_medium: clipMeta(utm.utm_medium),
+    utm_campaign: clipMeta(utm.utm_campaign),
+    utm_content: clipMeta(utm.utm_content),
+    utm_term: clipMeta(utm.utm_term),
+    utm_captured_at: clipMeta(utm.utm_captured_at),
+    utm_landing_path: clipMeta(utm.utm_landing_path),
+  }
+}
+
+function webPaymentIntentMetadata(
+  product: '63days' | '30days',
+  utm: ReturnType<typeof normalizeUTM>
+): Record<string, string> {
+  return {
+    product: clipMeta(product),
+    utm_source: clipMeta(utm.utm_source),
+    utm_medium: clipMeta(utm.utm_medium),
+    utm_campaign: clipMeta(utm.utm_campaign),
+    utm_content: clipMeta(utm.utm_content),
+    utm_term: clipMeta(utm.utm_term),
+  }
+}
+
+function isWebProduct(p: unknown): p is '63days' | '30days' {
+  return p === '63days' || p === '30days'
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { subscriber_id, fbp, fbc } = body
-    
-    if (!subscriber_id) {
-      return NextResponse.json({ error: 'missing subscriber_id' }, { status: 400 })
+    const { subscriber_id, fbp, fbc, utm: utmBody, product: productRaw } = body
+    const utm = normalizeUTM(utmBody)
+    const site = process.env.NEXT_PUBLIC_SITE_URL || ''
+
+    // Web checkout (UTM + product) — from startCheckout() / site CTAs
+    if (isWebProduct(productRaw)) {
+      const product = productRaw
+      const priceId = getPriceIdForWebProduct(product)
+      const successPath =
+        product === '63days' ? '/63days/thank-you' : '/30days/thank-you'
+      const cancelPath = product === '63days' ? '/63days' : '/30days'
+
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [{ price: priceId, quantity: 1 }],
+        metadata: webSessionMetadata(product, utm),
+        payment_intent_data: {
+          metadata: webPaymentIntentMetadata(product, utm),
+        },
+        success_url: `${site}${successPath}?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${site}${cancelPath}`,
+        expires_at: Math.floor(Date.now() / 1000) + 1800,
+      })
+
+      return NextResponse.json({ url: session.url })
     }
+
+    // ManyChat agent checkout (subscriber_id required)
+    if (!subscriber_id) {
+      return NextResponse.json(
+        { error: 'missing subscriber_id or invalid product' },
+        { status: 400 }
+      )
+    }
+
+    const manychatProduct = '63days' as const
 
     // Πάρε το email αν υπάρχει ήδη στο Supabase (για pre-fill στο Stripe)
     const { data: conversation } = await supabaseAdmin
@@ -113,14 +232,32 @@ export async function POST(req: NextRequest) {
         quantity: 1
       }],
       customer_email: existingEmail || undefined, // Pre-fill αν έχουμε
-      metadata: { 
-        subscriber_id, 
+      metadata: {
+        subscriber_id: clipMeta(String(subscriber_id)),
         source: 'manychat_agent',
-        fbp: fbp || '',
-        fbc: fbc || ''
+        product: manychatProduct,
+        fbp: clipMeta(fbp || ''),
+        fbc: clipMeta(fbc || ''),
+        utm_source: clipMeta(utm.utm_source),
+        utm_medium: clipMeta(utm.utm_medium),
+        utm_campaign: clipMeta(utm.utm_campaign),
+        utm_content: clipMeta(utm.utm_content),
+        utm_term: clipMeta(utm.utm_term),
+        utm_captured_at: clipMeta(utm.utm_captured_at),
+        utm_landing_path: clipMeta(utm.utm_landing_path),
       },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/63days/thank-you?sid=${subscriber_id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/63days?sid=${subscriber_id}`,
+      payment_intent_data: {
+        metadata: {
+          product: manychatProduct,
+          utm_source: clipMeta(utm.utm_source),
+          utm_medium: clipMeta(utm.utm_medium),
+          utm_campaign: clipMeta(utm.utm_campaign),
+          utm_content: clipMeta(utm.utm_content),
+          utm_term: clipMeta(utm.utm_term),
+        },
+      },
+      success_url: `${site}/63days/thank-you?sid=${subscriber_id}`,
+      cancel_url: `${site}/63days?sid=${subscriber_id}`,
       expires_at: Math.floor(Date.now() / 1000) + 1800 // 30 λεπτά
     })
 
@@ -151,6 +288,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url, sessionId: session.id })
   } catch (err) {
     console.error('Stripe session error:', err)
-    return NextResponse.json({ error: 'checkout failed' }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'checkout failed'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

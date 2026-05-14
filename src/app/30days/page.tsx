@@ -1,13 +1,20 @@
-"use client";
+'use client'
+
 import { useEffect, useState } from "react";
 import MetaPixel, { trackEvent } from "@/components/MetaPixel";
 import { trackBeginCheckout } from "@/lib/analytics";
+import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
+import UTMCapture from '@/components/UTMCapture';
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
 export default function ThirtyDays() {
   const stripeLink = "https://buy.stripe.com/4gM28sdbFczj7iV00N4ZG1M";
+  async function handleCheckout() {
+    trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })
+    await startCheckout('30days', stripeLink)
+  }
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);
@@ -19,6 +26,7 @@ export default function ThirtyDays() {
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <UTMCapture />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -49,9 +57,9 @@ export default function ThirtyDays() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all">
+          <button type="button" onClick={handleCheckout} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all cursor-pointer border-0">
             Αγόρασε τώρα — 15€
-          </a>
+          </button>
         </div>
       </nav>
 
@@ -67,9 +75,9 @@ export default function ThirtyDays() {
         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">
           Μικρές πράξεις που αλλάζουν τον τρόπο που βλέπεις τον εαυτό σου.
         </p>
-        <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors">
+        <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
           Ξεκίνα τώρα — 15€ →
-        </a>
+        </button>
         <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση. Ξεκινάς αύριο.</p>
       </section>
 
@@ -207,9 +215,9 @@ export default function ThirtyDays() {
             Έτοιμος να ξεκινήσεις;
           </h2>
           <p className="text-gray-400 mb-8">30 emails. 30 ασκήσεις. Μία νέα εσωτερική ιστορία.</p>
-          <a href={stripeLink} onClick={() => trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors">
+          <button type="button" onClick={handleCheckout} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors cursor-pointer border-0">
             Ξεκίνα τώρα — 15€ →
-          </a>
+          </button>
           <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
         </div>
       </section>

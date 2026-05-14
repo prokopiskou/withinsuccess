@@ -1,4 +1,5 @@
 import LinkButton from './LinkButton'
+import UTMCapture from '@/components/UTMCapture'
 
 export default function LinksPage() {
   return (
@@ -8,6 +9,7 @@ export default function LinksPage() {
         background: 'linear-gradient(180deg, #FBF9F4 0%, #FFFFFF 60%)',
       }}
     >
+      <UTMCapture />
       <div className="w-full max-w-sm">
         
         {/* Profile section */}
