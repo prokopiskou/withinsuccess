@@ -8,6 +8,7 @@ import {
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
 import AdRow from './components/AdRow'
+import AttributionView from './components/AttributionView'
 
 type AdData = {
   name: string
@@ -33,6 +34,27 @@ type MetaData = {
   ads: AdData[]
 }
 
+type AttributionData = {
+  success: boolean
+  totals: {
+    totalSales: number
+    totalRevenue: number
+    paidSales: number
+    paidRevenue: number
+    organicSales: number
+    organicRevenue: number
+    unknownSales: number
+    unknownRevenue: number
+  }
+  campaigns: Array<{
+    campaign: string
+    source: string
+    ads: Array<{ content: string; sales: number; revenue: number }>
+    sales: number
+    revenue: number
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -48,6 +70,7 @@ export default function PaidDashboardPage() {
   const [preset, setPreset] = useState<DateRangePreset>('last30')
   const [view, setView] = useState<View>('ads')
   const [data, setData] = useState<MetaData | null>(null)
+  const [attributionData, setAttributionData] = useState<AttributionData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -60,11 +83,16 @@ export default function PaidDashboardPage() {
         const startISO = range.start.toISOString()
         const endISO = range.end.toISOString()
 
-        const res = await fetch(
-          `/api/dashboard/meta-ads?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
-        )
-        const json = await res.json()
-        setData(json)
+        const [metaRes, attrRes] = await Promise.all([
+          fetch(
+            `/api/dashboard/meta-ads?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/attribution?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
+        ])
+        setData(metaRes)
+        setAttributionData(attrRes)
       } catch (err) {
         console.error('Paid dashboard fetch error:', err)
       } finally {
@@ -182,6 +210,24 @@ export default function PaidDashboardPage() {
                   value={(data.overall?.purchases || 0).toString()}
                 />
               </div>
+            </section>
+
+            <section>
+              <div className="flex items-baseline gap-3 mb-4 flex-wrap">
+                <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                  ATTRIBUTION · STRIPE GROUND TRUTH
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {attributionData?.success ? (
+                <AttributionView
+                  totals={attributionData.totals}
+                  campaigns={attributionData.campaigns}
+                />
+              ) : (
+                <div className="h-96 bg-gray-50 rounded-2xl animate-pulse" />
+              )}
             </section>
 
             {/* VIEW TOGGLE */}
