@@ -9,6 +9,7 @@ import {
 } from '@/lib/dashboard/dateRanges'
 import AdRow from './components/AdRow'
 import AttributionView from './components/AttributionView'
+import PerProductBreakdown from './components/PerProductBreakdown'
 
 type AdData = {
   name: string
@@ -55,6 +56,21 @@ type AttributionData = {
   }>
 }
 
+type PerProductData = {
+  success: boolean
+  products: Array<{
+    product: string
+    label: string
+    price: number
+    sales: number
+    revenue: number
+    adSpend: number
+    cac: number
+    roas: number
+    margin: number
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -71,6 +87,7 @@ export default function PaidDashboardPage() {
   const [view, setView] = useState<View>('ads')
   const [data, setData] = useState<MetaData | null>(null)
   const [attributionData, setAttributionData] = useState<AttributionData | null>(null)
+  const [perProductData, setPerProductData] = useState<PerProductData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -83,16 +100,20 @@ export default function PaidDashboardPage() {
         const startISO = range.start.toISOString()
         const endISO = range.end.toISOString()
 
-        const [metaRes, attrRes] = await Promise.all([
+        const [metaRes, attrRes, perProductRes] = await Promise.all([
           fetch(
             `/api/dashboard/meta-ads?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
           fetch(
             `/api/dashboard/attribution?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/per-product?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
         ])
         setData(metaRes)
         setAttributionData(attrRes)
+        setPerProductData(perProductRes)
       } catch (err) {
         console.error('Paid dashboard fetch error:', err)
       } finally {
@@ -210,6 +231,21 @@ export default function PaidDashboardPage() {
                   value={(data.overall?.purchases || 0).toString()}
                 />
               </div>
+            </section>
+
+            <section>
+              <div className="flex items-baseline gap-2 sm:gap-3 mb-4 flex-wrap">
+                <p className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                  PER PRODUCT
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {perProductData?.products ? (
+                <PerProductBreakdown products={perProductData.products} />
+              ) : (
+                <div className="h-48 bg-gray-50 rounded-2xl animate-pulse" />
+              )}
             </section>
 
             <section>
