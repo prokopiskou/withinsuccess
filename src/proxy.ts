@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SESSION_COOKIE_NAME } from '@/lib/dashboard/sessionConstants'
 import { verifySessionToken } from '@/lib/dashboard/sessionVerify'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Don't protect the login page itself or auth API routes
