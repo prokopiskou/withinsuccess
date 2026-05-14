@@ -48,16 +48,15 @@ export async function GET(req: NextRequest) {
     const startDate = toGA4Date(start)
     const endDate = toGA4Date(end)
 
-    // Build pagePath filter if product specified
     const pagePrefixes = productFilter ? PRODUCT_PAGES[productFilter] : null
-    
-    // Build a dimensionFilter that matches any of the page prefixes
+
+    // Build landing-page filter for sessions/engagement (first hit in session)
     let pagePathFilter = undefined
     if (pagePrefixes && pagePrefixes.length > 0) {
       if (pagePrefixes.length === 1) {
         pagePathFilter = {
           filter: {
-            fieldName: 'pagePath',
+            fieldName: 'landingPagePlusQueryString',
             stringFilter: {
               matchType: 'BEGINS_WITH' as const,
               value: pagePrefixes[0],
@@ -69,7 +68,7 @@ export async function GET(req: NextRequest) {
           orGroup: {
             expressions: pagePrefixes.map((prefix) => ({
               filter: {
-                fieldName: 'pagePath',
+                fieldName: 'landingPagePlusQueryString',
                 stringFilter: {
                   matchType: 'BEGINS_WITH' as const,
                   value: prefix,
@@ -81,7 +80,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Sessions + engagement (filtered by pagePath if product set)
+    // Sessions + engagement (filtered by landing page if product set)
     const sessionsResp = await ga4Client.properties.runReport({
       property: propertyPath,
       requestBody: {
@@ -91,7 +90,7 @@ export async function GET(req: NextRequest) {
           { name: 'engagedSessions' },
         ],
         ...(pagePathFilter ? { dimensionFilter: pagePathFilter } : {}),
-        ...(pagePathFilter ? { dimensions: [{ name: 'pagePath' }] } : {}),
+        ...(pagePathFilter ? { dimensions: [{ name: 'landingPagePlusQueryString' }] } : {}),
       },
     })
 
@@ -108,14 +107,37 @@ export async function GET(req: NextRequest) {
       engagedSessions = parseInt(sessionsResp.data.rows?.[0]?.metricValues?.[1]?.value || '0', 10)
     }
 
-    // Events: view_pricing + begin_checkout (filter by pagePath if product set)
-    const eventDimensions: Array<{ name: string }> = [{ name: 'eventName' }]
-    if (pagePathFilter) eventDimensions.push({ name: 'pagePath' })
+    // For events (view_pricing, begin_checkout), filter by pagePath where the event fired (not landingPage)
+    const eventsPagePathFilter = pagePrefixes && pagePrefixes.length > 0
+      ? (pagePrefixes.length === 1
+        ? {
+            filter: {
+              fieldName: 'pagePath',
+              stringFilter: {
+                matchType: 'BEGINS_WITH' as const,
+                value: pagePrefixes[0],
+              },
+            },
+          }
+        : {
+            orGroup: {
+              expressions: pagePrefixes.map((prefix) => ({
+                filter: {
+                  fieldName: 'pagePath',
+                  stringFilter: {
+                    matchType: 'BEGINS_WITH' as const,
+                    value: prefix,
+                  },
+                },
+              })),
+            },
+          })
+      : null
 
-    const eventsFilter = pagePathFilter ? {
+    const eventsFilter = eventsPagePathFilter ? {
       andGroup: {
         expressions: [
-          pagePathFilter,
+          eventsPagePathFilter,
           {
             filter: {
               fieldName: 'eventName',
@@ -134,6 +156,10 @@ export async function GET(req: NextRequest) {
         },
       },
     }
+
+    // Events: view_pricing + begin_checkout (filter by pagePath if product set)
+    const eventDimensions: Array<{ name: string }> = [{ name: 'eventName' }]
+    if (eventsPagePathFilter) eventDimensions.push({ name: 'pagePath' })
 
     const eventsResp = await ga4Client.properties.runReport({
       property: propertyPath,
