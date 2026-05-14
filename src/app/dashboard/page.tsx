@@ -15,6 +15,7 @@ import TrafficSources from './components/TrafficSources'
 import FunnelChart from './components/FunnelChart'
 import TopPages from './components/TopPages'
 import TrafficChart from './components/TrafficChart'
+import SourceBreakdown from './components/SourceBreakdown'
 
 type StripeData = {
   success: boolean
@@ -100,6 +101,28 @@ type ContentData = {
   }>
 }
 
+type SourceBreakdownData = {
+  success: boolean
+  buckets: Array<{
+    bucket: string
+    label: string
+    sales: number
+    revenue: number
+  }>
+  total: { sales: number; revenue: number }
+  products?: Array<{
+    product: string
+    label: string
+    total: { sales: number; revenue: number }
+    buckets: {
+      paid: { sales: number; revenue: number }
+      organic: { sales: number; revenue: number }
+      newsletter: { sales: number; revenue: number }
+      unknown: { sales: number; revenue: number }
+    }
+  }>
+}
+
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
   { preset: 'today', label: 'Σήμερα' },
   { preset: 'wtd', label: 'WTD' },
@@ -119,6 +142,8 @@ export default function DashboardPage() {
   const [ga4Prev, setGa4Prev] = useState<GA4Data | null>(null)
   const [funnelData, setFunnelData] = useState<FunnelData | null>(null)
   const [contentData, setContentData] = useState<ContentData | null>(null)
+  const [sourceBreakdownData, setSourceBreakdownData] =
+    useState<SourceBreakdownData | null>(null)
   const [loading, setLoading] = useState(true)
 
   const range = getDateRange(preset)
@@ -152,6 +177,9 @@ export default function DashboardPage() {
           fetch(
             `/api/dashboard/content?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
           ).then((r) => r.json()),
+          fetch(
+            `/api/dashboard/source-breakdown?start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`
+          ).then((r) => r.json()),
         ]
 
         const previousFetches = previousRange
@@ -169,7 +197,7 @@ export default function DashboardPage() {
             ]
           : []
 
-        const [stripe, ga4, ml, traffic, funnel, content, ...previousResults] =
+        const [stripe, ga4, ml, traffic, funnel, content, sourceBreakdown, ...previousResults] =
           await Promise.all([...currentFetches, ...previousFetches])
 
         setStripeData(stripe)
@@ -178,6 +206,7 @@ export default function DashboardPage() {
         setTrafficData(traffic)
         setFunnelData(funnel)
         setContentData(content)
+        setSourceBreakdownData(sourceBreakdown)
 
         if (previousRange && previousResults.length === 2) {
           setStripePrev(previousResults[0])
@@ -374,6 +403,25 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : null}
+            </section>
+
+            <section>
+              <div className="mb-4 flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  SOURCE BREAKDOWN
+                </p>
+                <p className="text-xs text-gray-300">·</p>
+                <p className="text-xs text-gray-400">{range.label}</p>
+              </div>
+              {sourceBreakdownData?.success ? (
+                <SourceBreakdown
+                  buckets={sourceBreakdownData.buckets}
+                  total={sourceBreakdownData.total}
+                  products={sourceBreakdownData.products}
+                />
+              ) : (
+                <div className="h-48 animate-pulse rounded-2xl bg-gray-50" />
+              )}
             </section>
 
             <section>
