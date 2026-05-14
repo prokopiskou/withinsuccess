@@ -49,11 +49,6 @@ export default function PerProductBreakdown({ products }: Props) {
         const hasSpend = p.adSpend > 0
         const roasStatus = statusForROAS(p.roas, hasSpend)
         const marginStatus = statusForMargin(p.margin, hasSpend)
-        const labelLower = p.label.toLowerCase()
-        const showCoachingAov =
-          labelLower.includes('coaching') ||
-          labelLower.includes('συνεδρ') ||
-          labelLower.includes('1-1')
 
         return (
           <div key={p.productId || p.label} className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 transition-colors">
@@ -63,7 +58,7 @@ export default function PerProductBreakdown({ products }: Props) {
               </h3>
               {p.price > 0 && (
                 <span className="text-xs text-gray-400">
-                  {showCoachingAov ? `~€${p.price.toFixed(0)} AOV` : `€${p.price}`}
+                  ~€{p.price.toFixed(2)} AOV
                 </span>
               )}
             </div>

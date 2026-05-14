@@ -105,25 +105,64 @@ export async function GET(req: NextRequest) {
 
       for (const session of batch.data) {
         if (session.payment_status !== 'paid') continue
-        
+
+        // ONLY include paid-ad attributed sessions
+        const meta = session.metadata || {}
+        const utm_medium = (meta.utm_medium || '').toLowerCase()
+        const utm_source = (meta.utm_source || '').toLowerCase()
+
+        const isPaid =
+          utm_medium === 'cpc' ||
+          utm_medium === 'paid' ||
+          ((utm_source === 'fb' ||
+            utm_source === 'facebook' ||
+            utm_source === 'ig' ||
+            utm_source === 'instagram') &&
+            utm_medium === 'cpc')
+
+        if (!isPaid) continue
+
         const lineItems = session.line_items?.data || []
-        
+
+        // Aggregate revenue per product in this session; sales = 1 per product per session
+        const sessionByProduct = new Map<
+          string,
+          { productId: string; revenue: number; unitPrice: number }
+        >()
+
         for (const item of lineItems) {
           const price = item.price
           if (!price) continue
-          
-          // price.product is the product ID (string)
-          const productId = typeof price.product === 'string' 
-            ? price.product 
-            : (price.product?.id || '')
-          
-          const productName = productMap.get(productId) || `Product ${productId}` || '(unknown)'
-          
+
+          const productId =
+            typeof price.product === 'string'
+              ? price.product
+              : price.product?.id || ''
+
+          const productName =
+            productMap.get(productId) || `Product ${productId}` || '(unknown)'
+          const itemAmount =
+            ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
+          const unitPrice = (price.unit_amount || 0) / 100
+
+          const prev = sessionByProduct.get(productName)
+          if (prev) {
+            prev.revenue += itemAmount
+          } else {
+            sessionByProduct.set(productName, {
+              productId,
+              revenue: itemAmount,
+              unitPrice,
+            })
+          }
+        }
+
+        for (const [productName, acc] of sessionByProduct) {
           if (!productStats.has(productName)) {
             productStats.set(productName, {
-              productId,
+              productId: acc.productId,
               label: productName,
-              price: (price.unit_amount || 0) / 100,
+              price: acc.unitPrice,
               sales: 0,
               revenue: 0,
               adSpend: 0,
@@ -132,11 +171,10 @@ export async function GET(req: NextRequest) {
               margin: 0,
             })
           }
-          
+
           const stats = productStats.get(productName)!
-          const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
-          stats.sales += (item.quantity || 1)
-          stats.revenue += itemAmount
+          stats.sales += 1
+          stats.revenue += acc.revenue
         }
       }
 
