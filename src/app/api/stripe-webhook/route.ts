@@ -19,9 +19,11 @@ type ProductConfig = {
 }
 
 function getProductConfig(amount: number, metadata?: Record<string, string>): ProductConfig {
-  const productName = metadata?.product_name?.toLowerCase() || ''
+  // PRIORITY 1: metadata.product (set explicitly by create-session)
+  const product = (metadata?.product || '').toLowerCase().trim()
   
-  if (productName.includes('63') || amount === 89) {
+  if (product === '63days') {
+    console.log(`[PRODUCT] Matched 63days via metadata.product (amount: ${amount})`)
     return {
       name: '63 Μέρες Ζωής',
       mailerLiteGroup: '170438323755550313',
@@ -30,7 +32,8 @@ function getProductConfig(amount: number, metadata?: Record<string, string>): Pr
     }
   }
   
-  if (productName.includes('30') || amount === 15) {
+  if (product === '30days') {
+    console.log(`[PRODUCT] Matched 30days via metadata.product (amount: ${amount})`)
     return {
       name: '30 Μέρες',
       mailerLiteGroup: '148420836003415194',
@@ -38,7 +41,52 @@ function getProductConfig(amount: number, metadata?: Record<string, string>): Pr
     }
   }
   
-  console.warn(`Unknown product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63days group')
+  // PRIORITY 2: metadata.product_name
+  const productName = (metadata?.product_name || '').toLowerCase()
+  
+  if (productName.includes('63')) {
+    console.log(`[PRODUCT] Matched 63days via product_name (amount: ${amount})`)
+    return {
+      name: '63 Μέρες Ζωής',
+      mailerLiteGroup: '170438323755550313',
+      syncManyChat: true,
+      manyChatField: 14490102
+    }
+  }
+  
+  if (productName.includes('30')) {
+    console.log(`[PRODUCT] Matched 30days via product_name (amount: ${amount})`)
+    return {
+      name: '30 Μέρες',
+      mailerLiteGroup: '148420836003415194',
+      syncManyChat: false
+    }
+  }
+  
+  // PRIORITY 3: Amount-based fallback with safer bands
+  // 63 Days has been priced: €69 / €89 / €109
+  if (amount >= 60 && amount <= 120) {
+    console.log(`[PRODUCT] Matched 63days via amount band ${amount}`)
+    return {
+      name: '63 Μέρες Ζωής',
+      mailerLiteGroup: '170438323755550313',
+      syncManyChat: true,
+      manyChatField: 14490102
+    }
+  }
+  
+  // 30 Days: only exact €15 (avoid edge cases like discounts)
+  if (amount === 15) {
+    console.log(`[PRODUCT] Matched 30days via exact amount 15`)
+    return {
+      name: '30 Μέρες',
+      mailerLiteGroup: '148420836003415194',
+      syncManyChat: false
+    }
+  }
+  
+  // PRIORITY 4: Final safe fallback → 63 Days (safer to not auto-send 30 day emails)
+  console.warn(`[PRODUCT] UNKNOWN product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63days group')
   return {
     name: 'WithinSuccess Program',
     mailerLiteGroup: '170438323755550313',
