@@ -95,6 +95,33 @@ export async function GET(req: NextRequest) {
     let totalSales = 0
     let totalRevenue = 0
 
+    const feeByChargeId = new Map<string, number>()
+    try {
+      let btCursor: string | undefined
+      let btHasMore = true
+      let btPages = 0
+      while (btHasMore && btPages < 30) {
+        const btBatch = await stripe.balanceTransactions.list({
+          limit: 100,
+          created: { gte: startTs, lte: endTs },
+          type: 'charge',
+          starting_after: btCursor,
+        })
+        for (const bt of btBatch.data) {
+          if (bt.source && typeof bt.source === 'string') {
+            feeByChargeId.set(bt.source, bt.fee || 0)
+          }
+        }
+        btHasMore = btBatch.has_more
+        if (btHasMore && btBatch.data.length > 0) {
+          btCursor = btBatch.data[btBatch.data.length - 1].id
+        }
+        btPages++
+      }
+    } catch (err) {
+      console.warn('Failed to fetch balance transactions for fees:', err)
+    }
+
     const MAX_PAGES = 30 // ~3000 sessions max per request
     let pages = 0
     let truncated = false
@@ -106,7 +133,7 @@ export async function GET(req: NextRequest) {
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
-        expand: ['data.line_items'],
+        expand: ['data.payment_intent', 'data.line_items.data.price'],
       })
 
       for (const session of batch.data) {
@@ -116,8 +143,17 @@ export async function GET(req: NextRequest) {
         const bucket = classifySession(meta)
         if (bucket !== 'paid') continue
 
+        const grossCents = session.amount_total || 0
+        const chargeId =
+          typeof session.payment_intent === 'object' && session.payment_intent
+            ? ((session.payment_intent as { latest_charge?: string | null }).latest_charge ??
+              null)
+            : null
+        const feeCents = chargeId ? feeByChargeId.get(chargeId) || 0 : 0
+        const sessionRevenue = (grossCents - feeCents) / 100 // NET in euros
+
         totalSales += 1
-        totalRevenue += (session.amount_total || 0) / 100
+        totalRevenue += sessionRevenue
 
         const lineItems = session.line_items?.data || []
 

@@ -55,9 +55,37 @@ export async function GET(req: NextRequest) {
     const allSessions: Array<{
       id: string
       amount_total: number | null
+      chargeId: string | null
       metadata: Record<string, string>
       payment_status: string
     }> = []
+
+    const feeByChargeId = new Map<string, number>()
+    try {
+      let btCursor: string | undefined
+      let btHasMore = true
+      let btPages = 0
+      while (btHasMore && btPages < 30) {
+        const btBatch = await stripe.balanceTransactions.list({
+          limit: 100,
+          created: { gte: startTs, lte: endTs },
+          type: 'charge',
+          starting_after: btCursor,
+        })
+        for (const bt of btBatch.data) {
+          if (bt.source && typeof bt.source === 'string') {
+            feeByChargeId.set(bt.source, bt.fee || 0)
+          }
+        }
+        btHasMore = btBatch.has_more
+        if (btHasMore && btBatch.data.length > 0) {
+          btCursor = btBatch.data[btBatch.data.length - 1].id
+        }
+        btPages++
+      }
+    } catch (err) {
+      console.warn('Failed to fetch balance transactions for fees:', err)
+    }
 
     const MAX_PAGES = 30 // ~3000 sessions max per request
     let pages = 0
@@ -70,13 +98,20 @@ export async function GET(req: NextRequest) {
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
+        expand: ['data.payment_intent'],
       })
 
       for (const s of batch.data) {
         if (s.payment_status === 'paid') {
+          const chargeId =
+            typeof s.payment_intent === 'object' && s.payment_intent
+              ? ((s.payment_intent as { latest_charge?: string | null }).latest_charge ??
+                null)
+              : null
           allSessions.push({
             id: s.id,
             amount_total: s.amount_total,
+            chargeId,
             metadata: s.metadata || {},
             payment_status: s.payment_status,
           })
@@ -111,7 +146,9 @@ export async function GET(req: NextRequest) {
     }
 
     for (const session of allSessions) {
-      const revenue = (session.amount_total || 0) / 100
+      const grossCents = session.amount_total || 0
+      const feeCents = session.chargeId ? feeByChargeId.get(session.chargeId) || 0 : 0
+      const revenue = (grossCents - feeCents) / 100 // NET in euros
       const meta = session.metadata
       const campaign = meta.utm_campaign || ''
       const source = meta.utm_source || ''

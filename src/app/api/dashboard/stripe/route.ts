@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
  * GET /api/dashboard/stripe?start=2026-05-01&end=2026-05-12
  * 
  * Returns aggregated Stripe metrics for the date range:
- * - Total revenue (€)
+ * - Total revenue (€ net after Stripe fees)
  * - Number of successful payments
  * - Average order value
  * - Product breakdown (63days vs 30days)
@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
     type Charge = {
       id: string
       amount: number
+      grossAmount: number
+      fee: number
       currency: string
       created: number
       status: string
@@ -53,19 +55,29 @@ export async function GET(req: NextRequest) {
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
+        expand: ['data.balance_transaction'],
       })
 
       for (const c of batch.data) {
         if (c.status === 'succeeded' && !c.refunded) {
+          const grossCents = c.amount
+          const feeCents =
+            typeof c.balance_transaction === 'object' && c.balance_transaction
+              ? c.balance_transaction.fee || 0
+              : 0
+          const netCents = grossCents - feeCents
+
           charges.push({
             id: c.id,
-            amount: c.amount,
+            amount: netCents / 100,
+            grossAmount: grossCents / 100,
+            fee: feeCents / 100,
             currency: c.currency,
             created: c.created,
             status: c.status,
             description: c.description,
             metadata: c.metadata,
-            receipt_email: c.receipt_email,
+            receipt_email: c.receipt_email ?? c.billing_details?.email ?? null,
             payment_method_details: c.payment_method_details
               ? { type: c.payment_method_details.type }
               : null,
@@ -79,15 +91,17 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Aggregate
-    const totalRevenue = charges.reduce((sum, c) => sum + c.amount, 0) / 100
+    // Aggregate (amount = NET euros)
+    const totalGross = charges.reduce((sum, c) => sum + (c.grossAmount || c.amount), 0)
+    const totalFees = charges.reduce((sum, c) => sum + (c.fee || 0), 0)
+    const totalRevenue = charges.reduce((sum, c) => sum + c.amount, 0)
     const purchaseCount = charges.length
     const aov = purchaseCount > 0 ? totalRevenue / purchaseCount : 0
 
-    // Product breakdown — match by amount (89€ = 63days, 15€ = 30days)
-    const product63 = charges.filter((c) => c.amount === 8900)
-    const product30 = charges.filter((c) => c.amount === 1500)
-    const other = charges.filter((c) => c.amount !== 8900 && c.amount !== 1500)
+    // Product breakdown — match by gross amount (89€ = 63days, 15€ = 30days)
+    const product63 = charges.filter((c) => c.grossAmount === 89)
+    const product30 = charges.filter((c) => c.grossAmount === 15)
+    const other = charges.filter((c) => c.grossAmount !== 89 && c.grossAmount !== 15)
 
     // Recent purchases (last 20, newest first)
     const recent = charges
@@ -95,25 +109,26 @@ export async function GET(req: NextRequest) {
       .slice(0, 20)
       .map((c) => ({
         id: c.id,
-        amount: c.amount / 100,
+        amount: c.amount,
+        grossAmount: c.grossAmount,
+        fee: c.fee,
         currency: c.currency,
         date: new Date(c.created * 1000).toISOString(),
         email: c.receipt_email,
         description: c.description,
         product:
-          c.amount === 8900
+          c.grossAmount === 89
             ? '63days'
-            : c.amount === 1500
-            ? '30days'
-            : 'other',
+            : c.grossAmount === 15
+              ? '30days'
+              : 'other',
       }))
 
-    // Daily aggregation: group charges by date
+    // Daily aggregation: group charges by date (NET revenue)
     const dailyMap = new Map<string, { revenue: number; count: number }>()
 
     charges.forEach((c) => {
       const date = new Date(c.created * 1000)
-      // Use YYYY-MM-DD in Athens TZ for consistency
       const dateKey = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Europe/Athens',
         year: 'numeric',
@@ -123,7 +138,7 @@ export async function GET(req: NextRequest) {
 
       const existing = dailyMap.get(dateKey) || { revenue: 0, count: 0 }
       dailyMap.set(dateKey, {
-        revenue: existing.revenue + c.amount / 100,
+        revenue: existing.revenue + c.amount,
         count: existing.count + 1,
       })
     })
@@ -157,6 +172,9 @@ export async function GET(req: NextRequest) {
       },
       summary: {
         totalRevenue: Math.round(totalRevenue * 100) / 100,
+        revenue: Math.round(totalRevenue * 100) / 100,
+        grossRevenue: Math.round(totalGross * 100) / 100,
+        stripeFees: Math.round(totalFees * 100) / 100,
         purchaseCount,
         aov: Math.round(aov * 100) / 100,
         currency: 'EUR',
@@ -164,15 +182,15 @@ export async function GET(req: NextRequest) {
       breakdown: {
         '63days': {
           count: product63.length,
-          revenue: product63.reduce((s, c) => s + c.amount, 0) / 100,
+          revenue: Math.round(product63.reduce((s, c) => s + c.amount, 0) * 100) / 100,
         },
         '30days': {
           count: product30.length,
-          revenue: product30.reduce((s, c) => s + c.amount, 0) / 100,
+          revenue: Math.round(product30.reduce((s, c) => s + c.amount, 0) * 100) / 100,
         },
         other: {
           count: other.length,
-          revenue: other.reduce((s, c) => s + c.amount, 0) / 100,
+          revenue: Math.round(other.reduce((s, c) => s + c.amount, 0) * 100) / 100,
         },
       },
       daily: dailyData,
