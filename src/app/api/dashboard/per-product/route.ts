@@ -92,10 +92,13 @@ export async function GET(req: NextRequest) {
     // STEP 2: List sessions with line_items expanded (within 4-level limit)
     const productStats = new Map<string, ProductStats>()
 
+    const MAX_PAGES = 30 // ~3000 sessions max per request
+    let pages = 0
+    let truncated = false
     let hasMore = true
     let startingAfter: string | undefined
 
-    while (hasMore) {
+    while (hasMore && pages < MAX_PAGES) {
       const batch = await stripe.checkout.sessions.list({
         limit: 100,
         created: { gte: startTs, lte: endTs },
@@ -179,9 +182,15 @@ export async function GET(req: NextRequest) {
       }
 
       hasMore = batch.has_more
-      if (batch.data.length > 0) {
+      if (hasMore && batch.data.length > 0) {
         startingAfter = batch.data[batch.data.length - 1].id
       }
+      pages++
+    }
+
+    if (hasMore && pages >= MAX_PAGES) {
+      truncated = true
+      console.warn(`[${req.nextUrl.pathname}] Pagination capped at ${MAX_PAGES} pages — data may be incomplete`)
     }
 
     // STEP 3: Match Meta spend to products
@@ -221,6 +230,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      truncated,
       dateRange: { start: start.toISOString(), end: end.toISOString() },
       products,
       timestamp: new Date().toISOString(),
