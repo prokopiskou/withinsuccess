@@ -10,16 +10,6 @@ const GROUPS = {
   seminar_waitlist: '187522640873784777',
 }
 
-type CampaignStats = {
-  name: string
-  sent: number
-  opens: number
-  clicks: number
-  openRate: number
-  clickRate: number
-  sentDate: string
-}
-
 function toDate(d: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Athens',
@@ -107,101 +97,6 @@ async function getQuizLeads(start: Date, end: Date): Promise<number> {
   }
 }
 
-async function getTotalSubscribers(apiKey: string): Promise<number> {
-  const cacheKey = 'leads_total_subscribers'
-  const cached = getCached<number>(cacheKey)
-  if (cached !== null) {
-    console.log('[Newsletter] Using cached total subscribers')
-    return cached
-  }
-
-  // Approach 1: Try /api/account
-  try {
-    const statsRes = await fetch('https://connect.mailerlite.com/api/account', {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json',
-      },
-    })
-    if (statsRes.ok) {
-      const data = await statsRes.json()
-      const total = data?.data?.subscribers?.active || data?.subscribers?.active || data?.data?.total_subscribers || 0
-      if (total > 0) {
-        setCached(cacheKey, total, 600) // 10 min cache
-        return total
-      }
-    }
-  } catch (err) {
-    console.warn('Account endpoint failed:', err)
-  }
-
-  // Approach 2: Paginate (slow, cache aggressively)
-  try {
-    let count = 0
-    let cursor: string | undefined
-    let hasMore = true
-    let pages = 0
-    const maxPages = 200
-    while (hasMore && pages < maxPages) {
-      const url = new URL('https://connect.mailerlite.com/api/subscribers')
-      url.searchParams.set('filter[status]', 'active')
-      url.searchParams.set('limit', '100')
-      if (cursor) url.searchParams.set('cursor', cursor)
-      const res = await fetch(url.toString(), {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Accept': 'application/json',
-        },
-      })
-      if (!res.ok) break
-      const data = await res.json()
-      const subs = data?.data || []
-      count += subs.length
-      cursor = data?.meta?.next_cursor || undefined
-      hasMore = !!cursor && subs.length === 100
-      pages++
-    }
-    setCached(cacheKey, count, 600) // 10 min cache
-    return count
-  } catch (err) {
-    console.warn('Pagination count failed:', err)
-    return 0
-  }
-}
-
-async function getRecentCampaigns(apiKey: string): Promise<CampaignStats[]> {
-  try {
-    const res = await fetch('https://connect.mailerlite.com/api/campaigns?filter[status]=sent&limit=5', {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json',
-      },
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    const campaigns = data.data || []
-
-    return campaigns.map((c: any): CampaignStats => {
-      const stats = c.stats || {}
-      const sent = stats.sent || 0
-      const opens = stats.opens_count || 0
-      const clicks = stats.clicks_count || 0
-      return {
-        name: c.name || '(no name)',
-        sent,
-        opens,
-        clicks,
-        openRate: sent > 0 ? (opens / sent) * 100 : 0,
-        clickRate: sent > 0 ? (clicks / sent) * 100 : 0,
-        sentDate: c.finished_at || c.scheduled_for || c.created_at || '',
-      }
-    })
-  } catch (err) {
-    console.warn('Campaigns fetch failed:', err)
-    return []
-  }
-}
-
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams
@@ -229,13 +124,11 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const [coaching, programWaitlist, seminarWaitlist, quiz, totalSubs, campaigns] = await Promise.all([
+    const [coaching, programWaitlist, seminarWaitlist, quiz] = await Promise.all([
       countSubscribersInGroup(GROUPS.coaching, apiKey, start, end),
       countSubscribersInGroup(GROUPS.program_waitlist, apiKey, start, end),
       countSubscribersInGroup(GROUPS.seminar_waitlist, apiKey, start, end),
       getQuizLeads(start, end),
-      getTotalSubscribers(apiKey),
-      getRecentCampaigns(apiKey),
     ])
 
     const total = coaching + programWaitlist + seminarWaitlist + quiz
@@ -250,10 +143,6 @@ export async function GET(req: NextRequest) {
         quiz,
         total,
       },
-      newsletter: {
-        totalSubscribers: totalSubs,
-        recentCampaigns: campaigns,
-      },
       timestamp: new Date().toISOString(),
     }, 300) // 5 min cache
 
@@ -266,10 +155,6 @@ export async function GET(req: NextRequest) {
         seminar_waitlist: seminarWaitlist,
         quiz,
         total,
-      },
-      newsletter: {
-        totalSubscribers: totalSubs,
-        recentCampaigns: campaigns,
       },
       timestamp: new Date().toISOString(),
     })

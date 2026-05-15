@@ -15,18 +15,6 @@ type LeadsData = {
     quiz: number
     total: number
   }
-  newsletter?: {
-    totalSubscribers: number
-    recentCampaigns: Array<{
-      name: string
-      sent: number
-      opens: number
-      clicks: number
-      openRate: number
-      clickRate: number
-      sentDate: string
-    }>
-  }
 }
 
 const PRESETS: { preset: DateRangePreset; label: string }[] = [
@@ -75,7 +63,6 @@ export default function LeadsDashboardPage() {
   }, [preset])
 
   const leads = data?.leads
-  const newsletter = data?.newsletter
   const hasLeads = data?.success && leads && leads.total > 0
   const maxLeadValue = leads
     ? Math.max(leads.coaching, leads.program_waitlist, leads.seminar_waitlist, leads.quiz, 1)
@@ -184,54 +171,6 @@ export default function LeadsDashboardPage() {
                 </div>
               )}
             </section>
-
-            {newsletter && (
-              <section>
-                <p className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">
-                  NEWSLETTER · MailerLite
-                </p>
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 mb-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Subscribers</p>
-                  <p className="text-3xl font-semibold tracking-tight" style={{ fontFamily: 'Georgia, serif', color: '#C9A96E' }}>
-                    {newsletter.totalSubscribers.toLocaleString('el-GR')}
-                  </p>
-                </div>
-
-                {newsletter.recentCampaigns.length > 0 && (
-                  <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-100">
-                      <p className="text-xs text-gray-400 uppercase tracking-wider">Recent Campaigns</p>
-                    </div>
-                    <div className="divide-y divide-gray-100">
-                      {newsletter.recentCampaigns.map((c, idx) => (
-                        <div key={idx} className="px-6 py-4">
-                          <div className="flex items-baseline justify-between gap-3 mb-2 flex-wrap">
-                            <p className="text-sm font-medium truncate flex-1" style={{ fontFamily: 'Georgia, serif' }}>
-                              {c.name}
-                            </p>
-                            <p className="text-[10px] text-gray-400">
-                              {c.sent.toLocaleString('el-GR')} sent
-                            </p>
-                          </div>
-                          <div className="flex gap-6 text-xs text-gray-600">
-                            <span>
-                              Open: <span className="font-semibold" style={{ color: c.openRate >= 30 ? '#15803D' : c.openRate >= 20 ? '#A16207' : '#737373' }}>
-                                {c.openRate.toFixed(1)}%
-                              </span>
-                            </span>
-                            <span>
-                              Click: <span className="font-semibold" style={{ color: c.clickRate >= 5 ? '#15803D' : c.clickRate >= 2 ? '#A16207' : '#737373' }}>
-                                {c.clickRate.toFixed(1)}%
-                              </span>
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </section>
-            )}
           </>
         )}
       </div>
