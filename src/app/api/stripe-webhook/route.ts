@@ -18,79 +18,91 @@ type ProductConfig = {
   manyChatField?: number
 }
 
-function getProductConfig(amount: number, metadata?: Record<string, string>): ProductConfig {
-  // PRIORITY 1: metadata.product (set explicitly by create-session)
+// Stripe Product IDs (stable — don't change with price)
+const PRODUCT_ID_63DAYS = 'prod_UKYraSNGQgor0D'
+const PRODUCT_ID_30DAYS = 'prod_Rxeqpm5IWwBxef'
+
+const CONFIG_63DAYS: ProductConfig = {
+  name: '63 Μέρες Ζωής',
+  mailerLiteGroup: '170438323755550313',
+  syncManyChat: true,
+  manyChatField: 14490102,
+}
+
+const CONFIG_30DAYS: ProductConfig = {
+  name: '30 Μέρες',
+  mailerLiteGroup: '148420836003415194',
+  syncManyChat: false,
+}
+
+async function getProductConfig(
+  session: Stripe.Checkout.Session,
+  amount: number,
+  metadata?: Record<string, string>
+): Promise<ProductConfig> {
+  // PRIORITY 1: Stripe Product ID via line items (most reliable, price-independent)
+  try {
+    const sessionFull = await stripe.checkout.sessions.retrieve(session.id, {
+      expand: ['line_items.data.price'],
+    })
+    const lineItems = sessionFull.line_items?.data || []
+    
+    for (const item of lineItems) {
+      const productId = typeof item.price?.product === 'string'
+        ? item.price.product
+        : (item.price?.product as Stripe.Product | undefined)?.id || ''
+      
+      if (productId === PRODUCT_ID_63DAYS) {
+        console.log(`[PRODUCT] ✅ Matched 63 Μέρες Ζωής via Product ID ${productId}`)
+        return CONFIG_63DAYS
+      }
+      if (productId === PRODUCT_ID_30DAYS) {
+        console.log(`[PRODUCT] ✅ Matched 30 Μέρες via Product ID ${productId}`)
+        return CONFIG_30DAYS
+      }
+    }
+    console.warn(`[PRODUCT] No matching Product ID in line items. Found:`, 
+      lineItems.map(i => typeof i.price?.product === 'string' ? i.price.product : (i.price?.product as Stripe.Product | undefined)?.id))
+  } catch (err) {
+    console.warn('Failed to fetch line items for product detection:', err)
+  }
+  
+  // PRIORITY 2: metadata.product (set by our /api/stripe/create-session)
   const product = (metadata?.product || '').toLowerCase().trim()
-  
   if (product === '63days') {
-    console.log(`[PRODUCT] Matched 63days via metadata.product (amount: ${amount})`)
-    return {
-      name: '63 Μέρες Ζωής',
-      mailerLiteGroup: '170438323755550313',
-      syncManyChat: true,
-      manyChatField: 14490102
-    }
+    console.log(`[PRODUCT] Matched 63 Μέρες via metadata.product`)
+    return CONFIG_63DAYS
   }
-  
   if (product === '30days') {
-    console.log(`[PRODUCT] Matched 30days via metadata.product (amount: ${amount})`)
-    return {
-      name: '30 Μέρες',
-      mailerLiteGroup: '148420836003415194',
-      syncManyChat: false
-    }
+    console.log(`[PRODUCT] Matched 30 Μέρες via metadata.product`)
+    return CONFIG_30DAYS
   }
   
-  // PRIORITY 2: metadata.product_name
+  // PRIORITY 3: metadata.product_name (legacy fallback)
   const productName = (metadata?.product_name || '').toLowerCase()
-  
   if (productName.includes('63')) {
-    console.log(`[PRODUCT] Matched 63days via product_name (amount: ${amount})`)
-    return {
-      name: '63 Μέρες Ζωής',
-      mailerLiteGroup: '170438323755550313',
-      syncManyChat: true,
-      manyChatField: 14490102
-    }
+    return CONFIG_63DAYS
   }
-  
   if (productName.includes('30')) {
-    console.log(`[PRODUCT] Matched 30days via product_name (amount: ${amount})`)
-    return {
-      name: '30 Μέρες',
-      mailerLiteGroup: '148420836003415194',
-      syncManyChat: false
-    }
+    return CONFIG_30DAYS
   }
   
-  // PRIORITY 3: Amount-based fallback with safer bands
-  // 63 Days has been priced: €69 / €89 / €109
+  // PRIORITY 4: Amount-based bands as last resort
   if (amount >= 60 && amount <= 120) {
-    console.log(`[PRODUCT] Matched 63days via amount band ${amount}`)
-    return {
-      name: '63 Μέρες Ζωής',
-      mailerLiteGroup: '170438323755550313',
-      syncManyChat: true,
-      manyChatField: 14490102
-    }
+    console.log(`[PRODUCT] Matched 63 Μέρες via amount band ${amount}`)
+    return CONFIG_63DAYS
   }
-  
-  // 30 Days: only exact €15 (avoid edge cases like discounts)
   if (amount === 15) {
-    console.log(`[PRODUCT] Matched 30days via exact amount 15`)
-    return {
-      name: '30 Μέρες',
-      mailerLiteGroup: '148420836003415194',
-      syncManyChat: false
-    }
+    console.log(`[PRODUCT] Matched 30 Μέρες via exact amount 15`)
+    return CONFIG_30DAYS
   }
   
-  // PRIORITY 4: Final safe fallback → 63 Days (safer to not auto-send 30 day emails)
-  console.warn(`[PRODUCT] UNKNOWN product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63days group')
+  // FINAL FALLBACK: default to 63 Days (safer — avoids triggering 30 days automation)
+  console.warn(`[PRODUCT] ⚠️ UNKNOWN product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63 Days group')
   return {
     name: 'WithinSuccess Program',
     mailerLiteGroup: '170438323755550313',
-    syncManyChat: false
+    syncManyChat: false,
   }
 }
 
@@ -370,7 +382,7 @@ export async function POST(req: NextRequest) {
     const rawFullName = session.customer_details?.name || ''
 
     // Determine which product was purchased
-    const product = getProductConfig(amount, session.metadata as Record<string, string>)
+    const product = await getProductConfig(session, amount, session.metadata as Record<string, string>)
     console.log(`Purchase: €${amount} → ${product.name} (group ${product.mailerLiteGroup})`)
 
     // 1. Send Purchase event to Meta CAPI
