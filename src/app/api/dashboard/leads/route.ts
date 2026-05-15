@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getGA4Client, getPropertyPath } from '@/lib/ga4Client'
+import { getCached, setCached } from '@/lib/dashboard/cache'
 
 export const dynamic = 'force-dynamic'
 
@@ -107,11 +108,14 @@ async function getQuizLeads(start: Date, end: Date): Promise<number> {
 }
 
 async function getTotalSubscribers(apiKey: string): Promise<number> {
-  // Try the groups endpoint - each group returns active_count
-  // But we need the UNIQUE total of all subscribers (no double-count across groups)
-  // Best approach: use stats from /api/account or paginate /api/subscribers
-  
-  // Approach 1: Try /api/stats endpoint
+  const cacheKey = 'leads_total_subscribers'
+  const cached = getCached<number>(cacheKey)
+  if (cached !== null) {
+    console.log('[Newsletter] Using cached total subscribers')
+    return cached
+  }
+
+  // Approach 1: Try /api/account
   try {
     const statsRes = await fetch('https://connect.mailerlite.com/api/account', {
       headers: {
@@ -123,28 +127,26 @@ async function getTotalSubscribers(apiKey: string): Promise<number> {
       const data = await statsRes.json()
       const total = data?.data?.subscribers?.active || data?.subscribers?.active || data?.data?.total_subscribers || 0
       if (total > 0) {
-        console.log(`[Newsletter] Total subscribers from /api/account: ${total}`)
+        setCached(cacheKey, total, 600) // 10 min cache
         return total
       }
     }
   } catch (err) {
     console.warn('Account endpoint failed:', err)
   }
-  
-  // Approach 2: Paginate and count active subscribers (slower but works)
+
+  // Approach 2: Paginate (slow, cache aggressively)
   try {
     let count = 0
     let cursor: string | undefined
     let hasMore = true
     let pages = 0
-    const maxPages = 200  // ~20,000 subscribers max
-    
+    const maxPages = 200
     while (hasMore && pages < maxPages) {
       const url = new URL('https://connect.mailerlite.com/api/subscribers')
       url.searchParams.set('filter[status]', 'active')
       url.searchParams.set('limit', '100')
       if (cursor) url.searchParams.set('cursor', cursor)
-      
       const res = await fetch(url.toString(), {
         headers: {
           'Authorization': `Bearer ${apiKey}`,
@@ -159,8 +161,7 @@ async function getTotalSubscribers(apiKey: string): Promise<number> {
       hasMore = !!cursor && subs.length === 100
       pages++
     }
-    
-    console.log(`[Newsletter] Total subscribers via pagination: ${count} (${pages} pages)`)
+    setCached(cacheKey, count, 600) // 10 min cache
     return count
   } catch (err) {
     console.warn('Pagination count failed:', err)
@@ -212,6 +213,14 @@ export async function GET(req: NextRequest) {
       ? new Date(startStr)
       : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000)
 
+    const dateKey = `${start.toISOString()}_${end.toISOString()}`
+    const cacheKey = `leads_${dateKey}`
+    const cachedResponse = getCached<any>(cacheKey)
+    if (cachedResponse) {
+      console.log('[Leads] Returning cached response')
+      return NextResponse.json(cachedResponse)
+    }
+
     const apiKey = process.env.MAILERLITE_API_KEY
     if (!apiKey) {
       return NextResponse.json(
@@ -230,6 +239,23 @@ export async function GET(req: NextRequest) {
     ])
 
     const total = coaching + programWaitlist + seminarWaitlist + quiz
+
+    setCached(cacheKey, {
+      success: true,
+      dateRange: { start: start.toISOString(), end: end.toISOString() },
+      leads: {
+        coaching,
+        program_waitlist: programWaitlist,
+        seminar_waitlist: seminarWaitlist,
+        quiz,
+        total,
+      },
+      newsletter: {
+        totalSubscribers: totalSubs,
+        recentCampaigns: campaigns,
+      },
+      timestamp: new Date().toISOString(),
+    }, 300) // 5 min cache
 
     return NextResponse.json({
       success: true,

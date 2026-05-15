@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { getDateRange, formatDateRange, type DateRangePreset } from '@/lib/dashboard/dateRanges'
+import { usePersistedPreset } from '@/lib/dashboard/usePersistedPreset'
 
 type LeadsData = {
   success: boolean
@@ -45,7 +46,7 @@ const LEAD_TYPES = [
 ] as const
 
 export default function LeadsDashboardPage() {
-  const [preset, setPreset] = useState<DateRangePreset>('last30')
+  const [preset, setPreset] = usePersistedPreset('last30')
   const [data, setData] = useState<LeadsData | null>(null)
   const [loading, setLoading] = useState(true)
 

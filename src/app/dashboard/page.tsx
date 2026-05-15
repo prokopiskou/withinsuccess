@@ -9,6 +9,7 @@ import {
   formatDateRange,
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
+import { usePersistedPreset } from '@/lib/dashboard/usePersistedPreset'
 import RevenueChart from './components/RevenueChart'
 import KPICard from './components/KPICard'
 import TrafficSources from './components/TrafficSources'
@@ -133,7 +134,7 @@ const PRESETS: { preset: DateRangePreset; label: string }[] = [
 ]
 
 export default function DashboardPage() {
-  const [preset, setPreset] = useState<DateRangePreset>('mtd')
+  const [preset, setPreset] = usePersistedPreset('last30')
   const [stripeData, setStripeData] = useState<StripeData | null>(null)
   const [ga4Data, setGa4Data] = useState<GA4Data | null>(null)
   const [mlData, setMlData] = useState<MailerLiteData | null>(null)

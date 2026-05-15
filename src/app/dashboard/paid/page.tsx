@@ -7,6 +7,7 @@ import {
   formatDateRange,
   type DateRangePreset,
 } from '@/lib/dashboard/dateRanges'
+import { usePersistedPreset } from '@/lib/dashboard/usePersistedPreset'
 import AdRow from './components/AdRow'
 import AttributionView from './components/AttributionView'
 import PerProductBreakdown from './components/PerProductBreakdown'
@@ -83,7 +84,7 @@ const PRESETS: { preset: DateRangePreset; label: string }[] = [
 type View = 'campaigns' | 'adsets' | 'ads'
 
 export default function PaidDashboardPage() {
-  const [preset, setPreset] = useState<DateRangePreset>('last30')
+  const [preset, setPreset] = usePersistedPreset('last30')
   const [view, setView] = useState<View>('ads')
   const [data, setData] = useState<MetaData | null>(null)
   const [attributionData, setAttributionData] = useState<AttributionData | null>(null)

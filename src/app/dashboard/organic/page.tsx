@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { getDateRange, formatDateRange, type DateRangePreset } from '@/lib/dashboard/dateRanges'
+import { usePersistedPreset } from '@/lib/dashboard/usePersistedPreset'
 
 type CategoryData = {
   category: string
@@ -45,7 +46,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 export default function OrganicDashboardPage() {
-  const [preset, setPreset] = useState<DateRangePreset>('last30')
+  const [preset, setPreset] = usePersistedPreset('last30')
   const [data, setData] = useState<OrganicData | null>(null)
   const [loading, setLoading] = useState(true)
 
