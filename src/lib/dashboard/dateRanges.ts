@@ -1,15 +1,18 @@
-import { 
-  startOfWeek, 
-  endOfWeek, 
-  startOfMonth, 
-  endOfMonth,
-  startOfYear,
-  endOfYear,
-  subDays,
-  format,
-} from 'date-fns'
+import { startOfWeek, startOfMonth, startOfYear, subDays, endOfDay, startOfDay } from 'date-fns'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 
-export type DateRangePreset = 'today' | 'yesterday' | 'wtd' | 'mtd' | 'ytd' | 'last7' | 'last30' | 'all'
+const ATHENS_TZ = 'Europe/Athens'
+
+export type DateRangePreset = 
+  | 'today'
+  | 'yesterday'
+  | 'wtd'
+  | 'mtd'
+  | 'last7'
+  | 'last30'
+  | 'last90'
+  | 'ytd'
+  | 'all'
 
 export type DateRange = {
   start: Date
@@ -17,87 +20,98 @@ export type DateRange = {
   label: string
 }
 
-const ALL_TIME_START = new Date('2024-01-01T00:00:00.000Z')
+function nowInAthens(): Date {
+  return toZonedTime(new Date(), ATHENS_TZ)
+}
+
+function athensToUtc(athensDate: Date): Date {
+  return fromZonedTime(athensDate, ATHENS_TZ)
+}
 
 export function getDateRange(preset: DateRangePreset): DateRange {
-  const now = new Date()
-
+  const athensNow = nowInAthens()
+  
   switch (preset) {
-    case 'today':
+    case 'today': {
+      const start = startOfDay(athensNow)
       return {
-        start: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0),
-        end: now,
+        start: athensToUtc(start),
+        end: athensToUtc(athensNow),
         label: 'Σήμερα',
       }
-
+    }
     case 'yesterday': {
-      const yesterday = subDays(now, 1)
+      const yesterday = subDays(athensNow, 1)
       return {
-        start: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 0, 0, 0),
-        end: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59),
+        start: athensToUtc(startOfDay(yesterday)),
+        end: athensToUtc(endOfDay(yesterday)),
         label: 'Χθες',
       }
     }
-
-    case 'wtd':
+    case 'wtd': {
+      const start = startOfWeek(athensNow, { weekStartsOn: 1 })
       return {
-        start: startOfWeek(now, { weekStartsOn: 1 }),
-        end: now,
-        label: 'Αυτή την εβδομάδα',
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
+        label: 'WTD',
       }
-
-    case 'mtd':
+    }
+    case 'mtd': {
+      const start = startOfMonth(athensNow)
       return {
-        start: startOfMonth(now),
-        end: now,
-        label: 'Αυτόν τον μήνα',
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
+        label: 'MTD',
       }
-
-    case 'ytd':
+    }
+    case 'last7': {
+      const start = subDays(athensNow, 7)
       return {
-        start: startOfYear(now),
-        end: now,
-        label: 'Φέτος',
-      }
-
-    case 'last7':
-      return {
-        start: subDays(now, 7),
-        end: now,
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
         label: 'Τελευταίες 7 ημέρες',
       }
-
-    case 'last30':
+    }
+    case 'last30': {
+      const start = subDays(athensNow, 30)
       return {
-        start: subDays(now, 30),
-        end: now,
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
         label: 'Τελευταίες 30 ημέρες',
       }
-
-    case 'all':
+    }
+    case 'last90': {
+      const start = subDays(athensNow, 90)
       return {
-        start: ALL_TIME_START,
-        end: now,
-        label: 'Όλη η περίοδος',
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
+        label: 'Τελευταίες 90 ημέρες',
       }
-
-    default:
-      return getDateRange('last30')
+    }
+    case 'ytd': {
+      const start = startOfYear(athensNow)
+      return {
+        start: athensToUtc(startOfDay(start)),
+        end: athensToUtc(athensNow),
+        label: 'YTD',
+      }
+    }
+    case 'all': {
+      return {
+        start: new Date('2020-01-01T00:00:00Z'),
+        end: athensToUtc(athensNow),
+        label: 'Όλος ο χρόνος',
+      }
+    }
   }
 }
 
 export function formatDateRange(range: DateRange): string {
-  return `${format(range.start, 'dd/MM/yyyy')} — ${format(range.end, 'dd/MM/yyyy')}`
+  return range.label
 }
 
 /**
  * Get the previous period for a given date range, for comparison.
- * - Today → Yesterday
- * - WTD → Previous week's same days
- * - MTD → Previous month's same days
- * - YTD → Previous year's YTD
- * - Last30 → 30-60 days ago
- * - All → null (no previous comparison)
  */
 export function getPreviousDateRange(preset: DateRangePreset, current: DateRange): DateRange | null {
   const { start, end } = current
@@ -107,20 +121,15 @@ export function getPreviousDateRange(preset: DateRangePreset, current: DateRange
     case 'all':
       return null
 
-    case 'today': {
-      const yesterday = subDays(start, 1)
-      return {
-        start: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 0, 0, 0),
-        end: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59),
-        label: 'Χθες',
-      }
-    }
+    case 'today':
+      return getDateRange('yesterday')
 
     case 'yesterday': {
-      const twoDaysAgo = subDays(start, 1)
+      const athensNow = nowInAthens()
+      const twoDaysAgo = subDays(athensNow, 2)
       return {
-        start: new Date(twoDaysAgo.getFullYear(), twoDaysAgo.getMonth(), twoDaysAgo.getDate(), 0, 0, 0),
-        end: new Date(twoDaysAgo.getFullYear(), twoDaysAgo.getMonth(), twoDaysAgo.getDate(), 23, 59, 59),
+        start: athensToUtc(startOfDay(twoDaysAgo)),
+        end: athensToUtc(endOfDay(twoDaysAgo)),
         label: 'Προ-χθες',
       }
     }
@@ -133,46 +142,79 @@ export function getPreviousDateRange(preset: DateRangePreset, current: DateRange
       }
 
     case 'mtd': {
-      const prevMonthEnd = subDays(start, 1)
-      const prevMonthStart = new Date(prevMonthEnd.getFullYear(), prevMonthEnd.getMonth(), 1)
-      const sameDayPrevMonth = new Date(prevMonthEnd.getFullYear(), prevMonthEnd.getMonth(), end.getDate())
+      const athensEnd = toZonedTime(end, ATHENS_TZ)
+      const prevMonthEnd = subDays(startOfMonth(athensEnd), 1)
+      const prevMonthStart = startOfMonth(prevMonthEnd)
+      const sameDay = Math.min(athensEnd.getDate(), prevMonthEnd.getDate())
+      const prevEndAthens = new Date(
+        prevMonthEnd.getFullYear(),
+        prevMonthEnd.getMonth(),
+        sameDay,
+        athensEnd.getHours(),
+        athensEnd.getMinutes(),
+        athensEnd.getSeconds(),
+        athensEnd.getMilliseconds()
+      )
       return {
-        start: prevMonthStart,
-        end: sameDayPrevMonth,
+        start: athensToUtc(startOfDay(prevMonthStart)),
+        end: athensToUtc(prevEndAthens),
         label: 'Προηγ. μήνας',
       }
     }
 
     case 'ytd': {
-      const prevYearStart = new Date(start.getFullYear() - 1, 0, 1)
-      const prevYearEnd = new Date(start.getFullYear() - 1, end.getMonth(), end.getDate())
+      const athensEnd = toZonedTime(end, ATHENS_TZ)
+      const prevYearStart = new Date(athensEnd.getFullYear() - 1, 0, 1)
+      const prevYearEnd = new Date(
+        athensEnd.getFullYear() - 1,
+        athensEnd.getMonth(),
+        athensEnd.getDate(),
+        athensEnd.getHours(),
+        athensEnd.getMinutes(),
+        athensEnd.getSeconds(),
+        athensEnd.getMilliseconds()
+      )
       return {
-        start: prevYearStart,
-        end: prevYearEnd,
+        start: athensToUtc(startOfDay(prevYearStart)),
+        end: athensToUtc(prevYearEnd),
         label: 'Προηγ. έτος',
       }
     }
 
     case 'last7': {
-      const prevEnd = subDays(start, 1)
+      const athensStart = toZonedTime(start, ATHENS_TZ)
+      const prevEnd = subDays(athensStart, 1)
+      const prevStart = subDays(prevEnd, 7)
       return {
-        start: subDays(prevEnd, 7),
-        end: prevEnd,
+        start: athensToUtc(startOfDay(prevStart)),
+        end: athensToUtc(endOfDay(prevEnd)),
         label: 'Προηγ. 7 ημέρες',
       }
     }
 
     case 'last30': {
-      const prevEnd = subDays(start, 1)
+      const athensStart = toZonedTime(start, ATHENS_TZ)
+      const prevEnd = subDays(athensStart, 1)
+      const prevStart = subDays(prevEnd, 30)
       return {
-        start: subDays(prevEnd, 30),
-        end: prevEnd,
+        start: athensToUtc(startOfDay(prevStart)),
+        end: athensToUtc(endOfDay(prevEnd)),
         label: 'Προηγ. 30 ημέρες',
       }
     }
 
+    case 'last90': {
+      const athensStart = toZonedTime(start, ATHENS_TZ)
+      const prevEnd = subDays(athensStart, 1)
+      const prevStart = subDays(prevEnd, 90)
+      return {
+        start: athensToUtc(startOfDay(prevStart)),
+        end: athensToUtc(endOfDay(prevEnd)),
+        label: 'Προηγ. 90 ημέρες',
+      }
+    }
+
     default: {
-      // Generic: shift back by duration
       const prevEnd = new Date(start.getTime() - 1)
       const prevStart = new Date(prevEnd.getTime() - durationMs)
       return {
