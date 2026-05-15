@@ -107,17 +107,63 @@ async function getQuizLeads(start: Date, end: Date): Promise<number> {
 }
 
 async function getTotalSubscribers(apiKey: string): Promise<number> {
+  // Try the groups endpoint - each group returns active_count
+  // But we need the UNIQUE total of all subscribers (no double-count across groups)
+  // Best approach: use stats from /api/account or paginate /api/subscribers
+  
+  // Approach 1: Try /api/stats endpoint
   try {
-    const res = await fetch('https://connect.mailerlite.com/api/subscribers?filter[status]=active&limit=1', {
+    const statsRes = await fetch('https://connect.mailerlite.com/api/account', {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Accept': 'application/json',
       },
     })
-    if (!res.ok) return 0
-    const data = await res.json()
-    return data?.meta?.total || data?.total || 0
-  } catch {
+    if (statsRes.ok) {
+      const data = await statsRes.json()
+      const total = data?.data?.subscribers?.active || data?.subscribers?.active || data?.data?.total_subscribers || 0
+      if (total > 0) {
+        console.log(`[Newsletter] Total subscribers from /api/account: ${total}`)
+        return total
+      }
+    }
+  } catch (err) {
+    console.warn('Account endpoint failed:', err)
+  }
+  
+  // Approach 2: Paginate and count active subscribers (slower but works)
+  try {
+    let count = 0
+    let cursor: string | undefined
+    let hasMore = true
+    let pages = 0
+    const maxPages = 200  // ~20,000 subscribers max
+    
+    while (hasMore && pages < maxPages) {
+      const url = new URL('https://connect.mailerlite.com/api/subscribers')
+      url.searchParams.set('filter[status]', 'active')
+      url.searchParams.set('limit', '100')
+      if (cursor) url.searchParams.set('cursor', cursor)
+      
+      const res = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept': 'application/json',
+        },
+      })
+      if (!res.ok) break
+      const data = await res.json()
+      const subs = data?.data || []
+      count += subs.length
+      cursor = data?.meta?.next_cursor || undefined
+      hasMore = !!cursor && subs.length === 100
+      pages++
+    }
+    
+    console.log(`[Newsletter] Total subscribers via pagination: ${count} (${pages} pages)`)
+    return count
+  } catch (err) {
+    console.warn('Pagination count failed:', err)
     return 0
   }
 }
