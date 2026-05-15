@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const WAITLIST_GROUP_ID = '187457343070405693'
+const GROUP_PROGRAM_WAITLIST = '187457343070405693'  // 63 Days + variants
+const GROUP_SEMINAR_WAITLIST = '187522640873784777'  // Seminars
+
+function getGroupForSource(source: string): string {
+  const s = source.toLowerCase()
+  if (s === 'seminar' || s === 'seminars' || s.startsWith('seminar_')) {
+    return GROUP_SEMINAR_WAITLIST
+  }
+  return GROUP_PROGRAM_WAITLIST
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const email = (body.email || '').trim().toLowerCase()
+    const name = (body.name || '').trim()
     const source = body.source || 'unknown'
 
     if (!email || !email.includes('@')) {
@@ -24,7 +34,16 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Subscribe to MailerLite + add to waitlist group + tag source
+    const groupId = getGroupForSource(source)
+
+    const fields: Record<string, string> = {
+      source,
+      waitlist_signup_date: new Date().toISOString(),
+    }
+    if (name) {
+      fields.name = name
+    }
+
     const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
       headers: {
@@ -34,11 +53,8 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         email,
-        groups: [WAITLIST_GROUP_ID],
-        fields: {
-          source,
-          waitlist_signup_date: new Date().toISOString(),
-        },
+        groups: [groupId],
+        fields,
         status: 'active',
       }),
     })
@@ -59,6 +75,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Στη waitlist',
       source,
+      group: groupId,
     })
   } catch (err) {
     const e = err as Error

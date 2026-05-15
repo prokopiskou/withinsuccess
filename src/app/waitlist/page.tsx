@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import SiteNav from "@/components/SiteNav";
-import MetaPixel, { trackEvent } from "@/components/MetaPixel";
+import MetaPixel from "@/components/MetaPixel";
+import { trackSeminarWaitlist } from '@/lib/analytics';
 
 const GOLD = '#C9A96E';
 
@@ -17,10 +18,10 @@ export default function Waitlist() {
     await fetch("/api/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name, email, source: 'seminar' }),
     });
     setSubmitted(true);
-    trackEvent("Lead");
+    trackSeminarWaitlist('live_seminar');
     setLoading(false);
   };
 
