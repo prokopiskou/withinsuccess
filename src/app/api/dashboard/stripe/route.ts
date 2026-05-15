@@ -6,9 +6,9 @@ export const dynamic = 'force-dynamic'
 /**
  * GET /api/dashboard/stripe?start=2026-05-01&end=2026-05-12
  * 
- * Returns aggregated Stripe metrics for the date range:
+ * Returns aggregated Stripe metrics for paid checkout sessions in the date range:
  * - Total revenue (€ net after Stripe fees)
- * - Number of successful payments
+ * - Number of successful payments (1 per paid session)
  * - Average order value
  * - Product breakdown (63days vs 30days)
  * - Recent payments list (last 20)
@@ -30,65 +30,99 @@ export async function GET(req: NextRequest) {
 
     const stripe = getStripeClient()
 
-    // Fetch all successful charges in date range
-    // Paginate through all results
-    type Charge = {
+    type SessionRecord = {
       id: string
       amount: number
       grossAmount: number
       fee: number
       currency: string
       created: number
-      status: string
       description: string | null
       metadata: Record<string, string>
       receipt_email: string | null
-      payment_method_details: { type: string } | null
+      name: string | null
     }
 
-    const charges: Charge[] = []
+    const charges: SessionRecord[] = []
+    const MAX_PAGES = 30
+    let pages = 0
+    let truncated = false
     let hasMore = true
     let startingAfter: string | undefined
 
-    while (hasMore && charges.length < 1000) {
-      const batch = await stripe.charges.list({
+    const feeByChargeId = new Map<string, number>()
+    try {
+      let btCursor: string | undefined
+      let btHasMore = true
+      let btPages = 0
+      while (btHasMore && btPages < MAX_PAGES) {
+        const btBatch = await stripe.balanceTransactions.list({
+          limit: 100,
+          created: { gte: startTs, lte: endTs },
+          type: 'charge',
+          starting_after: btCursor,
+        })
+        for (const bt of btBatch.data) {
+          if (bt.source && typeof bt.source === 'string') {
+            feeByChargeId.set(bt.source, bt.fee || 0)
+          }
+        }
+        btHasMore = btBatch.has_more
+        if (btHasMore && btBatch.data.length > 0) {
+          btCursor = btBatch.data[btBatch.data.length - 1].id
+        }
+        btPages++
+      }
+    } catch (err) {
+      console.warn('Failed to fetch balance transactions:', err)
+    }
+
+    while (hasMore && pages < MAX_PAGES) {
+      const batch = await stripe.checkout.sessions.list({
         limit: 100,
         created: { gte: startTs, lte: endTs },
         starting_after: startingAfter,
-        expand: ['data.balance_transaction'],
+        expand: ['data.payment_intent'],
       })
 
-      for (const c of batch.data) {
-        if (c.status === 'succeeded' && !c.refunded) {
-          const grossCents = c.amount
-          const feeCents =
-            typeof c.balance_transaction === 'object' && c.balance_transaction
-              ? c.balance_transaction.fee || 0
-              : 0
-          const netCents = grossCents - feeCents
+      for (const session of batch.data) {
+        if (session.payment_status !== 'paid') continue
 
-          charges.push({
-            id: c.id,
-            amount: netCents / 100,
-            grossAmount: grossCents / 100,
-            fee: feeCents / 100,
-            currency: c.currency,
-            created: c.created,
-            status: c.status,
-            description: c.description,
-            metadata: c.metadata,
-            receipt_email: c.receipt_email ?? c.billing_details?.email ?? null,
-            payment_method_details: c.payment_method_details
-              ? { type: c.payment_method_details.type }
-              : null,
-          })
-        }
+        const grossCents = session.amount_total || 0
+        const chargeId =
+          typeof session.payment_intent === 'object' && session.payment_intent
+            ? ((session.payment_intent as { latest_charge?: string | null }).latest_charge ??
+              null)
+            : null
+        const feeCents = chargeId ? feeByChargeId.get(chargeId) || 0 : 0
+        const netCents = grossCents - feeCents
+
+        charges.push({
+          id: session.id,
+          amount: netCents / 100,
+          grossAmount: grossCents / 100,
+          fee: feeCents / 100,
+          receipt_email: session.customer_details?.email ?? null,
+          name: session.customer_details?.name ?? null,
+          created: session.created,
+          currency: session.currency || 'eur',
+          description: null,
+          metadata: session.metadata || {},
+        })
       }
 
       hasMore = batch.has_more
-      if (batch.data.length > 0) {
+      if (hasMore && batch.data.length > 0) {
         startingAfter = batch.data[batch.data.length - 1].id
       }
+      pages++
+    }
+
+    if (hasMore && pages >= MAX_PAGES) {
+      truncated = true
+      console.warn(
+        `[${req.nextUrl.pathname}] Pagination capped at ${MAX_PAGES} pages — data may be incomplete`
+      )
     }
 
     // Aggregate (amount = NET euros)
@@ -166,6 +200,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      truncated,
       dateRange: {
         start: start.toISOString(),
         end: end.toISOString(),
