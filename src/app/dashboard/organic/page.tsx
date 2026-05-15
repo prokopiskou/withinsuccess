@@ -57,8 +57,9 @@ export default function OrganicDashboardPage() {
     async function fetchData() {
       setLoading(true)
       try {
-        const startISO = range.start.toISOString()
-        const endISO = range.end.toISOString()
+        const r = getDateRange(preset)
+        const startISO = r.start.toISOString()
+        const endISO = r.end.toISOString()
         const res = await fetch(`/api/dashboard/organic?start=${startISO}&end=${endISO}`)
         const json = await res.json()
         if (!cancelled) setData(json)
@@ -72,7 +73,7 @@ export default function OrganicDashboardPage() {
     fetchData()
 
     return () => { cancelled = true }
-  }, [preset, range.start, range.end])
+  }, [preset])
 
   const categories = (data?.categories ?? []) as CategoryData[]
   const totals = data?.totals ?? { visits: 0, sales: 0, revenue: 0, conversionRate: 0 }
