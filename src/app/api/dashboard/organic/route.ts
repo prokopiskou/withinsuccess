@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripeClient'
 import { getGA4Client, getPropertyPath } from '@/lib/ga4Client'
+import { classifySession, classifyOrganicSubSource } from '@/lib/dashboard/classifySession'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,40 +23,6 @@ const CATEGORY_LABELS: Record<OrganicCategory, string> = {
   google_organic: 'Google Organic',
   other_organic: 'Άλλο Organic',
   direct:       'Direct (no UTM)',
-}
-
-function classifyOrganicSource(source: string, medium: string, campaign: string = ''): OrganicCategory | null {
-  const s = source.toLowerCase()
-  const m = medium.toLowerCase()
-  const c = campaign.toLowerCase()
-  
-  if (m === 'cpc' || m === 'paid') return null
-  if (m === 'email' || m === 'newsletter' || s === 'newsletter' || s === 'mailerlite') return null
-  
-  if (s === 'manychat' || c.includes('manychat')) {
-    if (m === 'fb' || c.includes('fb') || c.includes('facebook')) return 'fb_manychat'
-    return 'ig_manychat'
-  }
-  
-  if (s === 'instagram' || s === 'ig' || s === 'instagram.com' || s === 'l.instagram.com') {
-    if (m === 'story' || m === 'stories') return 'ig_stories'
-    return 'ig_bio'
-  }
-  
-  if (s === 'facebook' || s === 'fb' || s === 'facebook.com' || s === 'm.facebook.com' || s === 'l.facebook.com') {
-    if (m === 'story' || m === 'stories') return 'fb_stories'
-    return 'fb_bio'
-  }
-  
-  if (s === 'tiktok' || s === 'tt' || s === 'tiktok.com') return 'tiktok_bio'
-  if (s === 'threads' || s === 'th' || s === 'threads.net') return 'threads_bio'
-  
-  if (s === 'google' && (m === 'organic' || m === '' || m === 'referral')) return 'google_organic'
-  
-  if (!s && !m && !c) return 'direct'
-  if (s === '(direct)' || s === 'direct' || s === '(none)') return 'direct'
-  
-  return 'other_organic'
 }
 
 type CategoryStats = {
@@ -135,9 +102,17 @@ export async function GET(req: NextRequest) {
         const campaign = row.dimensionValues?.[2]?.value || ''
         const sessions = parseInt(row.metricValues?.[0]?.value || '0', 10)
 
-        const category = classifyOrganicSource(source, medium, campaign)
-        if (!category) continue
-        
+        const meta = {
+          utm_source: source,
+          utm_medium: medium,
+          utm_campaign: campaign,
+        }
+        const bucket = classifySession(meta)
+        if (bucket !== 'organic' && bucket !== 'unknown') continue
+
+        const category: OrganicCategory =
+          bucket === 'unknown' ? 'direct' : classifyOrganicSubSource(meta)
+
         categories[category].visits += sessions
       }
     } catch (ga4Err) {
@@ -180,12 +155,11 @@ export async function GET(req: NextRequest) {
       for (const session of batch.data) {
         if (session.payment_status !== 'paid') continue
         const meta = session.metadata || {}
-        const category = classifyOrganicSource(
-          meta.utm_source || '',
-          meta.utm_medium || '',
-          meta.utm_campaign || ''
-        )
-        if (!category) continue
+        const bucket = classifySession(meta)
+        if (bucket !== 'organic' && bucket !== 'unknown') continue
+
+        const category: OrganicCategory =
+          bucket === 'unknown' ? 'direct' : classifyOrganicSubSource(meta)
 
         // UNIFIED RULE: 1 sale = 1 paid checkout session
         // Revenue from session.amount_total (excludes refunds and uses Stripe's source of truth)

@@ -1,32 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripeClient'
+import { classifySession, type SessionBucket } from '@/lib/dashboard/classifySession'
 
 export const dynamic = 'force-dynamic'
 
-type Bucket = 'paid' | 'organic' | 'newsletter' | 'unknown'
+type Bucket = SessionBucket
 
 type BucketStats = {
   bucket: Bucket
   label: string
   sales: number
   revenue: number
-}
-
-function classifyCharge(metadata: Record<string, string>): Bucket {
-  const utm_medium = (metadata.utm_medium || '').toLowerCase()
-  const utm_source = (metadata.utm_source || '').toLowerCase()
-  const hasAnyUtm = !!(metadata.utm_campaign || metadata.utm_source || metadata.utm_medium)
-
-  if (utm_medium === 'cpc' || utm_medium === 'paid') return 'paid'
-  if ((utm_source === 'fb' || utm_source === 'facebook' || utm_source === 'ig' || utm_source === 'instagram') && utm_medium === 'cpc') return 'paid'
-  
-  if (utm_medium === 'email' || utm_medium === 'newsletter') return 'newsletter'
-  if (utm_source === 'newsletter' || utm_source === 'mailerlite' || utm_source === 'email') return 'newsletter'
-
-  if (hasAnyUtm) return 'organic'
-  if (utm_source === 'instagram' || utm_source === 'ig' || utm_source === 'fb' || utm_source === 'facebook' || utm_source === 'tiktok' || utm_source === 'threads') return 'organic'
-
-  return 'unknown'
 }
 
 const BUCKET_LABELS: Record<Bucket, string> = {
@@ -102,7 +86,7 @@ export async function GET(req: NextRequest) {
       for (const session of batch.data) {
         if (session.payment_status !== 'paid') continue
         const meta = session.metadata || {}
-        const bucket = classifyCharge(meta)
+        const bucket = classifySession(meta)
 
         // UNIFIED RULE: 1 sale per session
         buckets[bucket].sales += 1

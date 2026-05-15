@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripeClient'
+import { classifySession } from '@/lib/dashboard/classifySession'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,6 +23,8 @@ type AttributionTotals = {
   paidRevenue: number
   organicSales: number
   organicRevenue: number
+  newsletterSales: number
+  newsletterRevenue: number
   unknownSales: number
   unknownRevenue: number
 }
@@ -101,6 +104,8 @@ export async function GET(req: NextRequest) {
       paidRevenue: 0,
       organicSales: 0,
       organicRevenue: 0,
+      newsletterSales: 0,
+      newsletterRevenue: 0,
       unknownSales: 0,
       unknownRevenue: 0,
     }
@@ -116,19 +121,20 @@ export async function GET(req: NextRequest) {
       totals.totalSales++
       totals.totalRevenue += revenue
 
-      // Classify: paid / organic / unknown
-      const isPaid = medium === 'cpc' || medium === 'paid' || source === 'fb' || source === 'ig' || source === 'facebook' || source === 'instagram'
-      const hasAnyAttribution = campaign || source
+      const bucket = classifySession(meta)
 
-      if (!hasAnyAttribution) {
-        totals.unknownSales++
-        totals.unknownRevenue += revenue
-      } else if (isPaid && medium === 'cpc') {
+      if (bucket === 'paid') {
         totals.paidSales++
         totals.paidRevenue += revenue
-      } else {
+      } else if (bucket === 'organic') {
         totals.organicSales++
         totals.organicRevenue += revenue
+      } else if (bucket === 'newsletter') {
+        totals.newsletterSales++
+        totals.newsletterRevenue += revenue
+      } else {
+        totals.unknownSales++
+        totals.unknownRevenue += revenue
       }
 
       // Aggregate by campaign

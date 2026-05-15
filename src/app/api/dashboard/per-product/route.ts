@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripeClient'
 import { fetchMetaInsights } from '@/lib/metaAdsClient'
+import { classifySession } from '@/lib/dashboard/classifySession'
 
 export const dynamic = 'force-dynamic'
 
@@ -111,21 +112,9 @@ export async function GET(req: NextRequest) {
       for (const session of batch.data) {
         if (session.payment_status !== 'paid') continue
 
-        // ONLY include paid-ad attributed sessions
         const meta = session.metadata || {}
-        const utm_medium = (meta.utm_medium || '').toLowerCase()
-        const utm_source = (meta.utm_source || '').toLowerCase()
-
-        const isPaid =
-          utm_medium === 'cpc' ||
-          utm_medium === 'paid' ||
-          ((utm_source === 'fb' ||
-            utm_source === 'facebook' ||
-            utm_source === 'ig' ||
-            utm_source === 'instagram') &&
-            utm_medium === 'cpc')
-
-        if (!isPaid) continue
+        const bucket = classifySession(meta)
+        if (bucket !== 'paid') continue
 
         totalSales += 1
         totalRevenue += (session.amount_total || 0) / 100
