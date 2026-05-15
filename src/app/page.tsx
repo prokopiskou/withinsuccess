@@ -72,10 +72,11 @@ export default function Home() {
             <p className="text-lg text-gray-500 leading-relaxed">
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a href="https://withinsuccess.gr/63days" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Άλλαξε τη ζωή σου σε 63 μέρες →
+            <div className="flex flex-col gap-2">
+              <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+                Κάνε το δωρεάν quiz αυτογνωσίας
               </a>
+              <p className="text-xs text-gray-400 tracking-wide">3 λεπτά · Δωρεάν</p>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
               <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-500 mt-1">Άτομα</p></div>
@@ -277,10 +278,10 @@ export default function Home() {
               <a href="/waitlist" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Λίστα αναμονής →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">63 Μέρες</span>
-              <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>63 Μέρες της Ζωής σου</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Ένα σύστημα που σε κρατάει σε πορεία. Κάθε μέρα μία πράξη. Έναρξη 12 Μαΐου.</p>
-              <a href="https://withinsuccess.gr/63days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κατοχύρωσε →</a>
+              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Αυτογνωσία</span>
+              <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Δωρεάν Quiz Αυτογνωσίας</h3>
+              <p className="text-gray-500 leading-relaxed text-sm">3 λεπτά · Δωρεάν. Μάθε σε ποιο στάδιο βρίσκεσαι και ποιο είναι το επόμενο βήμα.</p>
+              <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε το quiz →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
@@ -303,7 +304,7 @@ export default function Home() {
             Κάνε το Within Assessment - δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
           </p>
           <a href="/assessment" className="inline-block text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-            Κάνε το assessment →
+            Κάνε το δωρεάν quiz αυτογνωσίας
           </a>
           <p className="text-xs text-gray-500 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>
         </div>
