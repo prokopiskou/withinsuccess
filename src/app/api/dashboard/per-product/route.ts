@@ -91,6 +91,8 @@ export async function GET(req: NextRequest) {
 
     // STEP 2: List sessions with line_items expanded (within 4-level limit)
     const productStats = new Map<string, ProductStats>()
+    let totalSales = 0
+    let totalRevenue = 0
 
     const MAX_PAGES = 30 // ~3000 sessions max per request
     let pages = 0
@@ -124,6 +126,9 @@ export async function GET(req: NextRequest) {
             utm_medium === 'cpc')
 
         if (!isPaid) continue
+
+        totalSales += 1
+        totalRevenue += (session.amount_total || 0) / 100
 
         const lineItems = session.line_items?.data || []
 
@@ -232,6 +237,8 @@ export async function GET(req: NextRequest) {
       success: true,
       truncated,
       dateRange: { start: start.toISOString(), end: end.toISOString() },
+      totalSales,
+      totalRevenue,
       products,
       timestamp: new Date().toISOString(),
     })

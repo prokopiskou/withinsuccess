@@ -104,7 +104,12 @@ export async function GET(req: NextRequest) {
         const meta = session.metadata || {}
         const bucket = classifyCharge(meta)
 
+        // UNIFIED RULE: 1 sale per session
+        buckets[bucket].sales += 1
+        buckets[bucket].revenue += (session.amount_total || 0) / 100
+
         const lineItems = session.line_items?.data || []
+        const productsInSession = new Set<string>()
         for (const item of lineItems) {
           const price = item.price
           if (!price) continue
@@ -114,12 +119,10 @@ export async function GET(req: NextRequest) {
             : (price.product?.id || '')
           
           const productName = productMap.get(productId) || `Product ${productId}` || '(unknown)'
+          if (productsInSession.has(productName)) continue
+          productsInSession.add(productName)
           
           const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
-          const itemSales = item.quantity || 1
-
-          buckets[bucket].sales += itemSales
-          buckets[bucket].revenue += itemAmount
 
           if (!productBucketMap.has(productName)) {
             productBucketMap.set(productName, {
@@ -135,9 +138,9 @@ export async function GET(req: NextRequest) {
             })
           }
           const pb = productBucketMap.get(productName)!
-          pb.total.sales += itemSales
+          pb.total.sales += 1
           pb.total.revenue += itemAmount
-          pb.buckets[bucket].sales += itemSales
+          pb.buckets[bucket].sales += 1
           pb.buckets[bucket].revenue += itemAmount
         }
       }

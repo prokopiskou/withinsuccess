@@ -187,27 +187,33 @@ export async function GET(req: NextRequest) {
         )
         if (!category) continue
 
+        // UNIFIED RULE: 1 sale = 1 paid checkout session
+        // Revenue from session.amount_total (excludes refunds and uses Stripe's source of truth)
+        const sessionRevenue = (session.amount_total || 0) / 100
+        categories[category].sales += 1
+        categories[category].revenue += sessionRevenue
+
+        // Track products for breakdown (sale count per product = 1 per session per product)
         const lineItems = session.line_items?.data || []
+        const productsMap = productsPerCategory[category]
+        const productsInSession = new Set<string>()
+        
         for (const item of lineItems) {
           const price = item.price
           if (!price) continue
-
           const productId = typeof price.product === 'string' 
             ? price.product 
             : (price.product?.id || '')
           const productName = productMap.get(productId) || `Product ${productId}`
+          if (productsInSession.has(productName)) continue
+          productsInSession.add(productName)
+          
           const itemAmount = ((item.amount_total || price.unit_amount || 0) * (item.quantity || 1)) / 100
-          const itemSales = item.quantity || 1
-
-          categories[category].sales += itemSales
-          categories[category].revenue += itemAmount
-
-          const productsMap = productsPerCategory[category]
           if (!productsMap.has(productName)) {
             productsMap.set(productName, { sales: 0, revenue: 0 })
           }
           const p = productsMap.get(productName)!
-          p.sales += itemSales
+          p.sales += 1
           p.revenue += itemAmount
         }
       }
