@@ -68,7 +68,7 @@ export default function OrganicDashboardPage() {
     fetchData()
   }, [preset, range.start, range.end])
 
-  const maxVisits = Math.max(...(data?.categories.map(c => c.visits) || [1]), 1)
+  const maxVisits = Math.max(...((data?.categories || []).map(c => c.visits)), 1)
 
   return (
     <main className="min-h-screen bg-white">
@@ -111,7 +111,7 @@ export default function OrganicDashboardPage() {
           </div>
         )}
 
-        {!loading && data?.success && (
+        {!loading && data?.success && data.totals && data.categories && (
           <>
             <section>
               <p className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">
