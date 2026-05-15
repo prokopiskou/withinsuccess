@@ -278,6 +278,12 @@ export default function DashboardPage() {
             >
               Paid Performance →
             </Link>
+            <Link
+              href="/dashboard/organic"
+              className="text-xs text-gray-600 hover:text-black transition-colors px-3 py-1 border border-gray-200 rounded-full hover:border-black"
+            >
+              Organic →
+            </Link>
             <button
               onClick={async () => {
                 await fetch('/api/dashboard/auth/logout', { method: 'POST' })
