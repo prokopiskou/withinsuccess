@@ -36,6 +36,22 @@ export async function GET(req: NextRequest) {
     const client = getGA4Client()
     const propertyPath = getPropertyPath()
 
+    const totalResp = await client.properties.runReport({
+      property: propertyPath,
+      requestBody: {
+        dateRanges: [{ startDate, endDate }],
+        metrics: [{ name: 'sessions' }, { name: 'engagementRate' }],
+      },
+    })
+
+    const siteTotalSessions = parseInt(
+      totalResp.data.rows?.[0]?.metricValues?.[0]?.value || '0',
+      10
+    )
+    const siteEngagementRate = parseFloat(
+      totalResp.data.rows?.[0]?.metricValues?.[1]?.value || '0'
+    )
+
     const response = await client.properties.runReport({
       property: propertyPath,
       requestBody: {
@@ -82,8 +98,8 @@ export async function GET(req: NextRequest) {
       }
     })
 
-    // Total session count for % calculation
-    const totalSessions = rows.reduce((sum, r) => sum + r.sessions, 0)
+    const totalSessions = siteTotalSessions
+    const totalEngagementRate = siteEngagementRate
 
     const rowsWithPercent = rows.map((r) => ({
       ...r,
@@ -95,6 +111,7 @@ export async function GET(req: NextRequest) {
       success: true,
       dateRange: { startDate, endDate },
       totalSessions,
+      engagementRate: totalEngagementRate,
       sources: rowsWithPercent,
       timestamp: new Date().toISOString(),
     })
