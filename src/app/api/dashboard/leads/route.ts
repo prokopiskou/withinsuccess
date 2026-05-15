@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getGA4Client, getPropertyPath } from '@/lib/ga4Client'
 import { getCached, setCached } from '@/lib/dashboard/cache'
 
 export const dynamic = 'force-dynamic'
@@ -8,15 +7,7 @@ const GROUPS = {
   coaching: '184997659389461878',
   program_waitlist: '187457343070405693',  // 63 Days waitlist
   seminar_waitlist: '187522640873784777',
-}
-
-function toDate(d: Date): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Athens',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(d)
+  quiz: '183574050021311627',
 }
 
 async function countSubscribersInGroup(
@@ -68,35 +59,6 @@ async function countSubscribersInGroup(
   return count
 }
 
-async function getQuizLeads(start: Date, end: Date): Promise<number> {
-  try {
-    const ga4 = getGA4Client()
-    const propertyPath = getPropertyPath()
-    const resp = await ga4.properties.runReport({
-      property: propertyPath,
-      requestBody: {
-        dateRanges: [{ startDate: toDate(start), endDate: toDate(end) }],
-        dimensions: [{ name: 'eventName' }],
-        metrics: [{ name: 'eventCount' }],
-        dimensionFilter: {
-          filter: {
-            fieldName: 'eventName',
-            stringFilter: { value: 'generate_lead', matchType: 'EXACT' },
-          },
-        },
-      },
-    })
-    let total = 0
-    for (const row of resp.data.rows || []) {
-      total += parseInt(row.metricValues?.[0]?.value || '0', 10)
-    }
-    return total
-  } catch (err) {
-    console.warn('GA4 quiz query failed:', err)
-    return 0
-  }
-}
-
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams
@@ -128,7 +90,7 @@ export async function GET(req: NextRequest) {
       countSubscribersInGroup(GROUPS.coaching, apiKey, start, end),
       countSubscribersInGroup(GROUPS.program_waitlist, apiKey, start, end),
       countSubscribersInGroup(GROUPS.seminar_waitlist, apiKey, start, end),
-      getQuizLeads(start, end),
+      countSubscribersInGroup(GROUPS.quiz, apiKey, start, end),
     ])
 
     const total = coaching + programWaitlist + seminarWaitlist + quiz
