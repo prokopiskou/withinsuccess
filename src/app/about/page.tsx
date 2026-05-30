@@ -45,7 +45,7 @@ export default function About() {
             <p className="text-sm text-gray-400 mt-2">Ατομα</p>
           </div>
           <div className="text-center">
-            <span className="text-4xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>10+</span>
+            <span className="text-4xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>7+</span>
             <p className="text-sm text-gray-400 mt-2">Χρονια</p>
           </div>
           <div className="text-center">
@@ -134,7 +134,7 @@ export default function About() {
         <div className="max-w-2xl mx-auto">
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">Η φιλοσοφια</p>
           <div className="flex flex-col gap-6 text-gray-600 leading-relaxed text-lg">
-            <p>Μετά από 10+ χρόνια προσωπικής ανάπτυξης και πάνω από 150 βιβλία, κατάλαβα κάτι απλό:</p>
+            <p>Μετά από 7+ χρόνια προσωπικής ανάπτυξης και πάνω από 150 βιβλία, κατάλαβα κάτι απλό:</p>
             <p>Η αλλαγή δεν έρχεται από έξω. Έρχεται όταν αλλάξει η ιστορία που λες στον εαυτό σου.</p>
             <p>Έχω καθοδηγηθεί από Tony Robbins, Brendon Burchard και Marie Forleo. Έχω αναπτύξει τη δική μου φιλοσοφία και μέθοδο — το Within Path™.</p>
             <p>Και σήμερα τη μεταφέρω σε κάθε άνθρωπο που θέλει πραγματική αλλαγή.</p>
