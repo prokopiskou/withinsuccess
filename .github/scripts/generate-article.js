@@ -10,7 +10,12 @@ const KEYWORDS = [
   "αυτοπειθαρχία",
   "αντιμετώπιση burnout",
   "συνειδητότητα",
-  "καθοδήγηση ζωής"
+  "καθοδήγηση ζωής",
+  "εσωτερική δύναμη",
+  "αλλαγή συνηθειών",
+  "φόβος αποτυχίας",
+  "αυτοεκτίμηση",
+  "ψυχολογία επιτυχίας"
 ];
 
 const CATEGORIES = [
@@ -61,11 +66,13 @@ function extractExistingArticles(fileContent) {
   const titleMatches = fileContent.matchAll(/title:\s*["']([^"']+)["']/g);
   for (const m of titleMatches) titles.push(m[1]);
 
-  const kwMatches = fileContent.matchAll(/keywords:\s*\[([^\]]+)\]/g);
-  for (const m of kwMatches) {
-    const kws = m[1].match(/["']([^"']+)["']/g) || [];
-    kws.forEach(k => keywords.push(k.replace(/["']/g, '')));
-  }
+  const primaryMatches = fileContent.match(/keywords:\s*\[([^\]]+)\]/g) || [];
+  primaryMatches.forEach(m => {
+    const kws = m.match(/"([^"]+)"/g) || [];
+    if (kws.length > 0) {
+      keywords.push(kws[0].replace(/"/g, ''));
+    }
+  });
 
   return { slugs, titles, keywords };
 }
@@ -234,7 +241,8 @@ async function main() {
   const currentFile = fs.readFileSync('src/app/insights/articles.ts', 'utf8');
   const existing = extractExistingArticles(currentFile);
 
-  console.log(`Existing: ${existing.slugs.length} slugs, ${existing.titles.length} titles`);
+  const slugMatches = currentFile.match(/slug:\s*"([^"]+)"/g) || [];
+  console.log('Existing:', slugMatches.length, 'slugs', slugMatches.length, 'titles');
   console.log('Used keywords:', existing.keywords);
 
   // Skip if all keywords used (no random fallback that creates duplicates)
