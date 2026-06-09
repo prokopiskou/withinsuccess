@@ -1,1 +1,5 @@
+.next
 node_modules
+.git
+.img-tmp
+*.mp4

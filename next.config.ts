@@ -32,6 +32,19 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/path',
+        destination: 'https://within-path.vercel.app/path',
+      },
+      {
+        source: '/path/:match*',
+        destination: 'https://within-path.vercel.app/path/:match*',
+      },
+    ]
+  },
 };
 
 export default nextConfig;
