@@ -70,7 +70,7 @@ export default function Home() {
               Η ζωή αλλάζει<br />όταν αλλάξει<br />η εσωτερική ιστορία.
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
-              Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου - μπορεί να αλλάξει.
+              Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
               <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
@@ -101,7 +101,7 @@ export default function Home() {
             <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
               <span className="text-2xl font-light text-gray-200">01</span>
               <h3 className="text-lg font-semibold">Νιώθεις χαμένος</h3>
-              <p className="text-gray-500 leading-relaxed">Ξέρεις ότι κάτι πρέπει να αλλάξει - αλλά δεν ξέρεις από πού να αρχίσεις.</p>
+              <p className="text-gray-500 leading-relaxed">Ξέρεις ότι κάτι πρέπει να αλλάξει, αλλά δεν ξέρεις από πού να αρχίσεις.</p>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
               <span className="text-2xl font-light text-gray-200">02</span>
@@ -268,13 +268,13 @@ export default function Home() {
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική αλλαγή - όχι γενικές συμβουλές.</p>
+              <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική αλλαγή, όχι γενικές συμβουλές.</p>
               <a href="/apply" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε αίτηση →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 bg-black text-white rounded-2xl">
               <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">Seminars</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Live Εμπειρίες</h3>
-              <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις - εμπειρίες που μένουν.</p>
+              <p className="text-gray-400 leading-relaxed text-sm">2.5 ώρες βιωματικής αλλαγής. Όχι διαλέξεις, εμπειρίες που μένουν.</p>
               <a href="/waitlist" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Λίστα αναμονής →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
@@ -286,7 +286,7 @@ export default function Home() {
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30-Day Programs</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή - με εργαλεία, δομή και καθοδήγηση.</p>
+              <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή με εργαλεία, δομή και καθοδήγηση.</p>
               <a href="/30days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
             </div>
           </div>
@@ -301,7 +301,7 @@ export default function Home() {
             Ανακάλυψε σε ποιο στάδιο βρίσκεσαι.
           </h2>
           <p className="text-lg text-gray-500 mb-8">
-            Κάνε το Within Assessment - δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
+            Κάνε το Within Assessment δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
           </p>
           <a href="/assessment" className="inline-block text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
             Κάνε το δωρεάν quiz αυτογνωσίας
