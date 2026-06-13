@@ -37,3 +37,4 @@ jobs:
             - Αν κάτι είναι ασαφές, κάνε τη λογικότερη υπόθεση και σημείωσέ την ρητά στο PR.
           claude_args: |
             --max-turns 30
+            --allowedTools "Bash,Edit,MultiEdit,Read,Write,Glob,Grep"
