@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { getConsent, acceptAll, rejectAll } from '@/lib/consent'
 import CookiePreferencesModal from './CookiePreferencesModal'
 
@@ -8,6 +9,10 @@ export default function CookieBanner() {
   const [show, setShow] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const pathname = usePathname()
+
+  // Το cookie banner ΔΕΝ εμφανίζεται στο /links (Linktree-style σελίδα)
+  const hideOnRoute = pathname === '/links'
 
   useEffect(() => {
     setMounted(true)
@@ -31,6 +36,7 @@ export default function CookieBanner() {
   }, [])
 
   if (!mounted) return null
+  if (hideOnRoute) return null
 
   function handleAccept() {
     acceptAll()
