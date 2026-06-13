@@ -74,7 +74,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col gap-2">
               <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Κάνε το δωρεάν quiz αυτογνωσίας
+                Ξεκίνα τώρα
               </a>
               <p className="text-xs text-gray-400 tracking-wide">3 λεπτά · Δωρεάν</p>
             </div>
