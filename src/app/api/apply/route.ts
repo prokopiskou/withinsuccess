@@ -25,7 +25,7 @@ export async function POST(req: Request) {
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-5",
           max_tokens: 100,
           messages: [{
             role: "user",
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     }
 
     const { error: notifyError } = await resend.emails.send({
-      from: "WithinSuccess Apply <hello@send.withinsuccess.gr>",
+      from: "WithinSuccess Apply <hello@withinsuccess.gr>",
       to: "hello@withinsuccess.gr",
       replyTo: email,
       subject: `🎯 Νέα αίτηση coaching - ${normalizedName}`,
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
     }
 
     const { error: confirmError } = await resend.emails.send({
-      from: "Προκόπης από WithinSuccess <hello@send.withinsuccess.gr>",
+      from: "Προκόπης από WithinSuccess <hello@withinsuccess.gr>",
       to: email,
       replyTo: "hello@withinsuccess.gr",
       subject: "Έλαβα την αίτησή σου",
