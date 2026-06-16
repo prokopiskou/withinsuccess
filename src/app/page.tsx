@@ -74,7 +74,7 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
-              <a href="/path" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+              <a href="/path" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
                 Ξεκίνα το μονοπάτι σου εδώ →
               </a>
             </div>
@@ -112,7 +112,7 @@ export default function Home() {
               { num: '05', title: 'Embody', desc: 'Ζεις διαφορετικά.' },
             ].map((step) => (
               <div key={step.num} className="flex flex-col gap-3 p-6 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-                <span className="text-xs font-medium text-gray-300 tracking-widest">{step.num}</span>
+                <span className="text-xs font-medium text-gray-500 tracking-widest">{step.num}</span>
                 <h3 className="text-lg font-semibold" style={{fontFamily: 'Georgia, serif'}}>{step.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
               </div>
@@ -215,7 +215,7 @@ export default function Home() {
               </div>
               <p className="text-xs text-gray-500">{reviews[current].sub}</p>
             </div>
-            <p className="text-center text-xs text-gray-300 mt-3">← σύρε για περισσότερα →</p>
+            <p className="text-center text-xs text-gray-500 mt-3">← σύρε για περισσότερα →</p>
           </div>
           <div className="flex items-center justify-center gap-4 mt-8">
             <button onClick={prev} aria-label="Προηγούμενη μαρτυρία" className="hidden md:flex w-8 h-8 rounded-full border border-gray-200 items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
@@ -240,7 +240,7 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-4 gap-6">
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Coaching</span>
+              <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Βαθιά, εξατομικευμένη δουλειά. Για όσους θέλουν πραγματική αλλαγή, όχι γενικές συμβουλές.</p>
               <a href="/apply" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε αίτηση →</a>
@@ -252,13 +252,13 @@ export default function Home() {
               <a href="/waitlist" className="mt-auto self-start text-sm font-medium border border-white px-5 py-2.5 rounded-full hover:bg-white hover:text-black transition-all">Λίστα αναμονής →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Αυτογνωσία</span>
+              <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">Αυτογνωσία</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Δωρεάν Quiz Αυτογνωσίας</h3>
               <p className="text-gray-500 leading-relaxed text-sm">3 λεπτά · Δωρεάν. Μάθε σε ποιο στάδιο βρίσκεσαι και ποιο είναι το επόμενο βήμα.</p>
               <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε το quiz →</a>
             </div>
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-              <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">Programs</span>
+              <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">Programs</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30-Day Programs</h3>
               <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή με εργαλεία, δομή και καθοδήγηση.</p>
               <a href="/30days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
@@ -277,7 +277,7 @@ export default function Home() {
           <p className="text-lg text-gray-500 mb-8">
             Κάνε το Within Assessment δωρεάν. 3 λεπτά. Αποτέλεσμα που σου λέει ακριβώς πού είσαι και ποιο είναι το επόμενο βήμα.
           </p>
-          <a href="/assessment" className="inline-block text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+          <a href="/assessment" className="inline-block text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
             Κάνε το δωρεάν quiz αυτογνωσίας
           </a>
           <p className="text-xs text-gray-500 mt-4">9.000+ άνθρωποι που επέλεξαν την αλλαγή.</p>

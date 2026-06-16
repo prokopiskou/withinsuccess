@@ -83,7 +83,7 @@ export default function CookieBanner() {
                 <a 
                   href="/privacy" 
                   className="underline hover:text-black transition-colors"
-                  style={{ color: '#C9A96E' }}
+                  style={{ color: '#8A6D2F' }}
                 >
                   Πολιτική Απορρήτου
                 </a>
