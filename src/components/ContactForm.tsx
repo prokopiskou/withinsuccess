@@ -48,7 +48,7 @@ export default function ContactForm() {
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="mt-8 px-6 py-3 border border-current"
+          className="mt-8 px-6 py-3 rounded-xl border border-current"
           style={{ color: "#C9A96E", borderColor: "#C9A96E" }}
         >
           Στείλε νέο μήνυμα
@@ -69,7 +69,7 @@ export default function ContactForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 focus:border-current focus:outline-none transition-colors"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-current focus:outline-none transition-colors"
           style={{ color: "#0D0D0D" }}
           placeholder="Το όνομά σου"
         />
@@ -85,7 +85,7 @@ export default function ContactForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 focus:border-current focus:outline-none transition-colors"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-current focus:outline-none transition-colors"
           style={{ color: "#0D0D0D" }}
           placeholder="your@email.com"
         />
@@ -101,7 +101,7 @@ export default function ContactForm() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={6}
-          className="w-full px-4 py-3 border border-gray-300 focus:border-current focus:outline-none transition-colors resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-current focus:outline-none transition-colors resize-none"
           style={{ color: "#0D0D0D" }}
           placeholder="Πες μου τι σκέφτεσαι"
         />
@@ -116,7 +116,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="w-full py-4 font-medium tracking-wide transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="w-full py-4 rounded-xl font-medium tracking-wide transition-opacity hover:opacity-90 disabled:opacity-50"
         style={{ backgroundColor: "#0D0D0D", color: "#FFFFFF" }}
       >
         {status === "sending" ? "Αποστολή..." : "Αποστολή μηνύματος"}
