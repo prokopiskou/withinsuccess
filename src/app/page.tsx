@@ -74,8 +74,8 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
-              <a href="/assessment" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Κάνε το δωρεάν quiz αυτογνωσίας
+              <a href="#within-path" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+                Ξεκίνα το μονοπάτι σου εδώ
               </a>
               <p className="text-xs text-gray-400 tracking-wide">3 λεπτά · Δωρεάν</p>
             </div>
@@ -119,7 +119,7 @@ export default function Home() {
       </section>
 
       {/* WITHIN PATH */}
-      <section className="py-16 px-6 bg-white">
+      <section id="within-path" className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">The Within Path</p>
