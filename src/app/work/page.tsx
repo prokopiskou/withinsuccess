@@ -69,6 +69,41 @@ export default function Work() {
         </div>
       </section>
 
+      {/* WITHIN PATH */}
+      <section id="within-path" className="py-16 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">The Within Path™</p>
+          <h2 className="text-3xl md:text-4xl font-semibold leading-tight mb-4" style={{fontFamily: 'Georgia, serif'}}>
+            Η αλλαγή δεν είναι τυχαία. Έχει δρόμο.
+          </h2>
+          <div className="flex flex-col gap-3 text-lg text-gray-500 leading-relaxed max-w-2xl mb-12">
+            <p>Πέντε στάδια. Μία μέθοδος.</p>
+            <p>Ο δρόμος που 900+ άνθρωποι ακολούθησαν για να περάσουν από τον φόβο στη δύναμη.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
+            {[
+              { num: '01', title: 'Awake', desc: 'Βλέπεις τι πραγματικά συμβαίνει.' },
+              { num: '02', title: 'Pause', desc: 'Σταματάς τον αυτόματο πιλότο.' },
+              { num: '03', title: 'Remember', desc: 'Επιστρέφεις σε ό,τι ξέρεις ήδη.' },
+              { num: '04', title: 'Align', desc: 'Συγχρονίζεις σκέψη και πράξη.' },
+              { num: '05', title: 'Embody', desc: 'Ζεις διαφορετικά.' },
+            ].map((s) => (
+              <div key={s.num} className="flex flex-col gap-2 p-5 border border-gray-100 rounded-2xl">
+                <span className="text-sm font-light" style={{color: GOLD}}>{s.num}</span>
+                <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <p className="text-gray-500 mb-6">Το πρώτο βήμα; Να δεις πού βρίσκεσαι τώρα.</p>
+            <a href="/path" className="inline-block px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+              Δες ολόκληρο το Within Path →
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* 63 ΜΕΡΕΣ — κλειστός κύκλος, waitlist */}
       <section id="63days" className="py-16 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto">
