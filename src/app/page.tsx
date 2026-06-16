@@ -91,34 +91,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* THE PROBLEM */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold leading-tight mb-12" style={{fontFamily: 'Georgia, serif'}}>
-            Κάτι δεν κολλάει.<br />Και το ξέρεις.
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
-              <span className="text-2xl font-light text-gray-200">01</span>
-              <h3 className="text-lg font-semibold">Νιώθεις χαμένος</h3>
-              <p className="text-gray-500 leading-relaxed">Ξέρεις ότι κάτι πρέπει να αλλάξει, αλλά δεν ξέρεις από πού να αρχίσεις.</p>
-            </div>
-            <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
-              <span className="text-2xl font-light text-gray-200">02</span>
-              <h3 className="text-lg font-semibold">Έχεις προσπαθήσει</h3>
-              <p className="text-gray-500 leading-relaxed">Έχεις διαβάσει. Ακούσει. Δοκιμάσει. Και πάλι κάτι σε κρατάει στη θέση σου.</p>
-            </div>
-            <div className="flex flex-col gap-4 p-8 bg-white rounded-2xl border border-gray-100">
-              <span className="text-2xl font-light text-gray-200">03</span>
-              <h3 className="text-lg font-semibold">Δεν είναι το έξω</h3>
-              <p className="text-gray-500 leading-relaxed">Δεν σου λείπει η θέληση. Σου λείπει η σωστή εσωτερική βάση.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* WITHIN PATH */}
-      <section id="within-path" className="py-16 px-6 bg-white">
+      <section id="within-path" className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">The Within Path</p>
@@ -148,7 +122,7 @@ export default function Home() {
       </section>
 
       {/* ABOUT TEASER */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
@@ -173,7 +147,7 @@ export default function Home() {
       </section>
 
       {/* SEMINAR */}
-      <section className="py-16 px-6 bg-white">
+      <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Live Experience</p>
@@ -198,7 +172,7 @@ export default function Home() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Αυτοι το εζησαν</p>
@@ -256,7 +230,7 @@ export default function Home() {
       </section>
 
       {/* HOW I WORK */}
-      <section className="py-16 px-6 bg-white">
+      <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
             <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-3">Πως δουλευουμε μαζι</p>
@@ -294,7 +268,7 @@ export default function Home() {
       </section>
 
       {/* EMAIL OPT-IN */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section className="py-16 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-4">Within Assessment</p>
           <h2 className="text-3xl md:text-4xl font-semibold leading-tight mb-4" style={{fontFamily: 'Georgia, serif'}}>
