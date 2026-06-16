@@ -157,7 +157,7 @@ export default function Work() {
               <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>
               <div className="flex gap-2">
                 {testimonials.map((_, i) => (
-                  <button key={i} onClick={() => setCurrent(i)} className={`h-1.5 rounded-full transition-all ${current === i ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} />
+                  <button key={i} onClick={() => setCurrent(i)} aria-label={`Μαρτυρία ${i + 1}`} className="flex items-center justify-center min-h-[24px] min-w-[24px]"><span className={`block h-1.5 rounded-full transition-all ${current === i ? 'bg-black w-4' : 'bg-gray-300 w-1.5'}`} /></button>
                 ))}
               </div>
               <button onClick={next} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">→</button>

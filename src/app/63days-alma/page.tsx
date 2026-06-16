@@ -34,7 +34,7 @@ function Carousel({ images }: { images: string[] }) {
       </div>
       <div className="flex items-center justify-center gap-2 mt-6">
         {images.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)} className={`h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-6' : 'bg-gray-300 w-1.5'}`} />
+          <button key={i} onClick={() => setCurrent(i)} aria-label={`Μαρτυρία ${i + 1}`} className="flex items-center justify-center min-h-[24px] min-w-[24px]"><span className={`block h-1.5 rounded-full transition-all ${i === current ? 'bg-black w-6' : 'bg-gray-300 w-1.5'}`} /></button>
         ))}
       </div>
     </div>
