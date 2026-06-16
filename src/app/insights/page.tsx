@@ -66,7 +66,7 @@ export default function Insights() {
                 <a key={article.slug} href={`/insights/${article.slug}`} className="group flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-all">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">{article.category}</span>
-                    <span className="text-xs text-gray-300">·</span>
+                    <span className="text-xs text-gray-500">·</span>
                     <span className="text-xs text-gray-400">{article.readTime} λεπτά ανάγνωση</span>
                   </div>
                   <h2 className="text-xl font-semibold leading-snug group-hover:text-gray-600 transition-colors" style={{fontFamily: 'Georgia, serif'}}>

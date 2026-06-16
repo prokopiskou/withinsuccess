@@ -140,48 +140,48 @@ function PageContent() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white" style={{ backgroundColor: GOLD }}>1</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>1</div>
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε Κυριακή λαμβάνεις</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Ηχητική καθοδήγηση για την εβδομάδα</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Το προσωπικό σου Playbook (πρακτικό οδηγό με ασκήσεις)</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Τη συμφωνία που κάνεις με τον εαυτό σου</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Ηχητική καθοδήγηση για την εβδομάδα</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Το προσωπικό σου Playbook (πρακτικό οδηγό με ασκήσεις)</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Τη συμφωνία που κάνεις με τον εαυτό σου</span></div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white" style={{ backgroundColor: GOLD }}>2</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>2</div>
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε μέρα</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μηνύματα καθοδήγησης στο ιδιωτικό Viber channel</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μία πράξη 1–2 λεπτών που έχει τεθεί από πριν</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Χτίζεις συνέπεια, σπας την υπερανάλυση, παίρνεις τον έλεγχο</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μηνύματα καθοδήγησης στο ιδιωτικό Viber channel</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μία πράξη 1–2 λεπτών που έχει τεθεί από πριν</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Χτίζεις συνέπεια, σπας την υπερανάλυση, παίρνεις τον έλεγχο</span></div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white" style={{ backgroundColor: GOLD }}>3</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>3</div>
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε εβδομάδα</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κάνεις αυτοστοχασμό</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κάνεις δομημένη αυτοαξιολόγηση</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Προχωράς στο επόμενο επίπεδο</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κάνεις αυτοστοχασμό</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κάνεις δομημένη αυτοαξιολόγηση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Προχωράς στο επόμενο επίπεδο</span></div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white" style={{ backgroundColor: GOLD }}>4</div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>4</div>
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Στο τέλος των 63 ημερών</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Online τελετή αποφοίτησης</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Η στιγμή που βλέπεις τη μεταμόρφωση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Online τελετή αποφοίτησης</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Η στιγμή που βλέπεις τη μεταμόρφωση</span></div>
               </div>
             </div>
           </div>
@@ -219,7 +219,7 @@ function PageContent() {
                 { title: 'Αυτοαξιολόγηση', desc: 'Βλέπεις τι κράτησες και τι συνεχίζεις.' },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5 text-white" style={{ backgroundColor: GOLD }}>{i+1}</div>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5 text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>{i+1}</div>
                   <div>
                     <p className="font-semibold text-gray-800 text-sm">{item.title}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
@@ -254,7 +254,7 @@ function PageContent() {
                 'Χτίζει μια νέα ιστορία για τον εαυτό σου'
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 text-gray-600 text-sm">
-                  <span className="text-gray-300 mt-0.5">—</span>
+                  <span className="text-gray-500 mt-0.5">—</span>
                   <span>{item}</span>
                 </div>
               ))}
@@ -390,10 +390,10 @@ function PageContent() {
           <div className="bg-gray-50 rounded-2xl p-8 mb-8">
             <p className="text-gray-700 font-medium mb-6 text-center">Είναι η στιγμή που</p>
             <div className="space-y-3 text-gray-600 text-sm max-w-md mx-auto">
-              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Κλείνεις έναν κύκλο</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Βλέπεις τη μεταμόρφωση καθαρά</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Αναγνωρίζεις τον νέο σου εαυτό</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-300 mt-0.5">—</span><span>Μπαίνεις στην επόμενη φάση της ζωής σου</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κλείνεις έναν κύκλο</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Βλέπεις τη μεταμόρφωση καθαρά</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Αναγνωρίζεις τον νέο σου εαυτό</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μπαίνεις στην επόμενη φάση της ζωής σου</span></div>
             </div>
           </div>
           <div className="text-center space-y-2 text-gray-700">

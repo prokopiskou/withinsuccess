@@ -61,12 +61,12 @@ export default function About() {
         <div className="max-w-2xl mx-auto flex flex-col gap-16 text-gray-600 leading-relaxed text-lg">
 
           <div>
-            <p className="text-xs font-medium tracking-widest text-gray-300 uppercase mb-4">3 Οκτωβριου 2019</p>
+            <p className="text-xs font-medium tracking-widest text-gray-500 uppercase mb-4">3 Οκτωβριου 2019</p>
             <p>Τότε έγινε η πρώτη μου απόπειρα. Μια σελίδα αυτοβελτίωσης στο Instagram. Το όνομα: <em>Successexplained</em>. Ξόδευα δεκάδες ώρες κάθε βδομάδα. Τα μηνύματα ξεκίνησαν. Τα like ανέβαιναν. Ήξερα τι θέλω.</p>
           </div>
 
           <div>
-            <p className="text-xs font-medium tracking-widest text-gray-300 uppercase mb-4">18 Νοεμβριου 2019</p>
+            <p className="text-xs font-medium tracking-widest text-gray-500 uppercase mb-4">18 Νοεμβριου 2019</p>
             <p>Ξύπνησα το πρωί με μια δυσάρεστη έκπληξη.</p>
             <p className="mt-4">Ο λογαριασμός του Successexplained είχε αποσυνδεθεί. Δεν μπορούσα να μπω. Με έστελνε να επαληθεύσω μέσω κινητού. Κανένας κωδικός δεν ερχόταν.</p>
             <p className="mt-4">Για 5 μέρες δοκίμασα τα πάντα. Forums, άρθρα, support του Instagram. Τίποτα.</p>
@@ -75,7 +75,7 @@ export default function About() {
           </div>
 
           <div>
-            <p className="text-xs font-medium tracking-widest text-gray-300 uppercase mb-4">1 Δεκεμβριου 2019</p>
+            <p className="text-xs font-medium tracking-widest text-gray-500 uppercase mb-4">1 Δεκεμβριου 2019</p>
             <p>Μετά από 8ωρο στο ελαιοτριβείο, ήρθε η ώρα για τις ελιές της γιαγιάς.</p>
             <p className="mt-4">«Ρε γιαγιά, είναι ανάγκη να τις μαζέψουμε όλες; Είμαστε δύο άτομα με δύο ξύλινες βέργες για 20 δέντρα. Δεν το αφήνουμε;»</p>
             <p className="mt-4 font-medium text-gray-800">«Θα σταματήσουμε μόνο όταν τελειώσουμε.»</p>

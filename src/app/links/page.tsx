@@ -144,7 +144,7 @@ export default function LinksPage() {
               Site
             </a>
           </div>
-          <p className="text-center text-[10px] text-gray-300 mt-6 tracking-wider">
+          <p className="text-center text-[10px] text-gray-500 mt-6 tracking-wider">
             © {new Date().getFullYear()} WithinSuccess
           </p>
         </footer>

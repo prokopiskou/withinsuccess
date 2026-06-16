@@ -50,7 +50,7 @@ export default function ThankYouPage() {
           <p className="text-xs tracking-widest text-gray-400 uppercase mb-6 text-center">Τι ακολουθεί</p>
           <div className="space-y-5">
             <div className="flex items-start gap-4">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-white" style={{ backgroundColor: GOLD }}>1</div>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>1</div>
               <div>
                 <p className="text-gray-700 text-sm leading-relaxed">
                   <span className="font-semibold">Email επιβεβαίωσης</span> στα επόμενα λεπτά. Έλεγξε και τα spam.
@@ -58,7 +58,7 @@ export default function ThankYouPage() {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-white" style={{ backgroundColor: GOLD }}>2</div>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>2</div>
               <div>
                 <p className="text-gray-700 text-sm leading-relaxed">
                   <span className="font-semibold">Σύνδεσμος για το Viber channel</span> θα έρθει στο email στις 12 Μαΐου.
@@ -66,7 +66,7 @@ export default function ThankYouPage() {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-white" style={{ backgroundColor: GOLD }}>3</div>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 text-[#0D0D0D]" style={{ backgroundColor: GOLD }}>3</div>
               <div>
                 <p className="text-gray-700 text-sm leading-relaxed">
                   <span className="font-semibold">Κυριακή 12 Μαΐου</span> ξεκινάμε. Λαμβάνεις το πρώτο Playbook και την πρώτη καθοδήγηση.

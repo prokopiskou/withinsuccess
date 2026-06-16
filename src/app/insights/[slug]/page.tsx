@@ -132,9 +132,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <header className="mb-12">
           <div className="flex items-center gap-3 mb-6">
             <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">{article.category}</span>
-            <span className="text-xs text-gray-300">·</span>
+            <span className="text-xs text-gray-500">·</span>
             <span className="text-xs text-gray-400">{article.readTime} λεπτά ανάγνωση</span>
-            <span className="text-xs text-gray-300">·</span>
+            <span className="text-xs text-gray-500">·</span>
             <span className="text-xs text-gray-400">{article.date}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-semibold leading-tight mb-6" style={{fontFamily: 'Georgia, serif'}}>

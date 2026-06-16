@@ -93,7 +93,7 @@ export default function ThirtyDays() {
               "Θέλεις αλλαγή — αλλά χωρίς θεωρίες και χωρίς υπερβολές.",
             ].map((item, i) => (
               <div key={i} className="flex gap-4 items-start p-6 bg-white rounded-2xl border border-gray-100">
-                <span className="text-gray-300 font-light text-lg flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                <span className="text-gray-500 font-light text-lg flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
                 <p className="text-gray-700 leading-relaxed">{item}</p>
               </div>
             ))}
@@ -156,7 +156,7 @@ export default function ThirtyDays() {
               { week: "Εβδομάδα 4", title: "Γίνεσαι αυτός που δεν σταματάει", desc: "Η νέα σου ταυτότητα." },
             ].map((item, i) => (
               <div key={i} className="flex gap-6 items-start p-6 border border-gray-100 rounded-2xl">
-                <span className="text-xs font-medium text-gray-300 tracking-widest flex-shrink-0 w-24">{item.week}</span>
+                <span className="text-xs font-medium text-gray-500 tracking-widest flex-shrink-0 w-24">{item.week}</span>
                 <div>
                   <p className="font-semibold text-gray-900 mb-1">{item.title}</p>
                   <p className="text-sm text-gray-500">{item.desc}</p>

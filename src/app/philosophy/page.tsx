@@ -34,7 +34,7 @@ export default function Philosophy() {
       {/* BELIEF 1 */}
       <section className="py-16 px-6 border-t border-gray-100">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">01</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">01</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Οι τεχνικές είναι ψευδαίσθηση ελέγχου.
           </h2>
@@ -49,7 +49,7 @@ export default function Philosophy() {
       {/* BELIEF 2 */}
       <section className="py-16 px-6 border-t border-gray-100 bg-gray-50">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">02</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">02</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Δεν σε μαθαίνω κάτι. Σου δείχνω κάτι που ήδη ξέρεις.
           </h2>
@@ -64,7 +64,7 @@ export default function Philosophy() {
       {/* BELIEF 3 */}
       <section className="py-16 px-6 border-t border-gray-100">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">03</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">03</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Έχεις δύο εαυτούς. Και ξέρεις ποιος είναι ποιος.
           </h2>
@@ -79,7 +79,7 @@ export default function Philosophy() {
       {/* BELIEF 4 */}
       <section className="py-16 px-6 border-t border-gray-100 bg-gray-50">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">04</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">04</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Το τραύμα δεν είναι άλλοθι.
           </h2>
@@ -95,7 +95,7 @@ export default function Philosophy() {
       {/* BELIEF 5 */}
       <section className="py-16 px-6 border-t border-gray-100">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">05</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">05</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Being πριν Doing.
           </h2>
@@ -111,7 +111,7 @@ export default function Philosophy() {
       {/* BELIEF 6 */}
       <section className="py-16 px-6 border-t border-gray-100 bg-gray-50">
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <span className="text-xs font-medium tracking-widest text-gray-300 uppercase">06</span>
+          <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">06</span>
           <h2 className="text-2xl md:text-3xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
             Η πιο επαναστατική κίνηση είναι να έχεις θάρρος.
           </h2>
