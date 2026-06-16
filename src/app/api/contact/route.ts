@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     // Send email via Resend
     const { data, error } = await resend.emails.send({
-      from: "WithinSuccess Contact <hello@withinsuccess.gr>",
+      from: "WithinSuccess Contact <hello@send.withinsuccess.gr>",
       to: "hello@withinsuccess.gr",
       replyTo: email,
       subject: `Νέο μήνυμα από ${name} - WithinSuccess Contact Form`,

@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     // 2. Send notification email to Prokopis
     const { error: resendError } = await resend.emails.send({
-      from: "WithinSuccess Apply <hello@withinsuccess.gr>",
+      from: "WithinSuccess Apply <hello@send.withinsuccess.gr>",
       to: "hello@withinsuccess.gr",
       replyTo: email,
       subject: `🎯 Νέα αίτηση coaching - ${normalizedName}`,
