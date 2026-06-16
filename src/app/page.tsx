@@ -77,7 +77,6 @@ export default function Home() {
               <a href="#within-path" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
                 Ξεκίνα το μονοπάτι σου εδώ
               </a>
-              <p className="text-xs text-gray-400 tracking-wide">3 λεπτά · Δωρεάν</p>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
               <div><span className="text-2xl font-semibold">900+</span><p className="text-xs text-gray-500 mt-1">Άτομα</p></div>
