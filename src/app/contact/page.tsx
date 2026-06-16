@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
+import SiteNav from "@/components/SiteNav";
 
 export const metadata: Metadata = {
   title: "Επικοινωνία | WithinSuccess",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="min-h-screen py-20 px-6" style={{ backgroundColor: "#FFFFFF" }}>
+      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-serif mb-6" style={{ color: "#0D0D0D" }}>
