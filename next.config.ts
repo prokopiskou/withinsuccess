@@ -30,6 +30,21 @@ const nextConfig: NextConfig = {
         destination: '/links?utm_source=threads&utm_medium=bio&utm_campaign=evergreen',
         permanent: false,
       },
+      {
+        source: "/wl-ig",
+        destination: "https://withinsuccess.gr/path?utm_source=instagram&utm_medium=bio&utm_campaign=wp_waitlist",
+        permanent: false,
+      },
+      {
+        source: "/wl-fb",
+        destination: "https://withinsuccess.gr/path?utm_source=facebook&utm_medium=bio&utm_campaign=wp_waitlist",
+        permanent: false,
+      },
+      {
+        source: "/wl-tt",
+        destination: "https://withinsuccess.gr/path?utm_source=tiktok&utm_medium=bio&utm_campaign=wp_waitlist",
+        permanent: false,
+      },
     ]
   },
 
