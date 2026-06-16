@@ -6,6 +6,7 @@ import ConditionalHeader from "@/components/ConditionalHeader";
 import CookieBanner from "@/components/CookieBanner";
 import CookieTrigger from "@/components/CookieTrigger";
 import ConsentInitializer from "@/components/ConsentInitializer";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -219,6 +220,7 @@ export default function RootLayout({
         {children}
         <CookieBanner />
         <CookieTrigger />
+        <SpeedInsights />
       </body>
     </html>
   );
