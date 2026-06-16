@@ -23,6 +23,7 @@ export default function ContactPage() {
           </h1>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: "#0D0D0D" }}>
             Αν θέλεις να μου πεις κάτι, να ρωτήσεις κάτι ή απλά να συστηθείς,
+            <br />
             θα χαρώ να σε ακούσω.
           </p>
           <div className="mt-4 inline-block w-16 h-px" style={{ backgroundColor: "#C9A96E" }} />
