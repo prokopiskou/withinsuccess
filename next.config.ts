@@ -60,6 +60,27 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+
+  // Force the proxied /path HTML to always be fetched fresh, so it never
+  // references CSS/JS chunks from an older within-path deploy (the likely
+  // cause of the intermittent unstyled/broken page). Scoped to the HTML
+  // pages only — assets under /path/_next/* keep normal immutable caching.
+  async headers() {
+    return [
+      {
+        source: '/path',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
+        ],
+      },
+      {
+        source: '/path/thank-you',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;
