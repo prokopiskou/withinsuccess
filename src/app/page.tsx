@@ -61,7 +61,7 @@ export default function Home() {
       <UTMCapture />
       <MetaPixel />
 
-      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
+      <SiteNav ctaHref="/path" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-6xl mx-auto">
@@ -74,8 +74,8 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
-              <a href="#within-path" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Ξεκίνα το μονοπάτι σου εδώ
+              <a href="/path" className="self-start text-white px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+                Ξεκίνα το μονοπάτι σου εδώ →
               </a>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
