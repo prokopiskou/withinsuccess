@@ -61,6 +61,7 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
             <a href="/work" className={active === "work" ? "text-black font-medium" : "hover:text-black transition-colors"}>Συνεργασία</a>
             <a href="/corporate" className={active === "corporate" ? "text-black font-medium" : "hover:text-black transition-colors"}>Για εταιρείες</a>
             <a href="/insights" className={active === "insights" ? "text-black font-medium" : "hover:text-black transition-colors"}>Σκέψεις</a>
+            <a href="/contact" className={active === "contact" ? "text-black font-medium" : "hover:text-black transition-colors"}>Επικοινωνία</a>
           </div>
           <a href={ctaHref} className="text-sm font-medium border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all">
             {ctaLabel}
@@ -75,6 +76,7 @@ export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
           <a href="/work" className="hover:text-black transition-colors">Συνεργασία</a>
           <a href="/corporate" className="hover:text-black transition-colors">Για εταιρείες</a>
           <a href="/insights" className="hover:text-black transition-colors">Σκέψεις</a>
+          <a href="/contact" className="hover:text-black transition-colors">Επικοινωνία</a>
         </div>
       )}
     </nav>

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="min-h-screen py-20 px-6" style={{ backgroundColor: "#FFFFFF" }}>
-      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
+      <SiteNav active="contact" ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-serif mb-6" style={{ color: "#0D0D0D" }}>
