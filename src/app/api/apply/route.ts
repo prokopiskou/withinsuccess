@@ -6,9 +6,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email } = body;
+    const { name, email, reason, experience, goal, readiness } = body;
 
-    // Basic validation
     if (!name || !email) {
       return NextResponse.json(
         { error: "Όλα τα πεδία είναι υποχρεωτικά" },
@@ -16,7 +15,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Normalize name with Claude
     let normalizedName = name;
     try {
       const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -42,7 +40,6 @@ export async function POST(req: Request) {
       normalizedName = name;
     }
 
-    // 1. Add to CORRECT MailerLite group (Coaching Apply)
     const mailerliteRes = await fetch("https://connect.mailerlite.com/api/subscribers", {
       method: "POST",
       headers: {
@@ -51,7 +48,13 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         email,
-        fields: { name: normalizedName },
+        fields: {
+          name: normalizedName,
+          reason: reason || "",
+          experience: experience || "",
+          goal: goal || "",
+          readiness: readiness || "",
+        },
         groups: ["184651469072368868"],
       }),
     });
@@ -60,8 +63,7 @@ export async function POST(req: Request) {
       console.error("MailerLite error:", await mailerliteRes.text());
     }
 
-    // 2. Send notification email to Prokopis
-    const { error: resendError } = await resend.emails.send({
+    const { error: notifyError } = await resend.emails.send({
       from: "WithinSuccess Apply <hello@send.withinsuccess.gr>",
       to: "hello@withinsuccess.gr",
       replyTo: email,
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #0D0D0D; border-bottom: 2px solid #C9A96E; padding-bottom: 10px;">
-            Νέα αίτηση για coaching
+            Νέα αίτηση για 1:1 Coaching
           </h2>
           <table style="width: 100%; margin: 20px 0;">
             <tr>
@@ -87,9 +89,22 @@ export async function POST(req: Request) {
               <td style="padding: 10px 0; color: #0D0D0D;">${new Date().toLocaleString("el-GR", { timeZone: "Europe/Athens" })}</td>
             </tr>
           </table>
-          <p style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-left: 3px solid #C9A96E; color: #0D0D0D;">
-            Ο/η ${normalizedName} έχει προστεθεί αυτόματα στο MailerLite group "Coaching Apply".
-          </p>
+          <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
+            <h3 style="color: #0D0D0D; margin-top: 0;">Τι τον/την έφερε εδώ:</h3>
+            <p style="color: #0D0D0D; margin: 0;">${reason || "Δεν απάντησε"}</p>
+          </div>
+          <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
+            <h3 style="color: #0D0D0D; margin-top: 0;">Εμπειρία με coaching:</h3>
+            <p style="color: #0D0D0D; margin: 0;">${experience || "Δεν απάντησε"}</p>
+          </div>
+          <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
+            <h3 style="color: #0D0D0D; margin-top: 0;">Στόχος σε 6 μήνες:</h3>
+            <p style="color: #0D0D0D; margin: 0; white-space: pre-wrap;">${goal || "Δεν απάντησε"}</p>
+          </div>
+          <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
+            <h3 style="color: #0D0D0D; margin-top: 0;">Ετοιμότητα:</h3>
+            <p style="color: #0D0D0D; margin: 0;">${readiness || "Δεν απάντησε"}</p>
+          </div>
           <p style="margin-top: 30px; font-size: 12px; color: #888;">
             Στάλθηκε από το <a href="https://withinsuccess.gr/apply" style="color: #C9A96E;">withinsuccess.gr/apply</a>
           </p>
@@ -97,8 +112,50 @@ export async function POST(req: Request) {
       `,
     });
 
-    if (resendError) {
-      console.error("Resend error:", resendError);
+    if (notifyError) {
+      console.error("Resend notification error:", notifyError);
+    }
+
+    const { error: confirmError } = await resend.emails.send({
+      from: "Προκόπης από WithinSuccess <hello@send.withinsuccess.gr>",
+      to: email,
+      replyTo: "hello@withinsuccess.gr",
+      subject: "Έλαβα την αίτησή σου",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #0D0D0D; border-bottom: 2px solid #C9A96E; padding-bottom: 10px;">
+            ${normalizedName},
+          </h2>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
+            Έλαβα την αίτησή σου για 1:1 coaching.
+          </p>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
+            Δεν είναι μικρό αυτό που έκανες. Είναι η στιγμή που αποφάσισες να κάνεις κάτι για εσένα.
+          </p>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
+            Θα διαβάσω την αίτησή σου προσωπικά. Αν υπάρχει αντιστοιχία, θα σου απαντήσω τις επόμενες ημέρες.
+          </p>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
+            Αν έχεις κάτι επείγον στο μεταξύ, γράψε στο 
+            <a href="mailto:hello@withinsuccess.gr" style="color: #C9A96E;">hello@withinsuccess.gr</a>.
+          </p>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8; margin-top: 30px;">
+            Καλωσήρθες.
+          </p>
+          <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
+            Προκόπης
+          </p>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;" />
+          <p style="color: #888; font-size: 12px; text-align: center;">
+            WithinSuccess · Γλυφάδα, Αθήνα<br />
+            <a href="https://withinsuccess.gr" style="color: #C9A96E;">withinsuccess.gr</a>
+          </p>
+        </div>
+      `,
+    });
+
+    if (confirmError) {
+      console.error("Resend confirmation error:", confirmError);
     }
 
     return NextResponse.json({ success: true });
