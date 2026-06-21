@@ -238,7 +238,7 @@ export default function Home() {
               Διάλεξε το επόμενο βήμα σου.
             </h2>
           </div>
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
               <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">Coaching</span>
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1:1 Συνεδρίες</h3>
@@ -256,12 +256,6 @@ export default function Home() {
               <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>Δωρεάν Quiz Αυτογνωσίας</h3>
               <p className="text-gray-500 leading-relaxed text-sm">3 λεπτά · Δωρεάν. Μάθε σε ποιο στάδιο βρίσκεσαι και ποιο είναι το επόμενο βήμα.</p>
               <a href="/assessment" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Κάνε το quiz →</a>
-            </div>
-            <div className="flex flex-col gap-4 p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors">
-              <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">Programs</span>
-              <h3 className="text-xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30-Day Programs</h3>
-              <p className="text-gray-500 leading-relaxed text-sm">Δομημένα digital programs. Βήμα βήμα αλλαγή με εργαλεία, δομή και καθοδήγηση.</p>
-              <a href="/30days" className="mt-auto self-start text-sm font-medium border border-black px-5 py-2.5 rounded-full hover:bg-black hover:text-white transition-all">Δες τα programs →</a>
             </div>
           </div>
         </div>

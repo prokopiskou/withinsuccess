@@ -171,39 +171,6 @@ export default function Work() {
         </div>
       </section>
 
-      {/* 30-DAY PROGRAMS */}
-      <section id="programs" className="py-16 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-3">
-              <p className="text-xs font-medium tracking-widest text-gray-400 uppercase">30-Day Program</p>
-              <span className="flex items-center gap-1.5 bg-green-50 text-green-600 text-xs font-medium px-3 py-1 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block"></span>
-                Ανοιχτό τώρα
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-semibold leading-tight" style={{fontFamily: 'Georgia, serif'}}>
-              30 μέρες που αλλάζουν τη βάση.
-            </h2>
-            <div className="flex flex-col gap-3 text-gray-500 leading-relaxed">
-              <p>Ένα δομημένο πρόγραμμα 30 ημερών. Βήμα βήμα, με εργαλεία και καθοδήγηση.</p>
-              <p>Ανοίγει σε συγκεκριμένες περιόδους τον χρόνο - κάθε κύκλος έχει περιορισμένες θέσεις.</p>
-            </div>
-            <div className="flex flex-col gap-2 text-sm text-gray-400 border-t border-gray-100 pt-6">
-              <p>✓ Πλήρες πρόγραμμα 30 ημερών</p>
-              <p>✓ Εργαλεία & ασκήσεις καθημερινά</p>
-              <p>✓ Άμεση πρόσβαση</p>
-            </div>
-            <a href="/30days" className="self-start px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
-              Κατοχύρωσε τώρα - 15€ →
-            </a>
-          </div>
-          <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <img src="/prokopis_audience.webp" alt="Κοινό σεμιναρίου WithinSuccess Αθήνα" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      </section>
-
       {/* ΕΤΑΙΡΕΙΕΣ */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
