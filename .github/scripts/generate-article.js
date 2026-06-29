@@ -150,7 +150,7 @@ async function generateArticle(trendingContext, keyword, dateStr, existingTitles
       'anthropic-version': '2023-06-01'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       messages: [{
         role: 'user',
@@ -211,6 +211,9 @@ HTML content εδώ...
   });
 
   const data = await response.json();
+  if (!response.ok || !data.content || !data.content[0]) {
+    throw new Error(`Anthropic API error (${response.status}): ${JSON.stringify(data.error || data)}`);
+  }
   const text = data.content[0].text.trim();
 
   const get = (tag) => {
