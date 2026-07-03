@@ -22,6 +22,9 @@ const META_PIXEL_ID = "1653590555890252";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://withinsuccess.gr"),
+  alternates: {
+    canonical: "./",
+  },
   title: {
     default: "Προκόπης Κούκης | Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
     template: "%s | WithinSuccess",
