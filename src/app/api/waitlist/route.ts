@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const GROUP_PROGRAM_WAITLIST = '187457343070405693'  // 63 Days + variants
 const GROUP_SEMINAR_WAITLIST = '187522640873784777'  // Seminars
+const GROUP_WITHIN_PATH_WAITLIST = '190255541091567097'  // Within Path
 
 function getGroupForSource(source: string): string {
   const s = source.toLowerCase()
   if (s === 'seminar' || s === 'seminars' || s.startsWith('seminar_')) {
     return GROUP_SEMINAR_WAITLIST
+  }
+  if (s === 'within_path' || s === 'withinpath' || s.startsWith('within_path')) {
+    return GROUP_WITHIN_PATH_WAITLIST
   }
   return GROUP_PROGRAM_WAITLIST
 }

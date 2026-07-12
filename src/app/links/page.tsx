@@ -86,21 +86,21 @@ export default function LinksPage() {
         {/* Buttons */}
         <div className="space-y-3">
           <LinkButton
+            href="/work"
+            title="1-on-1 Coaching"
+            subtitle="Προσωπική διαδικασία · με αίτηση"
+            symbol="⊙"
+            destination="coaching"
+          />
+
+          <LinkButton
             href="/assessment"
             title="Within Assessment"
             subtitle="Δωρεάν · 3 λεπτά"
             symbol="✦"
             destination="assessment"
           />
-          
-          <LinkButton
-            href="/insights"
-            title="Σκέψεις & άρθρα"
-            subtitle="Νέο άρθρο κάθε εβδομάδα"
-            symbol="✎"
-            destination="insights"
-          />
-          
+
           <LinkButton
             href="https://www.youtube.com/@Prokopiskoukis"
             title="YouTube"
@@ -108,13 +108,13 @@ export default function LinksPage() {
             symbol="▶"
             destination="youtube"
           />
-          
+
           <LinkButton
-            href="/work"
-            title="1-on-1 Coaching"
-            subtitle="Προσωπική διαδικασία · με αίτηση"
-            symbol="⊙"
-            destination="coaching"
+            href="/insights"
+            title="Σκέψεις & άρθρα"
+            subtitle="Νέο άρθρο κάθε εβδομάδα"
+            symbol="✎"
+            destination="insights"
           />
         </div>
 

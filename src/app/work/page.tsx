@@ -95,12 +95,7 @@ export default function Work() {
               </div>
             ))}
           </div>
-          <div className="text-center">
-            <p className="text-gray-500 mb-6">Το πρώτο βήμα; Να δεις πού βρίσκεσαι τώρα.</p>
-            <a href="/path" className="inline-block px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
-              Δες ολόκληρο το Within Path →
-            </a>
-          </div>
+          <ClosedProgramCTA source="within_path" />
         </div>
       </section>
 
