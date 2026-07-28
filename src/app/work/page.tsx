@@ -51,16 +51,16 @@ export default function Work() {
             </h2>
             <div className="flex flex-col gap-3 text-gray-400 leading-relaxed">
               <p>Δεν είναι απλώς συνεδρίες.</p>
-              <p>Είναι η δουλειά που αλλάζει τον τρόπο που βλέπεις τον εαυτό σου - και άρα τα πάντα γύρω σου.</p>
-              <p>Κάθε περίοδο γίνεται δεκτός συγκεκριμένος αριθμός ατόμων. Η διαδικασία ξεκινάει με ένα σύντομο ερωτηματολόγιο.</p>
+              <p>Είναι η δουλειά που αλλάζει τον τρόπο που βλέπεις τον εαυτό σου, και άρα τα πάντα γύρω σου.</p>
+              <p>Κάθε περίοδο δουλεύω με λίγα άτομα. Το πρώτο βήμα είναι μια σύντομη ενημερωτική συνεδρία, να γνωριστούμε, να δω πού βρίσκεσαι και αν είμαι ο σωστός άνθρωπος για το επόμενο βήμα σου.</p>
             </div>
             <div className="flex flex-col gap-2 text-sm text-gray-400 border-t border-gray-800 pt-6">
               <p>✓ Βαθιά, εξατομικευμένη δουλειά</p>
-              <p>✓ Πραγματική αλλαγή - όχι γενικές συμβουλές</p>
+              <p>✓ Πραγματική αλλαγή, όχι γενικές συμβουλές</p>
               <p>✓ Περιορισμένες θέσεις</p>
             </div>
-            <a href="/apply" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
-              Συμπλήρωσε το ερωτηματολόγιο →
+            <a href="https://calendly.com/withinsuccess1/withinsuccess" target="_blank" rel="noopener noreferrer" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+              Προγραμμάτισε ενημερωτική συνεδρία →
             </a>
           </div>
           <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
