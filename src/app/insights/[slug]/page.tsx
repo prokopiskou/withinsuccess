@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { articles } from "../articles";
 import AssessmentCTA from "./AssessmentCTA";
+import CoachingCTA from "./CoachingCTA";
 
 export const dynamicParams = true;
 
@@ -154,6 +155,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           className="flex flex-col gap-6 text-gray-600 leading-relaxed [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:text-black [&>h2]:mt-8 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-black [&>p]:leading-relaxed [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6 [&>strong]:text-black [&>blockquote]:border-l-4 [&>blockquote]:border-gray-200 [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:text-gray-500"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
+
+        <CoachingCTA />
 
         <AssessmentCTA articleSlug={article.slug} />
       </article>
