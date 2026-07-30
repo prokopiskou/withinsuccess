@@ -63,31 +63,8 @@ export default function Home() {
 
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
-      {/* 1-1 TOP CTA */}
-      <section className="pt-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <a
-            href="https://calendly.com/withinsuccess1/withinsuccess"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center rounded-2xl px-6 py-4 border transition-opacity hover:opacity-90"
-            style={{ borderColor: "#EFE9DD", backgroundColor: "#FBF6EC" }}
-          >
-            <span className="text-sm md:text-base" style={{ color: "#1A1A1A" }}>
-              <strong>1-1 συνεδρίες:</strong> Ήρθε η ώρα για την αλλαγή που αναβάλλεις;
-            </span>
-            <span
-              className="text-sm font-medium px-5 py-2 rounded-full whitespace-nowrap"
-              style={{ backgroundColor: GOLD, color: "#0D0D0D" }}
-            >
-              Κλείσε δωρεάν συνεδρία ενημέρωσης →
-            </span>
-          </a>
-        </div>
-      </section>
-
       {/* HERO */}
-      <section className="pt-10 pb-16 px-6 max-w-6xl mx-auto">
+      <section className="pt-32 pb-16 px-6 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-8">
             <h1 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight" style={{fontFamily: 'Georgia, serif'}}>
@@ -97,8 +74,8 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
-              <a href="/assessment" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-                Κάνε το δωρεάν quiz →
+              <a href="https://calendly.com/withinsuccess1/withinsuccess" target="_blank" rel="noopener noreferrer" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+                Κλείσε δωρεάν συνεδρία ενημέρωσης →
               </a>
             </div>
             <div className="flex gap-8 pt-4 border-t border-gray-100">
