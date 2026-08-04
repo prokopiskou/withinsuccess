@@ -87,21 +87,13 @@ async function getProductConfig(
     return CONFIG_30DAYS
   }
   
-  // PRIORITY 4: Amount-based bands as last resort
-  if (amount >= 60 && amount <= 120) {
-    console.log(`[PRODUCT] Matched 63 Μέρες via amount band ${amount}`)
-    return CONFIG_63DAYS
-  }
-  if (amount === 15) {
-    console.log(`[PRODUCT] Matched 30 Μέρες via exact amount 15`)
-    return CONFIG_30DAYS
-  }
-  
-  // FINAL FALLBACK: default to 63 Days (safer — avoids triggering 30 days automation)
-  console.warn(`[PRODUCT] ⚠️ UNKNOWN product (amount: ${amount}, metadata:`, metadata, ') — defaulting to 63 Days group')
+  // No amount-based routing. Coaching / payment-link purchases must NOT be
+  // grouped as a program. If the product is not clearly 63/30 days, we return
+  // an empty group so the buyer is NOT added to any MailerLite list.
+  console.warn(`[PRODUCT] ⚠️ UNKNOWN product (amount: ${amount}, metadata:`, metadata, ') — NOT adding to any MailerLite group')
   return {
-    name: 'WithinSuccess Program',
-    mailerLiteGroup: '170438323755550313',
+    name: metadata?.product_name || 'WithinSuccess',
+    mailerLiteGroup: '',
     syncManyChat: false,
   }
 }
@@ -327,6 +319,10 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
 // MAILERLITE
 // ============================================================
 async function addToMailerLite(email: string, firstName: string, lastName: string, groupId: string) {
+  if (!groupId) {
+    console.log(`[MailerLite] No group for this product — skipping ${email}`)
+    return
+  }
   try {
     const mlRes = await fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
