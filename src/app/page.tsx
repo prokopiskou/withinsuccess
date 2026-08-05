@@ -61,6 +61,45 @@ export default function Home() {
       <UTMCapture />
       <MetaPixel />
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Person",
+              "@id": "https://withinsuccess.gr/#prokopis",
+              "name": "Προκόπης Κούκης",
+              "url": "https://withinsuccess.gr",
+              "image": "https://withinsuccess.gr/prokopis_about.webp",
+              "jobTitle": "Life Coach & Personal Development Expert",
+              "description": "Life Coach και ειδικός προσωπικής ανάπτυξης. Ιδρυτής του WithinSuccess. 7+ χρόνια εμπειρία, 900+ άνθρωποι.",
+              "worksFor": { "@id": "https://withinsuccess.gr/#org" },
+              "sameAs": [
+                "https://www.instagram.com/withinsuccess/",
+                "https://www.youtube.com/@Prokopiskoukis",
+                "https://open.spotify.com/show/3j08JeSsHOAoEWUnhiRjYy"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://withinsuccess.gr/#org",
+              "name": "WithinSuccess",
+              "url": "https://withinsuccess.gr",
+              "logo": "https://withinsuccess.gr/logo.png",
+              "description": "Ελληνική πλατφόρμα προσωπικής ανάπτυξης. Coaching, σεμινάρια και digital προγράμματα για αλλαγή νοοτροπίας και εσωτερικής ιστορίας.",
+              "founder": { "@id": "https://withinsuccess.gr/#prokopis" },
+              "email": "hello@withinsuccess.gr",
+              "sameAs": [
+                "https://www.instagram.com/withinsuccess/",
+                "https://www.youtube.com/@Prokopiskoukis",
+                "https://open.spotify.com/show/3j08JeSsHOAoEWUnhiRjYy"
+              ]
+            }
+          ]
+        }) }}
+      />
+
       <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
 
       {/* HERO */}
