@@ -25,7 +25,7 @@ export default function LinksPage() {
             <img 
               src="/prokopis_about.webp" 
               alt="Προκόπης Κούκης"
-              className="relative w-28 h-28 rounded-full object-cover border-[3px] border-white shadow-lg mx-auto"
+              className="relative w-32 h-32 rounded-full object-cover border-[3px] border-white shadow-lg mx-auto"
               style={{ objectPosition: 'center 5%' }}
             />
             <div 
