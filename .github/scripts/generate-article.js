@@ -50,9 +50,9 @@ function sanitizeText(text) {
     .replace(/^\uFEFF/, '');                  // BOM at start
 }
 
-function sanitizeArticle(article) {
+function asciiSlug(text){ if (typeof text !== 'string') return text; var cyr={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ж':'zh','з':'z','и':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'y','ф':'f','х':'x','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'}; return text.toLowerCase().split('').map(function(c){ return (c in cyr)?cyr[c]:c; }).join('').replace(/[^a-z0-9-]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,''); } function sanitizeArticle(article) {
   return {
-    slug: sanitizeText(article.slug),
+    slug: asciiSlug(article.slug),
     title: sanitizeText(article.title),
     excerpt: sanitizeText(article.excerpt),
     metaDescription: sanitizeText(article.metaDescription),
@@ -241,7 +241,7 @@ HTML content εδώ...
     metaDescription: get('META'),
     category: get('CATEGORY'),
     date: dateStr,
-    readTime: 5,
+    readTime: 3.5,
     keywords: get('KEYWORDS').split(',').map(k => k.trim()),
     content: get('CONTENT')
   };
