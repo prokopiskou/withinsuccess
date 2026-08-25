@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { articles } from './insights/articles'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -68,5 +69,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.6,
     },
+    ...articles.map((article) => ({
+      url: `https://withinsuccess.gr/insights/${article.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
   ]
 }
