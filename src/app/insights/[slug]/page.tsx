@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { articles } from "../articles";
-import AssessmentCTA from "./AssessmentCTA";
 import CoachingCTA from "./CoachingCTA";
 
 export const dynamicParams = true;
@@ -158,7 +157,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         <CoachingCTA />
 
-        <AssessmentCTA articleSlug={article.slug} />
+        
       </article>
 
       {/* FOOTER */}
