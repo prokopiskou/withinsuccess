@@ -110,7 +110,7 @@ export default function Home() {
               Η ζωή αλλάζει<br />όταν αλλάξει<br />η εσωτερική ιστορία.
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
-              Δεν έχεις χαθεί. Απλώς κάποιος δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
+              Δεν έχεις χαθεί. Απλώς κανείς δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
               <a href="https://calendly.com/withinsuccess1/withinsuccess" target="_blank" rel="noopener noreferrer" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
