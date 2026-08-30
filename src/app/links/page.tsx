@@ -95,7 +95,7 @@ export default function LinksPage() {
 
           <LinkButton
             href="/assessment"
-            title="Within Assessment - Quiz αυτογνωσίας"
+            title="Within Assessment · Quiz αυτογνωσίας"
             subtitle="Δωρεάν · 3 λεπτά"
             symbol="✦"
             destination="assessment"
