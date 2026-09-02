@@ -86,7 +86,7 @@ export default function LinksPage() {
         {/* Buttons */}
         <div className="space-y-3">
           <LinkButton
-            href="https://calendly.com/withinsuccess1/withinsuccess"
+            href="https://calendly.com/withinsuccess1/withinsuccess?a1=%CE%91%CF%84%CE%BF%CE%BC%CE%B9%CE%BA%CE%AD%CF%82%20%CF%83%CF%85%CE%BD%CE%B5%CE%B4%CF%81%CE%AF%CE%B5%CF%82"
             title="1-on-1 Coaching"
             subtitle="Κλείσε ενημερωτική συνεδρία"
             symbol="⊙"

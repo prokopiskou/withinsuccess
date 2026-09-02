@@ -95,7 +95,9 @@ export default function Work() {
               </div>
             ))}
           </div>
-          <ClosedProgramCTA source="within_path" />
+          <a href="/path" className="inline-block text-black px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+            Δες το Within Path™ →
+          </a>
         </div>
       </section>
 
