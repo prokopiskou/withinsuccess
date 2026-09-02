@@ -59,7 +59,7 @@ export default function Work() {
               <p>✓ Πραγματική αλλαγή, όχι γενικές συμβουλές</p>
               <p>✓ Περιορισμένες θέσεις</p>
             </div>
-            <a href="https://calendly.com/withinsuccess1/withinsuccess" target="_blank" rel="noopener noreferrer" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
+            <a href="https://calendly.com/withinsuccess1/withinsuccess?a1=%CE%91%CF%84%CE%BF%CE%BC%CE%B9%CE%BA%CE%AD%CF%82%20%CF%83%CF%85%CE%BD%CE%B5%CE%B4%CF%81%CE%AF%CE%B5%CF%82" target="_blank" rel="noopener noreferrer" className="self-start text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD, color: '#0D0D0D'}}>
               Προγραμμάτισε ενημερωτική συνεδρία →
             </a>
           </div>

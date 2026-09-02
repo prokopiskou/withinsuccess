@@ -113,7 +113,7 @@ export default function Home() {
               Δεν έχεις χαθεί. Απλώς κανείς δεν σου είπε ποτέ ότι η ιστορία που λες στον εαυτό σου μπορεί να αλλάξει.
             </p>
             <div className="flex flex-col gap-2">
-              <a href="https://calendly.com/withinsuccess1/withinsuccess" target="_blank" rel="noopener noreferrer" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
+              <a href="https://calendly.com/withinsuccess1/withinsuccess?a1=%CE%91%CF%84%CE%BF%CE%BC%CE%B9%CE%BA%CE%AD%CF%82%20%CF%83%CF%85%CE%BD%CE%B5%CE%B4%CF%81%CE%AF%CE%B5%CF%82" target="_blank" rel="noopener noreferrer" className="self-start text-[#0D0D0D] px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
                 Κλείσε δωρεάν συνεδρία ενημέρωσης →
               </a>
             </div>
