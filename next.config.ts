@@ -32,17 +32,17 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/wl-ig",
-        destination: "https://withinsuccess.gr/path?utm_source=instagram&utm_medium=bio&utm_campaign=wp_waitlist",
+        destination: "https://withinsuccess.gr/path?utm_source=instagram&utm_medium=bio&utm_campaign=within_path",
         permanent: false,
       },
       {
         source: "/wl-fb",
-        destination: "https://withinsuccess.gr/path?utm_source=facebook&utm_medium=bio&utm_campaign=wp_waitlist",
+        destination: "https://withinsuccess.gr/path?utm_source=facebook&utm_medium=bio&utm_campaign=within_path",
         permanent: false,
       },
       {
         source: "/wl-tt",
-        destination: "https://withinsuccess.gr/path?utm_source=tiktok&utm_medium=bio&utm_campaign=wp_waitlist",
+        destination: "https://withinsuccess.gr/path?utm_source=tiktok&utm_medium=bio&utm_campaign=within_path",
         permanent: false,
       },
 
