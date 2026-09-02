@@ -67,7 +67,7 @@ export default function Insights() {
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">{article.category}</span>
                     <span className="text-xs text-gray-500">·</span>
-                    <span className="text-xs text-gray-400">{article.readTime} λεπτά ανάγνωσης</span>
+                    <span className="text-xs text-gray-400">{String(article.readTime).replace(".", ",")} λεπτά ανάγνωσης</span>
                   </div>
                   <h2 className="text-xl font-semibold leading-snug group-hover:text-gray-600 transition-colors" style={{fontFamily: 'Georgia, serif'}}>
                     {article.title}

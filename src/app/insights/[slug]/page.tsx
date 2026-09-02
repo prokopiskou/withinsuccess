@@ -133,7 +133,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center gap-3 mb-6">
             <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">{article.category}</span>
             <span className="text-xs text-gray-500">·</span>
-            <span className="text-xs text-gray-400">{article.readTime} λεπτά ανάγνωσης</span>
+            <span className="text-xs text-gray-400">{String(article.readTime).replace(".", ",")} λεπτά ανάγνωσης</span>
             <span className="text-xs text-gray-500">·</span>
             <span className="text-xs text-gray-400">{article.date}</span>
           </div>
