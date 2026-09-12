@@ -70,7 +70,7 @@ export default function LinksPage() {
               fontStyle: 'italic',
             }}
           >
-            Η ζωή αλλάζει όταν αλλάζει
+            Η ζωή αλλάζει όταν αλλάξει
             <br />
             <span 
               style={{ 
