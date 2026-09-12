@@ -8,14 +8,23 @@ type Props = {
   subtitle?: string
   symbol?: string
   destination: string
+  featured?: boolean
 }
 
-export default function LinkButton({ href, title, subtitle, symbol = '✦', destination }: Props) {
+export default function LinkButton({ href, title, subtitle, symbol = '✦', destination, featured = false }: Props) {
   const isExternal = href.startsWith('http://') || href.startsWith('https://')
 
   function handleClick() {
     trackEvent('links_button_click', { destination })
   }
+
+  const borderColor = featured ? '#C9A96E' : '#EFE9DD'
+  const borderWidth = featured ? '2px' : '1px'
+  const bg = featured ? '#FDF8EE' : '#ffffff'
+  const restShadow = featured
+    ? '0 4px 16px rgba(201, 169, 110, 0.20), 0 0 0 1px rgba(201, 169, 110, 0.30)'
+    : '0 1px 2px rgba(0, 0, 0, 0.03), 0 0 0 0 rgba(201, 169, 110, 0)'
+  const hoverShadow = '0 6px 18px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(201, 169, 110, 0.40)'
 
   return (
     <a
@@ -23,18 +32,19 @@ export default function LinkButton({ href, title, subtitle, symbol = '✦', dest
       onClick={handleClick}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className="group block w-full bg-white rounded-xl px-5 py-4 transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
+      className="group block w-full rounded-xl px-5 py-4 transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
       style={{
-        border: '1px solid #EFE9DD',
-        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03), 0 0 0 0 rgba(201, 169, 110, 0)',
+        backgroundColor: bg,
+        border: `${borderWidth} solid ${borderColor}`,
+        boxShadow: restShadow,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(201, 169, 110, 0.2)'
+        e.currentTarget.style.boxShadow = hoverShadow
         e.currentTarget.style.borderColor = '#C9A96E'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.03), 0 0 0 0 rgba(201, 169, 110, 0)'
-        e.currentTarget.style.borderColor = '#EFE9DD'
+        e.currentTarget.style.boxShadow = restShadow
+        e.currentTarget.style.borderColor = borderColor
       }}
     >
       <div className="flex items-center gap-4">
