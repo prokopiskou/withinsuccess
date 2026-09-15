@@ -13,15 +13,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const article = articles.find((a) => a.slug === slug);
   if (!article) return {};
+  const metaDescription = article.metaDescription ?? article.excerpt;
   return {
     title: article.title,
-    description: article.excerpt,
+    description: metaDescription,
     keywords: article.keywords,
     authors: [{ name: "Προκόπης Κούκης", url: "https://withinsuccess.gr" }],
     alternates: { canonical: `https://withinsuccess.gr/insights/${article.slug}` },
     openGraph: {
       title: article.title,
-      description: article.excerpt,
+      description: metaDescription,
       url: `https://withinsuccess.gr/insights/${article.slug}`,
       type: "article",
       publishedTime: article.date,
@@ -36,11 +37,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const article = articles.find((a) => a.slug === slug);
   if (!article) notFound();
 
+  const metaDescription = article.metaDescription ?? article.excerpt;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
-    description: article.excerpt,
+    description: metaDescription,
     author: {
       "@type": "Person",
       name: "Προκόπης Κούκης",
