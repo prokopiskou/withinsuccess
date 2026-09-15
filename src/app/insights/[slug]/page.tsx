@@ -145,7 +145,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </h1>
           <p className="text-xl text-gray-500 leading-relaxed">{article.excerpt}</p>
           <div className="flex items-center gap-3 mt-8 pt-8 border-t border-gray-100">
-            <img src="/prokopis_about.webp" alt="Προκόπης Κούκης" className="w-10 h-10 rounded-full object-cover" />
+            <img src="/prokopis_about.webp" alt="Προκόπης Κούκης" className="w-10 h-10 rounded-full object-cover object-top" />
             <div>
               <p className="text-sm font-medium">Προκόπης Κούκης</p>
               <p className="text-xs text-gray-400">WithinSuccess</p>
