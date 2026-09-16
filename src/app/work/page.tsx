@@ -3,6 +3,7 @@ import { useState } from "react";
 import SiteNav from "@/components/SiteNav";
 import MetaPixel from "@/components/MetaPixel";
 import ClosedProgramCTA from "@/components/ClosedProgramCTA";
+import WaitlistInline from "@/components/WaitlistInline";
 import Footer from "@/components/Footer";
 
 const GOLD = '#C9A96E';
@@ -95,9 +96,13 @@ export default function Work() {
               </div>
             ))}
           </div>
-          <a href="/path" className="inline-block text-black px-8 py-4 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style={{backgroundColor: GOLD}}>
-            Δες το Within Path™ →
-          </a>
+          <p className="text-lg font-medium text-gray-900 mb-2" style={{fontFamily: 'Georgia, serif'}}>
+            Οι θέσεις για αυτόν τον κύκλο εξαντλήθηκαν.
+          </p>
+          <p className="text-sm text-gray-500 mb-5">
+            Άσε το email σου και θα είσαι από τους πρώτους που θα μάθουν όταν ανοίξει ο επόμενος κύκλος.
+          </p>
+          <WaitlistInline source="within_path" />
         </div>
       </section>
 
