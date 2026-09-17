@@ -94,15 +94,6 @@ export default function LinksPage() {
           />
 
           <LinkButton
-            href="/path"
-            title="Within Path™"
-            subtitle="Έναρξη 29/9 · 8 εβδομάδες online"
-            symbol="✦"
-            destination="within_path"
-            featured
-          />
-
-          <LinkButton
             href="/assessment"
             title="Within Assessment · Quiz αυτογνωσίας"
             subtitle="Δωρεάν · 3 λεπτά"
