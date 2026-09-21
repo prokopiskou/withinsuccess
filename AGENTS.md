@@ -29,8 +29,9 @@ API (`src/app/api/`): `apply` · `waitlist` · `stripe-webhook` (ΕΝΑ webhook,
 
 ## Κρίσιμα facts / gotchas (επιβεβαιωμένα από κώδικα)
 - **CookieBanner:** μπαίνει **χωρίς συνθήκη** στο `src/app/layout.tsx`. Φαίνεται σε ΟΛΕΣ τις σελίδες, και στο `/links`. Για να εξαιρεθεί κάποια route (π.χ. `/links`), πρέπει να **προστεθεί** gating με `usePathname` (το component είναι client). Δεν υπάρχει τέτοια εξαίρεση τώρα.
-- **Articles = ΣΤΑΤΙΚΑ.** Ζουν στο `src/app/insights/articles.ts` (typed `Article[]`, ~13 άρθρα, hardcoded content). **ΔΕΝ υπάρχει automation/cron για άρθρα.** Νέο άρθρο = προσθήκη entry στο `articles.ts`.
-- **Ο μόνος cron** (`vercel.json`) είναι `/api/manychat/cron` (καθημερινά 12:00) — ManyChat AI concierge για το 63days funnel (Anthropic-powered). Καμία σχέση με άρθρα.
+- **Articles = ΣΤΑΤΙΚΑ.** Ζουν στο `src/app/insights/articles.ts` (typed `Article[]`, ~22 άρθρα, hardcoded content). Νέο άρθρο = προσθήκη entry στο `articles.ts`.
+- **ΥΠΑΡΧΕΙ automation για άρθρα** (GitHub Action, ΟΧΙ vercel cron): `.github/workflows/auto-article.yml` τρέχει `.github/scripts/generate-article.js` κάθε **Δευτέρα 06:00 UTC** (`cron: '0 6 * * 1'`) + `workflow_dispatch`. Παίρνει trending topic (Serper), γράφει άρθρο με Anthropic API (claude-sonnet), κάνει dedup check, προσθέτει **αυτόματα internal links** προς σχετικά υπάρχοντα άρθρα (deterministic post-processor, βλ. `addInternalLinks` στο script), και ανοίγει **PR** (`auto-article` branch) για manual review πριν το merge. Secrets: `GH_TOKEN`, `ANTHROPIC_API_KEY`, `SERPER_API_KEY`.
+- **Ο μόνος vercel cron** (`vercel.json`) είναι `/api/manychat/cron` (καθημερινά 12:00) — ManyChat AI concierge για το 63days funnel (Anthropic-powered). Καμία σχέση με άρθρα.
 - **Stripe:** webhook = `/api/stripe-webhook` (παύλα). Checkout session = `/api/stripe/create-session`. Δεν υπάρχει `/api/stripe/webhook`.
 - **Header** είναι conditional (`ConditionalHeader` component) — δεν φαίνεται παντού.
 - **63days** είναι ΞΕΧΩΡΙΣΤΟ project/app· εδώ υπάρχουν μόνο landing/redirect σελίδες του. Μην μπερδεύεις τα δύο.

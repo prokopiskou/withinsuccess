@@ -118,6 +118,63 @@ function checkDuplicate(existing, newArticle) {
 }
 
 // ============================================================
+// INTERNAL LINKING - auto-link new article to related existing ones
+// ============================================================
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Pull {slug, primary keyword} for every existing article (order-independent:
+// relies only on slug appearing before its keywords array).
+function extractSlugKeyword(fileContent) {
+  const out = [];
+  const re = /slug:\s*"([^"]+)"[\s\S]*?keywords:\s*\[\s*"([^"]+)"/g;
+  let m;
+  while ((m = re.exec(fileContent)) !== null) {
+    out.push({ slug: m[1], keyword: m[2] });
+  }
+  return out;
+}
+
+// Wrap the FIRST plain-text mention of each related article's primary keyword
+// in a link to that article. Never links inside existing <a> or <h2> blocks,
+// never links the same target twice, caps total links. Deterministic + safe:
+// only ever produces hrefs for slugs that already exist.
+function addInternalLinks(content, selfSlug, targets, maxLinks) {
+  maxLinks = maxLinks || 4;
+  const candidates = targets
+    .filter(t => t.slug !== selfSlug && t.keyword && t.keyword.trim().length >= 5)
+    .sort((a, b) => b.keyword.length - a.keyword.length); // match longer phrases first
+
+  // Isolate anchors and headings so we never nest a link or touch a title.
+  const parts = content.split(/(<a\b[^>]*>[\s\S]*?<\/a>|<h2\b[^>]*>[\s\S]*?<\/h2>)/gi);
+  const isProtected = s => /^<a\b/i.test(s) || /^<h2\b/i.test(s);
+
+  const usedSlugs = new Set();
+  let added = 0;
+
+  for (const t of candidates) {
+    if (added >= maxLinks) break;
+    if (usedSlugs.has(t.slug)) continue;
+    const re = new RegExp(
+      '(^|[^\\p{L}\\p{M}])(' + escapeRegExp(t.keyword.trim()) + ')(?![\\p{L}\\p{M}])',
+      'iu'
+    );
+    for (let i = 0; i < parts.length; i++) {
+      if (isProtected(parts[i])) continue;
+      if (re.test(parts[i])) {
+        parts[i] = parts[i].replace(re, (full, pre, kw) =>
+          pre + '<a href="/insights/' + t.slug + '">' + kw + '</a>');
+        usedSlugs.add(t.slug);
+        added++;
+        break;
+      }
+    }
+  }
+  return { content: parts.join(''), added };
+}
+
+// ============================================================
 // UTILITIES
 // ============================================================
 function getDateString() {
@@ -282,6 +339,13 @@ async function main() {
 
   // SANITIZE - Remove invisible Unicode chars
   newArticle = sanitizeArticle(newArticle);
+
+  // AUTO INTERNAL LINKS - link this article to related existing ones by keyword.
+  // Runs after sanitize so anchors (ascii slug, straight quotes) survive the final pass.
+  const linkTargets = extractSlugKeyword(currentFile);
+  const linkResult = addInternalLinks(newArticle.content, newArticle.slug, linkTargets, 4);
+  newArticle.content = linkResult.content;
+  console.log('Internal links added:', linkResult.added);
 
   console.log('Article generated:', newArticle.title);
   console.log('Slug:', newArticle.slug);
