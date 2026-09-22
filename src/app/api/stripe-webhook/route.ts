@@ -78,15 +78,10 @@ async function getProductConfig(
     return CONFIG_30DAYS
   }
   
-  // PRIORITY 3: metadata.product_name (legacy fallback)
-  const productName = (metadata?.product_name || '').toLowerCase()
-  if (productName.includes('63')) {
-    return CONFIG_63DAYS
-  }
-  if (productName.includes('30')) {
-    return CONFIG_30DAYS
-  }
-  
+  // ΚΑΜΙΑ ασαφής αντιστοίχιση (π.χ. product_name που περιέχει «30»/«63»).
+  // Μόνο ρητό Product ID (P1) ή metadata.product (P2) βάζει κάποιον σε ομάδα,
+  // ώστε να ΜΗΝ μπαίνει γενικός κόσμος στη λίστα από random session.completed.
+
   // No amount-based routing. Coaching / payment-link purchases must NOT be
   // grouped as a program. If the product is not clearly 63/30 days, we return
   // an empty group so the buyer is NOT added to any MailerLite list.

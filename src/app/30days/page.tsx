@@ -65,7 +65,7 @@ export default function ThirtyDays() {
       </nav>
 
       {/* HERO */}
-      <section className="pt-16 md:pt-32 pb-16 px-6 max-w-3xl mx-auto text-center">
+      <section className="pt-16 md:pt-20 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">30-Day Program</p>
         <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-8" style={{fontFamily: 'Georgia, serif'}}>
           30 μέρες.<br />Μία νέα εσωτερική ιστορία.
@@ -219,6 +219,7 @@ export default function ThirtyDays() {
           <button type="button" onClick={handleCheckout} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors cursor-pointer border-0">
             Ξεκίνα τώρα 15€ →
           </button>
+          <p className="text-sm text-gray-300 mt-6 leading-relaxed">15€. Όχι για το περιεχόμενο.<br />Για να πεις «το εννοώ αυτή τη φορά.»</p>
           <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
         </div>
       </section>
