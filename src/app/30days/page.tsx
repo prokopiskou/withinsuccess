@@ -79,7 +79,7 @@ export default function ThirtyDays() {
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
           Ξεκίνα τώρα 15€ →
         </button>
-        <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση. Ξεκινάς αύριο.</p>
+        <p className="text-xs text-gray-400 mt-4">Έναρξη: 1/10</p>
       </section>
 
       {/* ΓΙΑ ΠΟΙΟΝ ΕΙΝΑΙ */}
