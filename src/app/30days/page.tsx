@@ -65,7 +65,7 @@ export default function ThirtyDays() {
       </nav>
 
       {/* HERO */}
-      <section className="pt-32 pb-16 px-6 max-w-3xl mx-auto text-center">
+      <section className="pt-16 md:pt-32 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">30-Day Program</p>
         <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-8" style={{fontFamily: 'Georgia, serif'}}>
           30 μέρες.<br />Μία νέα εσωτερική ιστορία.
