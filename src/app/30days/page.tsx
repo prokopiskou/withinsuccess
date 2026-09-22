@@ -56,11 +56,8 @@ export default function ThirtyDays() {
 
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-center">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-          <button type="button" onClick={handleCheckout} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all cursor-pointer border-0">
-            Κατοχύρωση 15€
-          </button>
         </div>
       </nav>
 
