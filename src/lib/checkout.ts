@@ -2,6 +2,25 @@ import { getStoredUTMs } from './utmCapture'
 
 export type CheckoutProduct = '63days' | '30days'
 
+/** Διαβάζει ένα cookie από τον browser (π.χ. _fbp, _fbc του Meta pixel). */
+function readCookie(name: string): string {
+  if (typeof document === 'undefined') return ''
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'))
+  return m ? decodeURIComponent(m[1]) : ''
+}
+
+/**
+ * Επιστρέφει το _fbc. Αν δεν υπάρχει cookie αλλά υπάρχει fbclid στο URL
+ * (π.χ. πρώτο click από διαφήμιση), το φτιάχνει στη μορφή που θέλει το Meta.
+ */
+function getFbc(): string {
+  const existing = readCookie('_fbc')
+  if (existing) return existing
+  if (typeof window === 'undefined') return ''
+  const fbclid = new URLSearchParams(window.location.search).get('fbclid')
+  return fbclid ? `fb.1.${Date.now()}.${fbclid}` : ''
+}
+
 /**
  * Initiates Stripe checkout with full UTM attribution.
  *
@@ -24,7 +43,7 @@ export async function startCheckout(
     const res = await fetch('/api/stripe/create-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, utm }),
+      body: JSON.stringify({ product, utm, fbp: readCookie('_fbp'), fbc: getFbc() }),
     })
 
     if (!res.ok) throw new Error(`Checkout API failed: ${res.status}`)

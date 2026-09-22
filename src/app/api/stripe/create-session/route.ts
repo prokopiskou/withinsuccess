@@ -180,6 +180,13 @@ export async function POST(req: NextRequest) {
     const utm = normalizeUTM(utmBody)
     const site = process.env.NEXT_PUBLIC_SITE_URL || ''
 
+    // Στοιχεία client για βελτίωση Event Match Quality στο Meta CAPI
+    const clientIp =
+      (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() ||
+      req.headers.get('x-real-ip') ||
+      ''
+    const clientUa = req.headers.get('user-agent') || ''
+
     // Web checkout (UTM + product) — from startCheckout() / site CTAs
     if (isWebProduct(productRaw)) {
       const product = productRaw
@@ -192,7 +199,13 @@ export async function POST(req: NextRequest) {
         mode: 'payment',
         payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
-        metadata: webSessionMetadata(product, utm),
+        metadata: {
+          ...webSessionMetadata(product, utm),
+          fbp: clipMeta(fbp || ''),
+          fbc: clipMeta(fbc || ''),
+          client_ip_address: clipMeta(clientIp),
+          client_user_agent: clipMeta(clientUa),
+        },
         payment_intent_data: {
           metadata: webPaymentIntentMetadata(product, utm),
         },
@@ -238,6 +251,8 @@ export async function POST(req: NextRequest) {
         product: manychatProduct,
         fbp: clipMeta(fbp || ''),
         fbc: clipMeta(fbc || ''),
+        client_ip_address: clipMeta(clientIp),
+        client_user_agent: clipMeta(clientUa),
         utm_source: clipMeta(utm.utm_source),
         utm_medium: clipMeta(utm.utm_medium),
         utm_campaign: clipMeta(utm.utm_campaign),

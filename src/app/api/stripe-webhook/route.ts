@@ -186,37 +186,57 @@ async function fixName(rawName: string): Promise<string> {
 // ============================================================
 // META CONVERSIONS API
 // ============================================================
+// SHA-256 hash μιας κανονικοποιημένης τιμής (πεζά, χωρίς κενά άκρων).
+function hashPII(value: string): string {
+  return crypto.createHash('sha256').update(value.toLowerCase().trim()).digest('hex')
+}
+
 async function sendMetaPurchaseEvent(params: {
   email: string | null | undefined
   phone?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  country?: string | null
   amount: number
   productName: string
   eventSourceUrl?: string
   eventId?: string
+  fbp?: string | null
+  fbc?: string | null
+  clientIpAddress?: string | null
+  clientUserAgent?: string | null
 }) {
   if (!process.env.META_CAPI_ACCESS_TOKEN) {
     console.log('Meta CAPI token missing, skipping server-side event')
     return
   }
 
-  const userData: Record<string, string[]> = {}
+  // em/ph/fn/ln/ct/st/zp/country/external_id → hashed arrays
+  // fbp/fbc/client_ip_address/client_user_agent → plain (χωρίς hash)
+  const userData: Record<string, string[] | string> = {}
 
   if (params.email) {
-    const hashedEmail = crypto
-      .createHash('sha256')
-      .update(params.email.toLowerCase().trim())
-      .digest('hex')
-    userData.em = [hashedEmail]
+    userData.em = [hashPII(params.email)]
+    userData.external_id = [hashPII(params.email)]
   }
-
   if (params.phone) {
     const cleanPhone = params.phone.replace(/[^\d]/g, '')
-    const hashedPhone = crypto
-      .createHash('sha256')
-      .update(cleanPhone)
-      .digest('hex')
-    userData.ph = [hashedPhone]
+    if (cleanPhone) userData.ph = [crypto.createHash('sha256').update(cleanPhone).digest('hex')]
   }
+  if (params.firstName) userData.fn = [hashPII(params.firstName)]
+  if (params.lastName) userData.ln = [hashPII(params.lastName)]
+  if (params.city) userData.ct = [hashPII(params.city.replace(/\s+/g, ''))]
+  if (params.state) userData.st = [hashPII(params.state.replace(/\s+/g, ''))]
+  if (params.zip) userData.zp = [hashPII(params.zip.replace(/\s+/g, ''))]
+  if (params.country) userData.country = [hashPII(params.country)]
+
+  if (params.fbp) userData.fbp = params.fbp
+  if (params.fbc) userData.fbc = params.fbc
+  if (params.clientIpAddress) userData.client_ip_address = params.clientIpAddress
+  if (params.clientUserAgent) userData.client_user_agent = params.clientUserAgent
 
   try {
     const res = await fetch(
@@ -376,20 +396,35 @@ export async function POST(req: NextRequest) {
     const phone = session.customer_details?.phone || null
     const amount = (session.amount_total || 0) / 100
     const rawFullName = session.customer_details?.name || ''
+    const nameBits = rawFullName.trim().split(/\s+/).filter(Boolean)
+    const capiFirstName = nameBits[0] || ''
+    const capiLastName = nameBits.slice(1).join(' ')
+    const addr = session.customer_details?.address
+    const meta = (session.metadata || {}) as Record<string, string>
 
     // Determine which product was purchased
     const product = await getProductConfig(session, amount, session.metadata as Record<string, string>)
     console.log(`Purchase: €${amount} → ${product.name} (group ${product.mailerLiteGroup})`)
 
-    // 1. Send Purchase event to Meta CAPI
+    // 1. Send Purchase event to Meta CAPI (πλήρες user_data για υψηλό Event Match Quality)
     await sendMetaPurchaseEvent({
       email,
       phone,
+      firstName: capiFirstName,
+      lastName: capiLastName,
+      city: addr?.city,
+      state: addr?.state,
+      zip: addr?.postal_code,
+      country: addr?.country,
       amount,
       productName: product.name,
       eventId: session.id,
-      eventSourceUrl: amount === 15 
-        ? 'https://withinsuccess.gr/30days' 
+      fbp: meta.fbp || null,
+      fbc: meta.fbc || null,
+      clientIpAddress: meta.client_ip_address || null,
+      clientUserAgent: meta.client_user_agent || null,
+      eventSourceUrl: amount === 15
+        ? 'https://withinsuccess.gr/30days'
         : 'https://withinsuccess.gr/63days'
     })
 
