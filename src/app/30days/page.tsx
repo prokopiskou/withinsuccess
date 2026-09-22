@@ -59,7 +59,7 @@ export default function ThirtyDays() {
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
           <button type="button" onClick={handleCheckout} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all cursor-pointer border-0">
-            Αγόρασε τώρα — 15€
+            Κατοχύρωση — 15€
           </button>
         </div>
       </nav>
@@ -71,7 +71,7 @@ export default function ThirtyDays() {
           30 μέρες.<br />Μία νέα εσωτερική ιστορία.
         </h1>
         <p className="text-xl text-gray-500 leading-relaxed mb-4 max-w-xl mx-auto">
-          Κάθε μέρα ένα email. Μία άσκηση. 2-3 λεπτά.
+          Κάθε μέρα ένα email με μια σημαντική αλλαγή νοοτροπίας και μία άσκηση για την πραγματική σου ζωή. 2-3 λεπτά.
         </p>
         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">
           Μικρές πράξεις που αλλάζουν τον τρόπο που βλέπεις τον εαυτό σου.
