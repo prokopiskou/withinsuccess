@@ -106,7 +106,7 @@ export default function Work() {
         </div>
       </section>
 
-      {/* 63 ΜΕΡΕΣ — κλειστός κύκλος, waitlist */}
+      {/* 63 ΜΕΡΕΣ, κλειστός κύκλος, waitlist */}
       <section id="63days" className="py-16 px-6 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="my-12 sm:my-16">
@@ -153,7 +153,7 @@ export default function Work() {
           <div className="mb-12">
             <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">Τι λενε οσοι ηταν εκει</p>
             <div className="relative rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center" style={{minHeight: '400px'}}>
-              <img src={`/seminar_testimonial${current + 1}.webp`} alt={`Μαρτυρία συμμετέχοντος σε σεμινάριο WithinSuccess — ${current + 1}`} className="max-w-full max-h-[500px] object-contain" />
+              <img src={`/seminar_testimonial${current + 1}.webp`} alt={`Μαρτυρία συμμετέχοντος σε σεμινάριο WithinSuccess, ${current + 1}`} className="max-w-full max-h-[500px] object-contain" />
             </div>
             <div className="flex items-center justify-center gap-4 mt-6">
               <button onClick={prev} className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-black transition-all text-sm">←</button>

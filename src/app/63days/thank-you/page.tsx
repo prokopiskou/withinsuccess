@@ -84,7 +84,7 @@ export default function ThankYouPage() {
           <p className="text-lg font-semibold mb-4" style={{ fontFamily: 'Georgia, serif' }}>
             Αν εμφανιστείς, θα είμαι εκεί.
           </p>
-          <p className="text-gray-600 text-sm">— Προκόπης</p>
+          <p className="text-gray-600 text-sm">, Προκόπης</p>
         </div>
 
         {/* Footer */}

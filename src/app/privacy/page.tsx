@@ -14,7 +14,7 @@ export default function Privacy() {
             <h2 className="text-xl font-semibold text-black mt-4">1. Τι δεδομένα συλλέγουμε</h2>
             <p>Συλλέγουμε ονοματεπώνυμο, email, τηλέφωνο και πόλη μέσω φορμών εγγραφής, Facebook Lead Ads και ManyChat (Messenger/Instagram bot).</p>
             <h2 className="text-xl font-semibold text-black mt-4">2. Πού αποθηκεύονται</h2>
-            <p>Τα δεδομένα αποθηκεύονται σε MailerLite, Meta Platforms και ManyChat — όλες GDPR-compliant πλατφόρμες. Χρησιμοποιούνται αποκλειστικά για επικοινωνία και ενημέρωση.</p>
+            <p>Τα δεδομένα αποθηκεύονται σε MailerLite, Meta Platforms και ManyChat, όλες GDPR-compliant πλατφόρμες. Χρησιμοποιούνται αποκλειστικά για επικοινωνία και ενημέρωση.</p>
             <h2 className="text-xl font-semibold text-black mt-4">3. Νομική βάση</h2>
             <p>Η επεξεργασία βασίζεται στη ρητή συγκατάθεσή σας. Μπορείτε να την ανακαλέσετε ανά πάσα στιγμή μέσω "unsubscribe" ή με email.</p>
             <h2 className="text-xl font-semibold text-black mt-4">4. Cookies</h2>
@@ -24,7 +24,7 @@ export default function Privacy() {
             <h2 className="text-xl font-semibold text-black mt-4">6. Επικοινωνία</h2>
             <p>Προκόπιος Κούκης · Ηρακλείου 4, Γλυφάδα 16675<br />Email: hello@withinsuccess.gr · Τηλ: +30 210 9627352</p>
             <h2 className="text-xl font-semibold text-black mt-4">7. Εποπτική Αρχή</h2>
-            <p>Αρχή Προστασίας Δεδομένων — <a href="https://www.dpa.gr" className="underline">www.dpa.gr</a></p>
+            <p>Αρχή Προστασίας Δεδομένων, <a href="https://www.dpa.gr" className="underline">www.dpa.gr</a></p>
           </div>
         </div>
       </main>

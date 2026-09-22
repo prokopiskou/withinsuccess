@@ -59,7 +59,7 @@ export default function ThirtyDays() {
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
           <button type="button" onClick={handleCheckout} className="text-sm font-medium bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all cursor-pointer border-0">
-            Αγόρασε τώρα — 15€
+            Κατοχύρωση 15€
           </button>
         </div>
       </nav>
@@ -71,13 +71,13 @@ export default function ThirtyDays() {
           30 μέρες.<br />Μία νέα εσωτερική ιστορία.
         </h1>
         <p className="text-xl text-gray-500 leading-relaxed mb-4 max-w-xl mx-auto">
-          Κάθε μέρα ένα email. Μία άσκηση. 2-3 λεπτά.
+          Κάθε μέρα ένα email με μια σημαντική αλλαγή νοοτροπίας και μία άσκηση για την πραγματική σου ζωή. 2-3 λεπτά.
         </p>
         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">
           Μικρές πράξεις που αλλάζουν τον τρόπο που βλέπεις τον εαυτό σου.
         </p>
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
-          Ξεκίνα τώρα — 15€ →
+          Ξεκίνα τώρα 15€ →
         </button>
         <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση. Ξεκινάς αύριο.</p>
       </section>
@@ -88,9 +88,9 @@ export default function ThirtyDays() {
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Για ποιον ειναι</p>
           <div className="flex flex-col gap-4">
             {[
-              "Ξέρεις τι πρέπει να κάνεις — αλλά δεν το εφαρμόζεις.",
+              "Ξέρεις τι πρέπει να κάνεις, αλλά δεν το εφαρμόζεις.",
               "Έχεις ξεκινήσει πολλές φορές. Και έχεις σταματήσει.",
-              "Θέλεις αλλαγή — αλλά χωρίς θεωρίες και χωρίς υπερβολές.",
+              "Θέλεις αλλαγή, αλλά χωρίς θεωρίες και χωρίς υπερβολές.",
             ].map((item, i) => (
               <div key={i} className="flex gap-4 items-start p-6 bg-white rounded-2xl border border-gray-100">
                 <span className="text-gray-500 font-light text-lg flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
@@ -108,7 +108,7 @@ export default function ThirtyDays() {
           <div className="grid grid-cols-3 gap-8">
             <div className="flex flex-col gap-2">
               <span className="text-4xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>30</span>
-              <p className="text-sm text-gray-500">emails — ένα κάθε μέρα</p>
+              <p className="text-sm text-gray-500">emails, ένα κάθε μέρα</p>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-4xl font-semibold" style={{fontFamily: 'Georgia, serif'}}>1</span>
@@ -128,12 +128,12 @@ export default function ThirtyDays() {
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Που θα εισαι</p>
           <div className="flex flex-col gap-8">
             {[
-              { day: "Μέρα 1", text: "Θα νιώσεις την πρώτη σύγκρουση με τον εαυτό σου. Θα αναρωτηθείς γιατί δεν έχεις αλλάξει — και θα βρεις την απάντηση." },
+              { day: "Μέρα 1", text: "Θα νιώσεις την πρώτη σύγκρουση με τον εαυτό σου. Θα αναρωτηθείς γιατί δεν έχεις αλλάξει, και θα βρεις την απάντηση." },
               { day: "Μέρα 6", text: "Θα έχεις ήδη γράψει με τα ίδια σου τα χέρια «Μπορώ.»" },
               { day: "Μέρα 12", text: "Η αρνητική φωνή στο μυαλό σου θα αρχίσει να σωπαίνει. Ο παλιός σου εαυτός θα προσπαθήσει να σε τραβήξει πίσω. Αλλά αυτή τη φορά δεν θα του δώσεις χώρο." },
               { day: "Μέρα 18", text: "Θα έχεις ήδη κάνει 2 από τα 3 πράγματα που φοβόσουν. Θα μάθεις να δρας, ακόμα και όταν δεν έχεις κίνητρο." },
               { day: "Μέρα 24", text: "Θα κοιτάς πίσω και θα αναρωτιέσαι: «Ποιος ήμουν πριν ξεκινήσω;»" },
-              { day: "Μέρα 30", text: "Θα φτάσεις στο τέλος. Ο παλιός σου εαυτός θα χτυπήσει την πόρτα. Αλλά αυτή τη φορά δεν θα ανοίξεις — γιατί θα ξέρεις ακριβώς ποιος είσαι." },
+              { day: "Μέρα 30", text: "Θα φτάσεις στο τέλος. Ο παλιός σου εαυτός θα χτυπήσει την πόρτα. Αλλά αυτή τη φορά δεν θα ανοίξεις, γιατί θα ξέρεις ακριβώς ποιος είσαι." },
             ].map((item, i) => (
               <div key={i} className="flex gap-6 items-start border-b border-gray-800 pb-8 last:border-0">
                 <span className="text-sm font-medium text-gray-500 flex-shrink-0 w-16">{item.day}</span>
@@ -151,7 +151,7 @@ export default function ThirtyDays() {
           <div className="flex flex-col gap-4">
             {[
               { week: "Εβδομάδα 1", title: "Βλέπεις τον εχθρό σου", desc: "Αποδόμηση του παλιού εαυτού." },
-              { week: "Εβδομάδα 2", title: "Αλλάζεις την ιστορία", desc: "Αυτό που λες στον εαυτό σου — αλλάζει." },
+              { week: "Εβδομάδα 2", title: "Αλλάζεις την ιστορία", desc: "Αυτό που λες στον εαυτό σου, αλλάζει." },
               { week: "Εβδομάδα 3", title: "Χτίζεις δράση", desc: "Αυτοπεποίθηση και κίνηση χωρίς κίνητρο." },
               { week: "Εβδομάδα 4", title: "Γίνεσαι αυτός που δεν σταματάει", desc: "Η νέα σου ταυτότητα." },
             ].map((item, i) => (
@@ -174,7 +174,7 @@ export default function ThirtyDays() {
           <div className="relative rounded-2xl overflow-hidden bg-white flex items-center justify-center" style={{minHeight: '400px'}}>
             <img
               src={`/program_testimonial${testimonialOrder[current]}.webp`}
-              alt={`Μαρτυρία συμμετέχοντος στο πρόγραμμα 30 ημερών WithinSuccess — ${current + 1}`}
+              alt={`Μαρτυρία συμμετέχοντος στο πρόγραμμα 30 ημερών WithinSuccess, ${current + 1}`}
               className="max-w-full max-h-[500px] object-contain"
             />
           </div>
@@ -217,7 +217,7 @@ export default function ThirtyDays() {
           </h2>
           <p className="text-gray-400 mb-8">30 emails. 30 ασκήσεις. Μία νέα εσωτερική ιστορία.</p>
           <button type="button" onClick={handleCheckout} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors cursor-pointer border-0">
-            Ξεκίνα τώρα — 15€ →
+            Ξεκίνα τώρα 15€ →
           </button>
           <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
         </div>

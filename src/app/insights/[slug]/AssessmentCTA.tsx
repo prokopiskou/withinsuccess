@@ -13,7 +13,7 @@ export default function AssessmentCTA({ articleSlug }: Props) {
       <h3 className="text-2xl font-semibold mb-4" style={{fontFamily: 'Georgia, serif'}}>
         Ανακάλυψε πού βρίσκεσαι τώρα.
       </h3>
-      <p className="text-gray-500 mb-6 text-sm">Κάνε το Within Assessment — δωρεάν. 3 λεπτά.</p>
+      <p className="text-gray-500 mb-6 text-sm">Κάνε το Within Assessment, δωρεάν. 3 λεπτά.</p>
       <a 
         href="/assessment" 
         onClick={() => trackArticleToAssessment(articleSlug)}

@@ -101,7 +101,7 @@ function PageContent() {
       <UTMCapture />
       <style>{`html { scroll-behavior: smooth; }`}</style>
 
-      {/* HERO — DOOR REFRAME */}
+      {/* HERO, DOOR REFRAME */}
       <section className="pt-20 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-xs font-medium tracking-[0.3em] uppercase mb-10" style={{ color: GOLD }}>63 Μέρες της Ζωής σου</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-12" style={{ fontFamily: 'Georgia, serif' }}>
@@ -144,9 +144,9 @@ function PageContent() {
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε Κυριακή λαμβάνεις</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Ηχητική καθοδήγηση για την εβδομάδα</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Το προσωπικό σου Playbook (πρακτικό οδηγό με ασκήσεις)</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Τη συμφωνία που κάνεις με τον εαυτό σου</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Ηχητική καθοδήγηση για την εβδομάδα</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Το προσωπικό σου Playbook (πρακτικό οδηγό με ασκήσεις)</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Τη συμφωνία που κάνεις με τον εαυτό σου</span></div>
               </div>
             </div>
 
@@ -156,9 +156,9 @@ function PageContent() {
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε μέρα</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μηνύματα καθοδήγησης στο ιδιωτικό Viber channel</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μία πράξη 1–2 λεπτών που έχει τεθεί από πριν</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Χτίζεις συνέπεια, σπας την υπερανάλυση, παίρνεις τον έλεγχο</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Μηνύματα καθοδήγησης στο ιδιωτικό Viber channel</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Μία πράξη 1–2 λεπτών που έχει τεθεί από πριν</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Χτίζεις συνέπεια, σπας την υπερανάλυση, παίρνεις τον έλεγχο</span></div>
               </div>
             </div>
 
@@ -168,9 +168,9 @@ function PageContent() {
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Κάθε εβδομάδα</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κάνεις αυτοστοχασμό</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κάνεις δομημένη αυτοαξιολόγηση</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Προχωράς στο επόμενο επίπεδο</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Κάνεις αυτοστοχασμό</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Κάνεις δομημένη αυτοαξιολόγηση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Προχωράς στο επόμενο επίπεδο</span></div>
               </div>
             </div>
 
@@ -180,8 +180,8 @@ function PageContent() {
                 <h3 className="text-lg font-semibold" style={{ fontFamily: 'Georgia, serif' }}>Στο τέλος των 63 ημερών</h3>
               </div>
               <div className="space-y-3 text-gray-600 text-sm">
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Online τελετή αποφοίτησης</span></div>
-                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Η στιγμή που βλέπεις τη μεταμόρφωση</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Online τελετή αποφοίτησης</span></div>
+                <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Η στιγμή που βλέπεις τη μεταμόρφωση</span></div>
               </div>
             </div>
           </div>
@@ -254,7 +254,7 @@ function PageContent() {
                 'Χτίζει μια νέα ιστορία για τον εαυτό σου'
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 text-gray-600 text-sm">
-                  <span className="text-gray-500 mt-0.5">—</span>
+                  <span className="text-gray-500 mt-0.5">•</span>
                   <span>{item}</span>
                 </div>
               ))}
@@ -390,10 +390,10 @@ function PageContent() {
           <div className="bg-gray-50 rounded-2xl p-8 mb-8">
             <p className="text-gray-700 font-medium mb-6 text-center">Είναι η στιγμή που</p>
             <div className="space-y-3 text-gray-600 text-sm max-w-md mx-auto">
-              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Κλείνεις έναν κύκλο</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Βλέπεις τη μεταμόρφωση καθαρά</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Αναγνωρίζεις τον νέο σου εαυτό</span></div>
-              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">—</span><span>Μπαίνεις στην επόμενη φάση της ζωής σου</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Κλείνεις έναν κύκλο</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Βλέπεις τη μεταμόρφωση καθαρά</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Αναγνωρίζεις τον νέο σου εαυτό</span></div>
+              <div className="flex items-start gap-3"><span className="text-gray-500 mt-0.5">•</span><span>Μπαίνεις στην επόμενη φάση της ζωής σου</span></div>
             </div>
           </div>
           <div className="text-center space-y-2 text-gray-700">
@@ -440,7 +440,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* Η ΑΠΟΦΑΣΗ — DOOR CLOSURE */}
+      {/* Η ΑΠΟΦΑΣΗ, DOOR CLOSURE */}
       <section id="apofasi" ref={pricingRef as RefObject<HTMLElement>} className="py-20 px-6 bg-gray-50 scroll-mt-8">
         <div className="max-w-xl mx-auto text-center">
           <SectionLabel>Η απόφαση</SectionLabel>
@@ -488,7 +488,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* FINAL CTA — DOOR CALLBACK */}
+      {/* FINAL CTA, DOOR CALLBACK */}
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-xl mx-auto text-center">
           <p className="text-2xl md:text-3xl font-semibold mb-4 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>

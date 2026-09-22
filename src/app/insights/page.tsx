@@ -24,7 +24,7 @@ const sortedArticles = [...articles].sort(
 );
 
 export const metadata: Metadata = {
-  title: "Insights — Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
+  title: "Insights, Άρθρα για Προσωπική Ανάπτυξη & Αλλαγή Νοοτροπίας",
   description: "Άρθρα για αλλαγή νοοτροπίας, διαχείριση άγχους, αυτογνωσία και προσωπική ανάπτυξη από τον Προκόπη Κούκη.",
   alternates: { canonical: "https://withinsuccess.gr/insights" },
   openGraph: {

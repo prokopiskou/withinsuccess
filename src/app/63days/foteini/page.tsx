@@ -117,7 +117,7 @@ function PageContent() {
         />
       </noscript>
 
-      {/* FOTEINI BRIDGE — συνέχεια από το email */}
+      {/* FOTEINI BRIDGE, συνέχεια από το email */}
       <section className="pt-20 pb-12 px-6 max-w-2xl mx-auto">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Η Φωτεινή</p>
         <div className="space-y-5 text-gray-700 leading-relaxed">
@@ -132,7 +132,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* HERO — μετά τη Φωτεινή */}
+      {/* HERO, μετά τη Φωτεινή */}
       <section className="pt-8 pb-4 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">63 Μέρες Ζωής</p>
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight tracking-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
@@ -151,7 +151,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ΔΥΟ ΕΠΙΛΟΓΕΣ — Angle 4 */}
+      {/* ΔΥΟ ΕΠΙΛΟΓΕΣ, Angle 4 */}
       <section className="pt-4 pb-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Μόνο δύο επιλογές</p>
@@ -170,7 +170,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ΤΙ ΕΙΝΑΙ — Angle 5 */}
+      {/* ΤΙ ΕΙΝΑΙ, Angle 5 */}
       <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι είναι</p>
@@ -213,7 +213,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ΓΙΑΤΙ ΔΟΥΛΕΥΕΙ — Angle 2 */}
+      {/* ΓΙΑΤΙ ΔΟΥΛΕΥΕΙ, Angle 2 */}
       <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8">Γιατί δουλεύει</p>
@@ -229,7 +229,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ΤΙ ΑΛΛΑΖΕΙ — rewritten σε φωνή Προκόπη */}
+      {/* ΤΙ ΑΛΛΑΖΕΙ, rewritten σε φωνή Προκόπη */}
       <section className="py-12 px-6 bg-white">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι αλλάζει σε σένα</p>
@@ -280,7 +280,7 @@ function PageContent() {
         </div>
       </section>
 
-      {/* ΩΜΗ ΑΛΗΘΕΙΑ — qualifier */}
+      {/* ΩΜΗ ΑΛΗΘΕΙΑ, qualifier */}
       <section className="py-12 px-6 bg-black text-white">
         <div className="max-w-2xl mx-auto">
           <p className="text-sm font-medium tracking-widest text-gray-500 uppercase mb-8 text-center">Κάτι να ξέρεις</p>
@@ -295,7 +295,7 @@ function PageContent() {
             <p className="text-gray-400">Αν ψάχνεις quick fix, δεν είσαι εδώ.</p>
             <p className="text-gray-400">Αν ψάχνεις διακόπτη που ανάβει με ένα κλικ, το πρόγραμμα δεν θα σε βοηθήσει.</p>
             <div className="py-2" />
-            <p>Αλλά αν είσαι έτοιμος να δουλέψεις 1-2 λεπτά τη μέρα, με συνέπεια —</p>
+            <p>Αλλά αν είσαι έτοιμος να δουλέψεις 1-2 λεπτά τη μέρα, με συνέπεια,</p>
             <p className="text-lg font-medium" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>
               Σε 63 μέρες θα έχεις αλλάξει την ιστορία σου.
             </p>
