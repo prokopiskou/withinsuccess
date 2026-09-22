@@ -20,26 +20,33 @@ async function sendMetaInitiateCheckout(params: {
   email: string | null
   amount: number
   eventId: string
+  productName: string
   fbp?: string
   fbc?: string
+  clientIp?: string
+  clientUa?: string
   sourceUrl?: string
 }) {
   if (!process.env.META_CAPI_ACCESS_TOKEN) {
     return
   }
 
+  // em → hashed· fbp/fbc/IP/UA → plain (όπως τα θέλει το Meta)
   const userData: Record<string, string | string[]> = {}
-  
+
   if (params.email) {
     const hashedEmail = crypto
       .createHash('sha256')
       .update(params.email.toLowerCase().trim())
       .digest('hex')
     userData.em = [hashedEmail]
+    userData.external_id = [hashedEmail]
   }
-  
+
   if (params.fbp) userData.fbp = params.fbp
   if (params.fbc) userData.fbc = params.fbc
+  if (params.clientIp) userData.client_ip_address = params.clientIp
+  if (params.clientUa) userData.client_user_agent = params.clientUa
 
   try {
     await fetch(
@@ -59,7 +66,7 @@ async function sendMetaInitiateCheckout(params: {
             custom_data: {
               currency: 'EUR',
               value: params.amount,
-              content_name: '63 Μέρες Ζωής',
+              content_name: params.productName,
               content_type: 'product'
             }
           }]
@@ -176,7 +183,7 @@ function isWebProduct(p: unknown): p is '63days' | '30days' {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { subscriber_id, fbp, fbc, utm: utmBody, product: productRaw } = body
+    const { subscriber_id, fbp, fbc, utm: utmBody, product: productRaw, event_id } = body
     const utm = normalizeUTM(utmBody)
     const site = process.env.NEXT_PUBLIC_SITE_URL || ''
 
@@ -213,6 +220,26 @@ export async function POST(req: NextRequest) {
         cancel_url: `${site}${cancelPath}`,
         expires_at: Math.floor(Date.now() / 1000) + 1800,
       })
+
+      // CAPI InitiateCheckout — ίδιο event_id με το browser Pixel για dedup.
+      // Στέλνεται μόνο όταν ο client έστειλε event_id (νέος client), αλλιώς
+      // θα μετρούσε διπλά με το browser event.
+      if (event_id) {
+        const isThirty = product === '30days'
+        await sendMetaInitiateCheckout({
+          email: null, // το email δίνεται στο Stripe, δεν το έχουμε ακόμα εδώ
+          amount: isThirty ? 15 : getCurrentAmount(),
+          eventId: event_id,
+          productName: isThirty ? '30 Μέρες' : '63 Μέρες Ζωής',
+          fbp,
+          fbc,
+          clientIp,
+          clientUa,
+          sourceUrl: isThirty
+            ? 'https://withinsuccess.gr/30days'
+            : 'https://withinsuccess.gr/63days',
+        })
+      }
 
       return NextResponse.json({ url: session.url })
     }
@@ -295,8 +322,11 @@ export async function POST(req: NextRequest) {
       email: existingEmail,
       amount: getCurrentAmount(),
       eventId: session.id,
+      productName: '63 Μέρες Ζωής',
       fbp,
       fbc,
+      clientIp,
+      clientUa,
       sourceUrl: 'https://withinsuccess.gr/63days'
     })
 

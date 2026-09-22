@@ -33,7 +33,8 @@ function getFbc(): string {
  */
 export async function startCheckout(
   product: CheckoutProduct,
-  fallbackUrl: string
+  fallbackUrl: string,
+  eventId?: string
 ): Promise<void> {
   if (typeof window === 'undefined') return
 
@@ -43,7 +44,7 @@ export async function startCheckout(
     const res = await fetch('/api/stripe/create-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, utm, fbp: readCookie('_fbp'), fbc: getFbc() }),
+      body: JSON.stringify({ product, utm, fbp: readCookie('_fbp'), fbc: getFbc(), event_id: eventId }),
     })
 
     if (!res.ok) throw new Error(`Checkout API failed: ${res.status}`)

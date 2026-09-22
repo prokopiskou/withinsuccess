@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MetaPixel, { trackEvent } from "@/components/MetaPixel";
-import { trackBeginCheckout } from "@/lib/analytics";
+import { trackBeginCheckout, generateEventId } from "@/lib/analytics";
 import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
 import UTMCapture from '@/components/UTMCapture';
@@ -13,8 +13,9 @@ const testimonialOrder = [5, 1, 2, 3, 4];
 export default function ThirtyDays() {
   const stripeLink = "https://buy.stripe.com/4gM28sdbFczj7iV00N4ZG1M";
   async function handleCheckout() {
-    trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 })
-    await startCheckout('30days', stripeLink)
+    const eventId = generateEventId('checkout')
+    trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 }, eventId)
+    await startCheckout('30days', stripeLink, eventId)
   }
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);

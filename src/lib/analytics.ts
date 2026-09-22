@@ -44,7 +44,7 @@ type ProductInfo = {
 }
 
 // Generate unique event ID for server CAPI deduplication
-function generateEventId(prefix: string): string {
+export function generateEventId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
 }
 
@@ -86,10 +86,10 @@ export function trackPurchase(product: ProductInfo, transactionId?: string) {
 // ============================================================
 // BEGIN CHECKOUT — Fires on Stripe button click (REGULAR EVENT)
 // ============================================================
-export function trackBeginCheckout(product: ProductInfo) {
+export function trackBeginCheckout(product: ProductInfo, providedEventId?: string) {
   if (typeof window === 'undefined') return
 
-  const eventId = generateEventId('checkout')
+  const eventId = providedEventId || generateEventId('checkout')
 
   // GA4 — NOT a key event, just for funnel analysis
   window.gtag?.('event', 'begin_checkout', {
