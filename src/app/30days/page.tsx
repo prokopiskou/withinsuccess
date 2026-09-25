@@ -55,13 +55,6 @@ export default function ThirtyDays() {
       />
       <MetaPixel />
 
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-center">
-          <a href="/" className="text-lg font-semibold tracking-tight">WithinSuccess</a>
-        </div>
-      </nav>
-
       {/* HERO */}
       <section className="pt-16 md:pt-20 pb-16 px-6 max-w-3xl mx-auto text-center">
         <p className="text-sm font-medium tracking-widest text-gray-400 uppercase mb-6">30-Day Program</p>

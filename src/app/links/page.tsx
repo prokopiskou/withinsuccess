@@ -94,6 +94,15 @@ export default function LinksPage() {
           />
 
           <LinkButton
+            href="/30days"
+            title="Πρόγραμμα μεταμόρφωσης 30 ημερών"
+            subtitle="Έναρξη 1/10"
+            symbol="◈"
+            destination="30days"
+            featured
+          />
+
+          <LinkButton
             href="/assessment"
             title="Within Assessment · Quiz αυτογνωσίας"
             subtitle="Δωρεάν · 3 λεπτά"
