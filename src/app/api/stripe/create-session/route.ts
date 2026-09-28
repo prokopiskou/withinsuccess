@@ -95,9 +95,8 @@ function getPriceIdForWebProduct(product: '63days' | '30days'): string {
     if (!id) throw new Error('Missing STRIPE_PRICE_ID')
     return id
   }
-  const id = process.env.STRIPE_PRICE_ID_30DAYS
-  if (!id) throw new Error('Missing STRIPE_PRICE_ID_30DAYS')
-  return id
+  // 30-Day Program (prod_Rxeqpm5IWwBxef) — €15 default price
+  return process.env.STRIPE_PRICE_ID_30DAYS || 'price_1TJUqWKsSs6ngkjNZvRGxIg2'
 }
 
 function getCurrentAmount(): number {
