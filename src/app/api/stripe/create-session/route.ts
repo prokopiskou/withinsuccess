@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
+import { sendTikTokEvent } from '@/lib/tiktokEvents'
 
 const stripe = getStripeClient()
 
@@ -183,7 +184,7 @@ function isWebProduct(p: unknown): p is '63days' | '30days' {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { subscriber_id, fbp, fbc, utm: utmBody, product: productRaw, event_id } = body
+    const { subscriber_id, fbp, fbc, ttp, ttclid, utm: utmBody, product: productRaw, event_id } = body
     const utm = normalizeUTM(utmBody)
     const site = process.env.NEXT_PUBLIC_SITE_URL || ''
 
@@ -212,6 +213,8 @@ export async function POST(req: NextRequest) {
           fbc: clipMeta(fbc || ''),
           client_ip_address: clipMeta(clientIp),
           client_user_agent: clipMeta(clientUa),
+          ttp: clipMeta(ttp || ''),
+          ttclid: clipMeta(ttclid || ''),
         },
         payment_intent_data: {
           metadata: webPaymentIntentMetadata(product, utm),
@@ -238,6 +241,20 @@ export async function POST(req: NextRequest) {
           sourceUrl: isThirty
             ? 'https://withinsuccess.gr/30days'
             : 'https://withinsuccess.gr/63days',
+        })
+
+        // TikTok Events API — ίδιο event_id με το browser pixel (dedup)
+        await sendTikTokEvent({
+          event: 'InitiateCheckout',
+          eventId: event_id,
+          value: isThirty ? 15 : getCurrentAmount(),
+          contentId: isThirty ? '30days-program' : '63days-program',
+          contentName: isThirty ? '30 Μέρες' : '63 Μέρες Ζωής',
+          pageUrl: isThirty ? 'https://withinsuccess.gr/30days' : 'https://withinsuccess.gr/63days',
+          ttclid,
+          ttp,
+          ip: clientIp,
+          userAgent: clientUa,
         })
       }
 

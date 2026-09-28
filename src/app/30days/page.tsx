@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MetaPixel, { trackEvent } from "@/components/MetaPixel";
-import { trackBeginCheckout, generateEventId } from "@/lib/analytics";
+import { trackBeginCheckout, generateEventId, trackViewContentTikTok } from "@/lib/analytics";
 import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
 import UTMCapture from '@/components/UTMCapture';
@@ -24,7 +24,10 @@ export default function ThirtyDays() {
   useScrollDepth('30days');
   const pricingRef = useViewPricing('30days');
 
-  useEffect(() => { trackEvent("ViewContent", { content_name: "30days" }); }, []);
+  useEffect(() => {
+    trackEvent("ViewContent", { content_name: "30days" });
+    trackViewContentTikTok({ id: '30days-program', name: '30 Μέρες', price: 15 });
+  }, []);
 
   return (
     <main className="min-h-screen bg-white font-sans">

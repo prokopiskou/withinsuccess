@@ -1,4 +1,4 @@
-import { getStoredUTMs } from './utmCapture'
+import { getStoredUTMs, getStoredTtclid } from './utmCapture'
 
 export type CheckoutProduct = '63days' | '30days'
 
@@ -44,7 +44,15 @@ export async function startCheckout(
     const res = await fetch('/api/stripe/create-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product, utm, fbp: readCookie('_fbp'), fbc: getFbc(), event_id: eventId }),
+      body: JSON.stringify({
+        product,
+        utm,
+        fbp: readCookie('_fbp'),
+        fbc: getFbc(),
+        ttp: readCookie('_ttp'),
+        ttclid: getStoredTtclid(),
+        event_id: eventId,
+      }),
     })
 
     if (!res.ok) throw new Error(`Checkout API failed: ${res.status}`)

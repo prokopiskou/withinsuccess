@@ -7,6 +7,17 @@ declare global {
   interface Window {
     gtag?: (...args: any[]) => void
     fbq?: (...args: any[]) => void
+    ttq?: any
+  }
+}
+
+// TikTok: contents payload για ένα προϊόν
+function ttContents(product: { id: string; name: string; price: number }) {
+  return {
+    contents: [{ content_id: product.id, content_type: 'product', content_name: product.name, price: product.price, quantity: 1 }],
+    content_type: 'product',
+    value: product.price,
+    currency: 'EUR',
   }
 }
 
@@ -78,6 +89,8 @@ export function trackPurchase(product: ProductInfo, transactionId?: string) {
       content_type: 'product',
       content_ids: [product.id]
     }, { eventID: eventId })
+    // TikTok — ίδιο event_id με το server-side CompletePayment (dedup)
+    window.ttq?.track('CompletePayment', ttContents(product), { event_id: eventId })
   }
 
   console.log('[Analytics] Purchase tracked:', eventId, product)
@@ -111,9 +124,21 @@ export function trackBeginCheckout(product: ProductInfo, providedEventId?: strin
       content_name: product.name,
       content_ids: [product.id]
     }, { eventID: eventId })
+    // TikTok — ίδιο event_id με το server-side InitiateCheckout (dedup)
+    window.ttq?.track('InitiateCheckout', ttContents(product), { event_id: eventId })
   }
 
   console.log('[Analytics] Begin checkout tracked:', product.name)
+}
+
+// ============================================================
+// VIEW CONTENT — TikTok (το Meta ViewContent στέλνεται ήδη από τη σελίδα)
+// ============================================================
+export function trackViewContentTikTok(product: ProductInfo) {
+  if (typeof window === 'undefined') return
+  if (hasMarketingConsent()) {
+    window.ttq?.track('ViewContent', ttContents(product), { event_id: generateEventId('view') })
+  }
 }
 
 // ============================================================

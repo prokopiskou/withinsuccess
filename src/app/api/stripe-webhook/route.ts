@@ -3,6 +3,7 @@ import type Stripe from 'stripe'
 import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
+import { sendTikTokEvent } from '@/lib/tiktokEvents'
 
 const stripe = getStripeClient()
 
@@ -421,6 +422,23 @@ export async function POST(req: NextRequest) {
       eventSourceUrl: amount === 15
         ? 'https://withinsuccess.gr/30days'
         : 'https://withinsuccess.gr/63days'
+    })
+
+    // 1b. TikTok Events API — CompletePayment (event_id = session.id, ίδιο με το browser)
+    const isThirtyDays = product.name === '30 Μέρες'
+    await sendTikTokEvent({
+      event: 'CompletePayment',
+      eventId: session.id,
+      value: amount,
+      contentId: isThirtyDays ? '30days-program' : product.name === '63 Μέρες Ζωής' ? '63days-program' : 'other',
+      contentName: product.name,
+      pageUrl: isThirtyDays ? 'https://withinsuccess.gr/30days' : 'https://withinsuccess.gr/63days',
+      email,
+      phone,
+      ttclid: meta.ttclid || null,
+      ttp: meta.ttp || null,
+      ip: meta.client_ip_address || null,
+      userAgent: meta.client_user_agent || null,
     })
 
     // 2. Update Supabase + ManyChat (only for products that use ManyChat)

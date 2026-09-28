@@ -28,6 +28,16 @@ export function captureUTMs(): UTMData {
   const captured: UTMData = {}
   let hasAny = false
 
+  // TikTok click id: αποθηκεύεται χωριστά, για το TikTok Events API
+  const ttclid = params.get('ttclid')
+  if (ttclid) {
+    try {
+      localStorage.setItem('ws_ttclid', ttclid)
+    } catch {
+      // ignore
+    }
+  }
+
   for (const key of UTM_KEYS) {
     const value = params.get(key)
     if (value) {
@@ -64,6 +74,20 @@ export function getStoredUTMs(): UTMData {
     return JSON.parse(stored) as UTMData
   } catch {
     return {}
+  }
+}
+
+/**
+ * TikTok click id: από το τρέχον URL ή από το localStorage (αν ήρθε νωρίτερα).
+ */
+export function getStoredTtclid(): string {
+  if (typeof window === 'undefined') return ''
+  const fromUrl = new URLSearchParams(window.location.search).get('ttclid')
+  if (fromUrl) return fromUrl
+  try {
+    return localStorage.getItem('ws_ttclid') || ''
+  } catch {
+    return ''
   }
 }
 

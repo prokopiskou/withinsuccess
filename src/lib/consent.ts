@@ -20,6 +20,7 @@ declare global {
     gtag?: (...args: any[]) => void
     fbq?: (...args: any[]) => void
     _fbq?: any
+    ttq?: any
   }
 }
 
@@ -65,6 +66,10 @@ export function saveConsent(consent: Omit<ConsentState, 'necessary' | 'timestamp
   
   // Activate/deactivate Meta Pixel based on marketing consent
   updateMetaPixel(fullConsent.marketing)
+
+  // Activate/deactivate TikTok Pixel based on marketing consent
+  // (για επιστρέφοντες επισκέπτες το χειρίζεται το script του layout)
+  updateTikTokPixel(fullConsent.marketing)
   
   // Dispatch event for components to listen
   window.dispatchEvent(new CustomEvent('consent-updated', { detail: fullConsent }))
@@ -118,6 +123,20 @@ function updateMetaPixel(marketingConsent: boolean) {
     if (window.fbq) {
       window.fbq('consent', 'revoke')
     }
+  }
+}
+
+// ============================================================
+// TIKTOK PIXEL — Enable/disable based on marketing consent
+// ============================================================
+function updateTikTokPixel(marketingConsent: boolean) {
+  if (typeof window === 'undefined' || !window.ttq) return
+
+  if (marketingConsent) {
+    window.ttq.grantConsent()
+    window.ttq.page()
+  } else {
+    window.ttq.revokeConsent()
   }
 }
 
