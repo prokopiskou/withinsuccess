@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 const LANDING_PAGE_PREFIXES = [
   '/63days',
   '/30days',
+  '/30days-tt',
 ]
 
 export default function ConditionalHeader() {
