@@ -27,7 +27,7 @@ function hashPhone(phone: string): string {
 }
 
 export type TikTokEventParams = {
-  event: 'CompletePayment' | 'InitiateCheckout' | 'ViewContent'
+  event: 'Purchase' | 'InitiateCheckout' | 'ViewContent'
   eventId: string
   value: number
   contentId: string
@@ -39,14 +39,17 @@ export type TikTokEventParams = {
   ttp?: string | null
   ip?: string | null
   userAgent?: string | null
+  eventTime?: number // unix seconds· default = τώρα (για backfill: η ώρα της αγοράς)
 }
 
-export async function sendTikTokEvent(p: TikTokEventParams) {
+export type TikTokSendResult = { ok: boolean; code?: number; message?: string }
+
+export async function sendTikTokEvent(p: TikTokEventParams): Promise<TikTokSendResult> {
   const pixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || 'DATCRTBC77U88MSOAST0'
   const token = process.env.TIKTOK_EVENTS_ACCESS_TOKEN
   if (!pixelId || !token) {
     console.log('TikTok Events API not configured, skipping', p.event)
-    return
+    return { ok: false, message: 'not configured' }
   }
 
   const user: Record<string, string> = {}
@@ -70,7 +73,7 @@ export async function sendTikTokEvent(p: TikTokEventParams) {
         data: [
           {
             event: p.event,
-            event_time: Math.floor(Date.now() / 1000),
+            event_time: p.eventTime ?? Math.floor(Date.now() / 1000),
             event_id: p.eventId,
             user,
             page: { url: p.pageUrl },
@@ -87,12 +90,17 @@ export async function sendTikTokEvent(p: TikTokEventParams) {
       }),
     })
     const text = await res.text()
-    if (!res.ok || !text.includes('"code":0')) {
+    let code: number | undefined
+    let message: string | undefined
+    try { const j = JSON.parse(text); code = j.code; message = j.message } catch {}
+    if (!res.ok || code !== 0) {
       console.error(`TikTok Events API error (${res.status}):`, text)
-    } else {
-      console.log(`TikTok ${p.event} sent: €${p.value} (${p.contentName})`)
+      return { ok: false, code, message: message || text.slice(0, 200) }
     }
+    console.log(`TikTok ${p.event} sent: €${p.value} (${p.contentName})`)
+    return { ok: true, code, message }
   } catch (err) {
     console.error('TikTok Events API fetch failed:', err)
+    return { ok: false, message: String(err) }
   }
 }

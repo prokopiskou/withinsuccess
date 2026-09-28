@@ -89,8 +89,8 @@ export function trackPurchase(product: ProductInfo, transactionId?: string) {
       content_type: 'product',
       content_ids: [product.id]
     }, { eventID: eventId })
-    // TikTok — ίδιο event_id με το server-side CompletePayment (dedup)
-    window.ttq?.track('CompletePayment', ttContents(product), { event_id: eventId })
+    // TikTok — ίδιο event_id με το server-side Purchase (dedup)
+    window.ttq?.track('Purchase', ttContents(product), { event_id: eventId })
   }
 
   console.log('[Analytics] Purchase tracked:', eventId, product)

@@ -424,10 +424,10 @@ export async function POST(req: NextRequest) {
         : 'https://withinsuccess.gr/63days'
     })
 
-    // 1b. TikTok Events API — CompletePayment (event_id = session.id, ίδιο με το browser)
+    // 1b. TikTok Events API — Purchase (event_id = session.id, ίδιο με το browser)
     const isThirtyDays = product.name === '30 Μέρες'
     await sendTikTokEvent({
-      event: 'CompletePayment',
+      event: 'Purchase',
       eventId: session.id,
       value: amount,
       contentId: isThirtyDays ? '30days-program' : product.name === '63 Μέρες Ζωής' ? '63days-program' : 'other',
