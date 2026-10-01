@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 const title = '30 μέρες μεταμόρφωσης | WithinSuccess'
 const description =
-  'Κάθε μέρα ένα email με μια σημαντική αλλαγή νοοτροπίας και μία άσκηση για την πραγματική σου ζωή. Ξεκινάμε 1 Οκτωβρίου.'
+  'Κάθε μέρα ένα email με μια σημαντική αλλαγή νοοτροπίας και μία άσκηση για την πραγματική σου ζωή. Άμεση πρόσβαση.'
 
 export const metadata: Metadata = {
   title,

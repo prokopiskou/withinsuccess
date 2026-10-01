@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { firstNameVocative } from '@/lib/nameFixer'
 import type Stripe from 'stripe'
 import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
@@ -95,87 +96,17 @@ async function getProductConfig(
 }
 
 // ============================================================
-// NAME FIXER — Greek vocative case (κλητική) via Claude Haiku
-// "ΠΡΟΚΟΠΗΣ ΚΟΥΚΗΣ" → "Προκόπη" (για να φωνάζεις τον πελάτη σε email)
+// NAME FIXER — κλητική με κανόνες (src/lib/greekName.ts).
+// Το AI κάνει μόνο καθαρισμό (τόνοι/κεφαλαία/greeklish), όχι γραμματική.
+// "ΑΛΕΞΑΝΔΡΟΣ ΝΙΚΟΛΑΟΥ" → "Αλέξανδρε", "ΘΩΜΑΗ" → "Θωμαή"
 // ============================================================
 async function fixName(rawName: string): Promise<string> {
   if (!rawName || !rawName.trim()) return ''
-  
-  // Fallback if no API key
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return rawName.split(/\s+/)[0]
-  }
-  
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 50,
-        messages: [{
-          role: 'user',
-          content: `Δίνεται όνομα πελάτη από φόρμα αγοράς: "${rawName}"
-
-Επέστρεψε ΜΟΝΟ το μικρό όνομα στην ΚΛΗΤΙΚΗ ΠΤΩΣΗ (όπως θα φωνάξεις το άτομο σε email), με σωστή κεφαλαία στο πρώτο γράμμα, ΧΩΡΙΣ εισαγωγικά, ΧΩΡΙΣ εξήγηση, ΜΟΝΟ μια λέξη.
-
-Παραδείγματα:
-"ΠΡΟΚΟΠΗΣ ΚΟΥΚΗΣ" → Προκόπη
-"prokopis koukis" → Προκόπη
-"Νίκος Παπαδόπουλος" → Νίκο
-"Πέτρος" → Πέτρο
-"Παύλος" → Παύλο
-"Γιώργος" → Γιώργο
-"Στέλιος" → Στέλιο
-"Χρήστος" → Χρήστο
-"Δημήτρης Σταυρόπουλος" → Δημήτρη
-"Μιχάλης" → Μιχάλη
-"Γιάννης" → Γιάννη
-"Παναγιώτης" → Παναγιώτη
-"Αντώνης" → Αντώνη
-"Θανάσης" → Θανάση
-"Νικόλας" → Νικόλα
-"Κώστας" → Κώστα
-"Μαρία Παπαδοπούλου" → Μαρία
-"Ελένη" → Ελένη
-"Αλεξάνδρα" → Αλεξάνδρα
-"Σοφία" → Σοφία
-"John Smith" → John
-"Maria Costa" → Maria
-"Anna" → Anna
-
-Κανόνες κλητικής (φιλική/καθημερινή χρήση):
-- Αρσενικά σε -ης → -η (Προκόπης→Προκόπη, Δημήτρης→Δημήτρη)
-- Αρσενικά σε -ος → -ο (Νίκος→Νίκο, Πέτρος→Πέτρο, Παύλος→Παύλο, Στέλιος→Στέλιο)
-- Αρσενικά σε -ας → -α (Νικόλας→Νικόλα, Κώστας→Κώστα)
-- Θηλυκά → αμετάβλητα
-- Ξενόγλωσσα → αμετάβλητα`
-        }]
-      })
-    })
-    
-    if (!response.ok) {
-      console.error(`Claude name fix error (${response.status})`)
-      return rawName.split(/\s+/)[0]
-    }
-    
-    const data = await response.json()
-    const fixed = data.content?.[0]?.text?.trim() || ''
-    
-    // Safety: if fixed is empty or too long, fallback to raw first word
-    if (!fixed || fixed.length > 30 || fixed.split(/\s+/).length > 2) {
-      console.warn(`fixName returned suspicious result: "${fixed}" - using fallback`)
-      return rawName.split(/\s+/)[0]
-    }
-    
-    return fixed
+    return await firstNameVocative(rawName)
   } catch (err) {
     console.error('fixName failed:', err)
-    return rawName.split(/\s+/)[0]
+    return rawName.trim().split(/\s+/)[0]
   }
 }
 

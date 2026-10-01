@@ -96,7 +96,7 @@ export default function LinksPage() {
           <LinkButton
             href="/30days"
             title="Πρόγραμμα μεταμόρφωσης 30 ημερών"
-            subtitle="Έναρξη 1/10"
+            subtitle="Άμεση πρόσβαση"
             symbol="◈"
             destination="30days"
             featured

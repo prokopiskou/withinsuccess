@@ -7,16 +7,20 @@ import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
 import UTMCapture from '@/components/UTMCapture';
 import Footer from "@/components/Footer";
+import ThirtyDaysWaitlist, { useThirtyDaysClosed } from '@/components/ThirtyDaysWaitlist';
+import { isThirtyDaysClosed } from '@/lib/thirtyDays';
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
 export default function ThirtyDays() {
   const stripeLink = "https://buy.stripe.com/4gM28sdbFczj7iV00N4ZG1M";
   async function handleCheckout() {
+    if (isThirtyDaysClosed()) { window.location.reload(); return }
     const eventId = generateEventId('checkout')
     trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 }, eventId)
     await startCheckout('30days', stripeLink, eventId)
   }
+  const closed = useThirtyDaysClosed();
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);
@@ -70,10 +74,14 @@ export default function ThirtyDays() {
         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">
           Μικρές πράξεις που αλλάζουν τον τρόπο που βλέπεις τον εαυτό σου.
         </p>
+        {closed ? (
+          <ThirtyDaysWaitlist source="30days_hero" />
+        ) : (<>
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
           Ξεκίνα τώρα 15€ →
         </button>
-        <p className="text-xs text-gray-400 mt-4">Έναρξη: 1/10</p>
+        <p className="text-sm text-gray-500 mt-4">Άμεση πρόσβαση</p>
+        </>)}
       </section>
 
       {/* ΓΙΑ ΠΟΙΟΝ ΕΙΝΑΙ */}
@@ -206,6 +214,9 @@ export default function ThirtyDays() {
       {/* CTA ΤΕΛΙΚΟ */}
       <section ref={pricingRef} className="py-16 px-6 bg-black text-center">
         <div className="max-w-xl mx-auto">
+          {closed ? (
+            <ThirtyDaysWaitlist dark source="30days_final" />
+          ) : (<>
           <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white" style={{fontFamily: 'Georgia, serif'}}>
             Έτοιμος να ξεκινήσεις;
           </h2>
@@ -214,6 +225,7 @@ export default function ThirtyDays() {
             Ξεκίνα τώρα 15€ →
           </button>
           <p className="text-sm text-gray-300 mt-6 leading-relaxed">15€. Όχι για το περιεχόμενο.<br />Για να πεις «το εννοώ αυτή τη φορά.»</p>
+          </>)}
           <p className="text-xs text-gray-500 mt-4">Για οποιαδήποτε απορία: hello@withinsuccess.gr</p>
         </div>
       </section>

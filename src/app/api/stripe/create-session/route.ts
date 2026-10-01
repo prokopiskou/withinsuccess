@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
+import { isThirtyDaysClosed } from '@/lib/thirtyDays'
 
 const stripe = getStripeClient()
 
@@ -197,6 +198,10 @@ export async function POST(req: NextRequest) {
     // Web checkout (UTM + product) — from startCheckout() / site CTAs
     if (isWebProduct(productRaw)) {
       const product = productRaw
+      // Οι εγγραφές του 30days έκλεισαν → καμία νέα πληρωμή
+      if (product === '30days' && isThirtyDaysClosed()) {
+        return NextResponse.json({ error: 'closed', closed: true }, { status: 410 })
+      }
       const priceId = getPriceIdForWebProduct(product)
       const successPath =
         product === '63days' ? '/63days/thank-you' : '/30days/thank-you'

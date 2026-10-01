@@ -55,6 +55,11 @@ export async function startCheckout(
       }),
     })
 
+    // 410 = οι εγγραφές έκλεισαν → ΟΧΙ fallback σε payment link, ανανέωση σελίδας (δείχνει waitlist)
+    if (res.status === 410) {
+      window.location.reload()
+      return
+    }
     if (!res.ok) throw new Error(`Checkout API failed: ${res.status}`)
 
     const data = await res.json()

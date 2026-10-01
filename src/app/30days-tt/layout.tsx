@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 // Εκδοχή του /30days για TikTok Ads (policy-safe). Δεν ευρετηριάζεται, canonical → /30days.
 const title = '30 μέρες μεταμόρφωσης | WithinSuccess'
 const description =
-  'Ψηφιακό πρόγραμμα αυτοβελτίωσης μέσω email: 30 μέρες, ένα email με μια αλλαγή νοοτροπίας και μία άσκηση κάθε μέρα. Έναρξη 1 Οκτωβρίου.'
+  'Ψηφιακό πρόγραμμα αυτοβελτίωσης μέσω email: 30 μέρες, ένα email με μια αλλαγή νοοτροπίας και μία άσκηση κάθε μέρα. Άμεση πρόσβαση.'
 
 export const metadata: Metadata = {
   title,

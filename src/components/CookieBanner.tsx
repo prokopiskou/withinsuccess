@@ -13,6 +13,8 @@ export default function CookieBanner() {
 
   // Το cookie banner ΔΕΝ εμφανίζεται στο /links (Linktree-style σελίδα)
   const hideOnRoute = pathname === '/links'
+  // Στις landing του 30days: λεπτή μπάρα αντί για κάρτα (λιγότερη τριβή στο κινητό)
+  const slimBar = pathname === '/30days' || pathname === '/30days-tt'
 
   useEffect(() => {
     setMounted(true)
@@ -54,7 +56,38 @@ export default function CookieBanner() {
 
   return (
     <>
-      {show && (
+      {show && slimBar && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur border-t border-gray-200"
+          role="dialog"
+          aria-label="Cookies"
+        >
+          <div className="max-w-3xl mx-auto px-4 py-2 flex items-center gap-3">
+            <p className="flex-1 text-[11px] leading-snug text-gray-500">
+              Χρησιμοποιούμε cookies.{' '}
+              <a href="/privacy" className="underline hover:text-black">Πολιτική</a>
+              {' · '}
+              <button type="button" onClick={handleManage} className="underline hover:text-black">Ρυθμίσεις</button>
+            </p>
+            <button
+              type="button"
+              onClick={handleReject}
+              className="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-300 text-gray-700 hover:border-black"
+            >
+              Απόρριψη
+            </button>
+            <button
+              type="button"
+              onClick={handleAccept}
+              className="px-3 py-1.5 rounded-full text-xs font-medium bg-black text-white hover:bg-gray-800"
+            >
+              Αποδοχή
+            </button>
+          </div>
+        </div>
+      )}
+
+      {show && !slimBar && (
         <div 
           className="fixed bottom-4 right-4 left-4 md:left-auto md:max-w-[400px] z-[60] animate-in slide-in-from-bottom-4 fade-in duration-500"
           role="dialog"
