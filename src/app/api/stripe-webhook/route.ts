@@ -40,13 +40,13 @@ const CONFIG_30DAYS: ProductConfig = {
 // Ανοιχτή Συζήτηση 15/11 — τα group IDs μπαίνουν ως env vars στο Vercel
 const CONFIG_SEMINAR_LIVE: ProductConfig = {
   name: 'Ανοιχτή Συζήτηση · Δια ζώσης',
-  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_LIVE || '',
+  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_LIVE || '201385793674020414',
   syncManyChat: false,
 }
 
 const CONFIG_SEMINAR_ONLINE: ProductConfig = {
   name: 'Ανοιχτή Συζήτηση · Online',
-  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_ONLINE || '',
+  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_ONLINE || '201385806670071499',
   syncManyChat: false,
 }
 
