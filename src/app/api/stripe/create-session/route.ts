@@ -232,29 +232,31 @@ export async function POST(req: NextRequest) {
           },
         }],
         phone_number_collection: { enabled: true },
-        custom_fields: [
-          {
-            key: 'question',
-            label: { type: 'custom', custom: 'Η ερώτησή σου για τη συζήτηση (προαιρετικό)' },
-            type: 'text',
-            optional: true,
-            text: { maximum_length: 255 },
-          },
-          isLive
-            ? {
+        // Δια ζώσης: ερωτήσεις μόνο live στην αίθουσα, όλοι βιντεοσκοπούνται (υποχρεωτική συναίνεση).
+        // Online: η ερώτηση στέλνεται εδώ (υποχρεωτικά) και απαντιέται στη συζήτηση.
+        custom_fields: isLive
+          ? [
+              {
                 key: 'camera',
                 label: { type: 'custom', custom: 'Βιντεοσκόπηση εκδήλωσης' },
                 type: 'dropdown',
                 dropdown: {
                   options: [
-                    { label: 'Δέχομαι να εμφανίζομαι στο βίντεο', value: 'ok' },
-                    { label: 'Θέλω θέση εκτός κάμερας', value: 'nocamera' },
+                    { label: 'Συμφωνώ να βιντεοσκοπηθώ στην εκδήλωση και να δημοσιευτεί το βίντεο', value: 'ok' },
                   ],
                 },
-              }
-            : {
+              },
+            ]
+          : [
+              {
+                key: 'question',
+                label: { type: 'custom', custom: 'Η ερώτησή σου για τη συζήτηση' },
+                type: 'text',
+                text: { maximum_length: 255 },
+              },
+              {
                 key: 'qname',
-                label: { type: 'custom', custom: 'Αν διαβαστεί η ερώτησή σου' },
+                label: { type: 'custom', custom: 'Όταν διαβάσω την ερώτησή σου' },
                 type: 'dropdown',
                 dropdown: {
                   options: [
@@ -263,7 +265,7 @@ export async function POST(req: NextRequest) {
                   ],
                 },
               },
-        ],
+            ],
         metadata: {
           ...webSessionMetadata('30days', utm),
           product: ticket,
