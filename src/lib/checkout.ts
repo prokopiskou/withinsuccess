@@ -1,6 +1,6 @@
 import { getStoredUTMs, getStoredTtclid } from './utmCapture'
 
-export type CheckoutProduct = '63days' | '30days'
+export type CheckoutProduct = '63days' | '30days' | 'seminar_live' | 'seminar_online'
 
 /** Διαβάζει ένα cookie από τον browser (π.χ. _fbp, _fbc του Meta pixel). */
 function readCookie(name: string): string {

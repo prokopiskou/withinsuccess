@@ -4,6 +4,8 @@ import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
 import { isThirtyDaysClosed } from '@/lib/thirtyDays'
+import { SEMINAR, SEMINAR_TICKETS, isSeminarTicket, isSeminarSalesClosed } from '@/lib/seminar'
+import { getLiveSeatsLeft } from '@/lib/seminarSeats'
 
 const stripe = getStripeClient()
 
@@ -194,6 +196,121 @@ export async function POST(req: NextRequest) {
       req.headers.get('x-real-ip') ||
       ''
     const clientUa = req.headers.get('user-agent') || ''
+
+    // ===== Ανοιχτή Συζήτηση 15/11 (δια ζώσης / online) =====
+    if (isSeminarTicket(productRaw)) {
+      const ticket = productRaw
+      if (isSeminarSalesClosed()) {
+        return NextResponse.json({ error: 'closed', closed: true }, { status: 410 })
+      }
+      if (ticket === 'seminar_live') {
+        try {
+          if ((await getLiveSeatsLeft()) <= 0) {
+            return NextResponse.json({ error: 'sold_out', soldOut: true }, { status: 410 })
+          }
+        } catch (err) {
+          console.error('seat check failed, allowing checkout:', err)
+        }
+      }
+
+      const info = SEMINAR_TICKETS[ticket]
+      const isLive = ticket === 'seminar_live'
+      const pagePath = `/${SEMINAR.slug}`
+
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [{
+          quantity: 1,
+          price_data: {
+            currency: 'eur',
+            unit_amount: SEMINAR.priceEur * 100,
+            product_data: {
+              name: info.name,
+              description: `${SEMINAR.dateLabel} · ${SEMINAR.timeLabel}`,
+            },
+          },
+        }],
+        phone_number_collection: { enabled: true },
+        custom_fields: [
+          {
+            key: 'question',
+            label: { type: 'custom', custom: 'Η ερώτησή σου για τη συζήτηση (προαιρετικό)' },
+            type: 'text',
+            optional: true,
+            text: { maximum_length: 255 },
+          },
+          isLive
+            ? {
+                key: 'camera',
+                label: { type: 'custom', custom: 'Βιντεοσκόπηση εκδήλωσης' },
+                type: 'dropdown',
+                dropdown: {
+                  options: [
+                    { label: 'Δέχομαι να εμφανίζομαι στο βίντεο', value: 'ok' },
+                    { label: 'Θέλω θέση εκτός κάμερας', value: 'nocamera' },
+                  ],
+                },
+              }
+            : {
+                key: 'qname',
+                label: { type: 'custom', custom: 'Αν διαβαστεί η ερώτησή σου' },
+                type: 'dropdown',
+                dropdown: {
+                  options: [
+                    { label: 'Με το μικρό μου όνομα', value: 'firstname' },
+                    { label: 'Ανώνυμα', value: 'anonymous' },
+                  ],
+                },
+              },
+        ],
+        metadata: {
+          ...webSessionMetadata('30days', utm),
+          product: ticket,
+          product_name: clipMeta(info.name),
+          fbp: clipMeta(fbp || ''),
+          fbc: clipMeta(fbc || ''),
+          client_ip_address: clipMeta(clientIp),
+          client_user_agent: clipMeta(clientUa),
+          ttp: clipMeta(ttp || ''),
+          ttclid: clipMeta(ttclid || ''),
+        },
+        payment_intent_data: {
+          metadata: { ...webPaymentIntentMetadata('30days', utm), product: ticket },
+        },
+        success_url: `${site}${pagePath}/thank-you?session_id={CHECKOUT_SESSION_ID}&t=${isLive ? 'live' : 'online'}`,
+        cancel_url: `${site}${pagePath}`,
+        expires_at: Math.floor(Date.now() / 1000) + 1800,
+      })
+
+      if (event_id) {
+        await sendMetaInitiateCheckout({
+          email: null,
+          amount: SEMINAR.priceEur,
+          eventId: event_id,
+          productName: info.name,
+          fbp,
+          fbc,
+          clientIp,
+          clientUa,
+          sourceUrl: `https://withinsuccess.gr${pagePath}`,
+        })
+        await sendTikTokEvent({
+          event: 'InitiateCheckout',
+          eventId: event_id,
+          value: SEMINAR.priceEur,
+          contentId: ticket,
+          contentName: info.name,
+          pageUrl: `https://withinsuccess.gr${pagePath}`,
+          ttclid,
+          ttp,
+          ip: clientIp,
+          userAgent: clientUa,
+        })
+      }
+
+      return NextResponse.json({ url: session.url })
+    }
 
     // Web checkout (UTM + product) — from startCheckout() / site CTAs
     if (isWebProduct(productRaw)) {

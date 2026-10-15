@@ -37,6 +37,23 @@ const CONFIG_30DAYS: ProductConfig = {
   syncManyChat: false,
 }
 
+// Ανοιχτή Συζήτηση 15/11 — τα group IDs μπαίνουν ως env vars στο Vercel
+const CONFIG_SEMINAR_LIVE: ProductConfig = {
+  name: 'Ανοιχτή Συζήτηση · Δια ζώσης',
+  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_LIVE || '',
+  syncManyChat: false,
+}
+
+const CONFIG_SEMINAR_ONLINE: ProductConfig = {
+  name: 'Ανοιχτή Συζήτηση · Online',
+  mailerLiteGroup: process.env.MAILERLITE_GROUP_SEMINAR_ONLINE || '',
+  syncManyChat: false,
+}
+
+function isSeminarConfig(p: ProductConfig): boolean {
+  return p === CONFIG_SEMINAR_LIVE || p === CONFIG_SEMINAR_ONLINE
+}
+
 async function getProductConfig(
   session: Stripe.Checkout.Session,
   amount: number,
@@ -79,7 +96,15 @@ async function getProductConfig(
     console.log(`[PRODUCT] Matched 30 Μέρες via metadata.product`)
     return CONFIG_30DAYS
   }
-  
+  if (product === 'seminar_live') {
+    console.log(`[PRODUCT] Matched Σεμινάριο Live via metadata.product`)
+    return CONFIG_SEMINAR_LIVE
+  }
+  if (product === 'seminar_online') {
+    console.log(`[PRODUCT] Matched Σεμινάριο Online via metadata.product`)
+    return CONFIG_SEMINAR_ONLINE
+  }
+
   // ΚΑΜΙΑ ασαφής αντιστοίχιση (π.χ. product_name που περιέχει «30»/«63»).
   // Μόνο ρητό Product ID (P1) ή metadata.product (P2) βάζει κάποιον σε ομάδα,
   // ώστε να ΜΗΝ μπαίνει γενικός κόσμος στη λίστα από random session.completed.
@@ -350,9 +375,11 @@ export async function POST(req: NextRequest) {
       fbc: meta.fbc || null,
       clientIpAddress: meta.client_ip_address || null,
       clientUserAgent: meta.client_user_agent || null,
-      eventSourceUrl: amount === 15
-        ? 'https://withinsuccess.gr/30days'
-        : 'https://withinsuccess.gr/63days'
+      eventSourceUrl: isSeminarConfig(product)
+        ? 'https://withinsuccess.gr/anoixti-syzitisi'
+        : amount === 15
+          ? 'https://withinsuccess.gr/30days'
+          : 'https://withinsuccess.gr/63days'
     })
 
     // 1b. TikTok Events API — Purchase (event_id = session.id, ίδιο με το browser)
@@ -361,9 +388,15 @@ export async function POST(req: NextRequest) {
       event: 'Purchase',
       eventId: session.id,
       value: amount,
-      contentId: isThirtyDays ? '30days-program' : product.name === '63 Μέρες Ζωής' ? '63days-program' : 'other',
+      contentId: isThirtyDays
+        ? '30days-program'
+        : product.name === '63 Μέρες Ζωής'
+          ? '63days-program'
+          : isSeminarConfig(product) ? (meta.product || 'seminar') : 'other',
       contentName: product.name,
-      pageUrl: isThirtyDays ? 'https://withinsuccess.gr/30days' : 'https://withinsuccess.gr/63days',
+      pageUrl: isSeminarConfig(product)
+        ? 'https://withinsuccess.gr/anoixti-syzitisi'
+        : isThirtyDays ? 'https://withinsuccess.gr/30days' : 'https://withinsuccess.gr/63days',
       email,
       phone,
       ttclid: meta.ttclid || null,
