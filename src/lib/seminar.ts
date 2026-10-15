@@ -14,9 +14,8 @@ export const SEMINAR = {
   startsAt: '2026-11-15T11:00:00+02:00',
   endsAt: '2026-11-15T13:30:00+02:00',
 
-  // TODO: συμπλήρωσε όταν θες να φαίνεται ο χώρος. Αν μείνει null → «Αθήνα · ο χώρος στο email επιβεβαίωσης».
-  venueName: null as string | null,
-  venueAddress: null as string | null,
+  venueName: 'Ιωνικό Κέντρο' as string | null,
+  venueAddress: 'Λυσίου 11, Πλάκα' as string | null,
   city: 'Αθήνα',
 
   // TODO: βάλε τον ακριβή αριθμό θέσεων του χώρου.
