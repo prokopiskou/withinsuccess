@@ -232,22 +232,9 @@ export async function POST(req: NextRequest) {
           },
         }],
         phone_number_collection: { enabled: true },
-        // Δια ζώσης: ερωτήσεις μόνο live στην αίθουσα, όλοι βιντεοσκοπούνται (υποχρεωτική συναίνεση).
+        // Δια ζώσης: ερωτήσεις μόνο live στην αίθουσα (καμία ερώτηση στο checkout).
         // Online: η ερώτηση στέλνεται εδώ (υποχρεωτικά) και απαντιέται στη συζήτηση.
-        custom_fields: isLive
-          ? [
-              {
-                key: 'camera',
-                label: { type: 'custom', custom: 'Βιντεοσκόπηση εκδήλωσης' },
-                type: 'dropdown',
-                dropdown: {
-                  options: [
-                    { label: 'Συμφωνώ να βιντεοσκοπηθώ στην εκδήλωση', value: 'ok' },
-                  ],
-                },
-              },
-            ]
-          : [
+        ...(isLive ? {} : { custom_fields: [
               {
                 key: 'question',
                 label: { type: 'custom', custom: 'Η ερώτησή σου για τη συζήτηση' },
@@ -265,7 +252,7 @@ export async function POST(req: NextRequest) {
                   ],
                 },
               },
-            ],
+            ] as const }),
         metadata: {
           ...webSessionMetadata('30days', utm),
           product: ticket,
