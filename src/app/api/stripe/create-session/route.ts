@@ -219,7 +219,10 @@ export async function POST(req: NextRequest) {
 
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
-        payment_method_types: ['card'],
+        // Μόνο κάρτα (+ Apple Pay / Google Pay αυτόματα) και PayPal.
+        // Χωρίς 'link' → δεν εμφανίζεται το «αποθήκευση στοιχείων για ταχύτερη αγορά».
+        payment_method_types: ['card', 'paypal'],
+        billing_address_collection: 'auto',
         line_items: [{
           quantity: 1,
           price_data: {
@@ -231,27 +234,7 @@ export async function POST(req: NextRequest) {
             },
           },
         }],
-        // Δια ζώσης: ερωτήσεις μόνο live στην αίθουσα (καμία ερώτηση στο checkout).
-        // Online: η ερώτηση στέλνεται εδώ (υποχρεωτικά) και απαντιέται στη συζήτηση.
-        ...(isLive ? {} : { custom_fields: [
-              {
-                key: 'question',
-                label: { type: 'custom', custom: 'Η ερώτησή σου για τη συζήτηση' },
-                type: 'text',
-                text: { maximum_length: 255 },
-              },
-              {
-                key: 'qname',
-                label: { type: 'custom', custom: 'Όταν διαβάσω την ερώτησή σου' },
-                type: 'dropdown',
-                dropdown: {
-                  options: [
-                    { label: 'Με το μικρό μου όνομα', value: 'firstname' },
-                    { label: 'Ανώνυμα', value: 'anonymous' },
-                  ],
-                },
-              },
-            ] as const }),
+        // Καθαρό checkout: καμία επιπλέον ερώτηση. Οι ερωτήσεις των online μαζεύονται με email μετά την αγορά.
         metadata: {
           ...webSessionMetadata('30days', utm),
           product: ticket,
