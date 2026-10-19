@@ -94,12 +94,20 @@ export default function LinksPage() {
           />
 
           <LinkButton
+            href="/anoixti-syzitisi"
+            title="Ανοιχτή Συζήτηση με τον Προκόπη"
+            subtitle="Κυριακή 15/11 · Πλάκα & online"
+            symbol="◉"
+            destination="anoixti-syzitisi"
+            featured
+          />
+
+          <LinkButton
             href="/30days"
             title="Πρόγραμμα μεταμόρφωσης 30 ημερών"
             subtitle="Άμεση πρόσβαση"
             symbol="◈"
             destination="30days"
-            featured
           />
 
           <LinkButton
