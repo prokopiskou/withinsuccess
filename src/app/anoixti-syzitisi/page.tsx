@@ -94,9 +94,9 @@ export default function OpenConversationPage() {
         <img
           src="/syzitisi_stage.webp"
           alt="Ο Προκόπης Κούκης μιλά σε γεμάτη αίθουσα"
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
+          className="absolute inset-0 w-full h-full object-cover opacity-75"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/60 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/90" />
         <div className="relative pt-24 md:pt-32 pb-20 px-6 max-w-3xl mx-auto text-center">
           <p className="text-xs md:text-sm font-medium tracking-widest uppercase mb-6" style={{ color: GOLD_LIGHT }}>
             Live · {SEMINAR.dateLabel}
