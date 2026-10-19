@@ -104,8 +104,11 @@ export default function OpenConversationPage() {
           <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
             {SEMINAR.title}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 leading-relaxed mb-10 max-w-xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-300 leading-relaxed mb-4 max-w-xl mx-auto">
             {SEMINAR.subtitle}
+          </p>
+          <p className="text-base md:text-lg italic mb-10 max-w-xl mx-auto" style={{ fontFamily: 'Georgia, serif', color: GOLD_LIGHT }}>
+            Οι σωστές απαντήσεις ξεκινούν από τις σωστές ερωτήσεις.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-gray-300 mb-10">
             <span>{SEMINAR.timeLabel}</span>
@@ -174,7 +177,7 @@ export default function OpenConversationPage() {
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Πως δουλευει</p>
           <div className="flex flex-col gap-8">
             {[
-              { n: '1', t: 'Κάνεις την ερώτησή σου', d: 'Στην αίθουσα, ζωντανά στο μικρόφωνο. Αν είσαι online, μετά την εγγραφή σου θα σου στείλω email για να τη στείλεις, και ανώνυμα αν θέλεις.' },
+              { n: '1', t: 'Χτίζεις τη σωστή ερώτηση', d: 'Μετά την εγγραφή σου σού στέλνω έναν σύντομο οδηγό για να φτάσεις στην ερώτηση που πραγματικά σε απασχολεί. Στην αίθουσα την κάνεις ζωντανά στο μικρόφωνο. Online, μου τη στέλνεις με email, και ανώνυμα αν θέλεις.' },
               { n: '2', t: 'Απαντάω ζωντανά', d: 'Χωρίς σενάριο. Πάμε στη ρίζα της ερώτησης, όχι στην επιφάνεια.' },
               { n: '3', t: 'Φεύγεις με ένα βήμα', d: 'Όχι με ωραία λόγια. Με κάτι συγκεκριμένο που κάνεις από την επόμενη μέρα.' },
             ].map(s => (
