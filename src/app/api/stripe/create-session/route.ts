@@ -231,7 +231,6 @@ export async function POST(req: NextRequest) {
             },
           },
         }],
-        phone_number_collection: { enabled: true },
         // Δια ζώσης: ερωτήσεις μόνο live στην αίθουσα (καμία ερώτηση στο checkout).
         // Online: η ερώτηση στέλνεται εδώ (υποχρεωτικά) και απαντιέται στη συζήτηση.
         ...(isLive ? {} : { custom_fields: [
