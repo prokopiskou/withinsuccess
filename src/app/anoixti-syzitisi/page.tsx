@@ -102,13 +102,13 @@ export default function OpenConversationPage() {
             Live · {SEMINAR.dateLabel}
           </p>
           <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-            {SEMINAR.title}
+            Ανοιχτή Συζήτηση<br />με τον Προκόπη
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 leading-relaxed mb-4 max-w-xl mx-auto">
-            {SEMINAR.subtitle}
+            Ξεκάθαρες απαντήσεις σε<br />πραγματικές ερωτήσεις.
           </p>
           <p className="text-base md:text-lg italic mb-10 max-w-xl mx-auto" style={{ fontFamily: 'Georgia, serif', color: GOLD_LIGHT }}>
-            Οι σωστές απαντήσεις ξεκινούν από τις σωστές ερωτήσεις.
+            Οι σωστές απαντήσεις ξεκινούν<br />από τις σωστές ερωτήσεις.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-gray-300 mb-10">
             <span>{SEMINAR.timeLabel}</span>
