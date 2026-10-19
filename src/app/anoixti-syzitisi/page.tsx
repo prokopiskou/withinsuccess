@@ -142,6 +142,10 @@ export default function OpenConversationPage() {
             Δυόμισι ώρες ανοιχτής συζήτησης για όσα σε απασχολούν πραγματικά: το άγχος, τις σχέσεις,
             τα όρια, την αυτοπεποίθηση, το επόμενο βήμα. Φεύγεις με απαντήσεις που ισχύουν για τη δική σου ζωή.
           </p>
+          <p className="text-lg text-gray-900 leading-relaxed mt-6 pl-5 border-l-2" style={{ borderColor: GOLD }}>
+            Κάθε απάντηση πάει σε ένα σημείο: την ιστορία που λες στον εαυτό σου.
+            Γιατί η ζωή αλλάζει όταν αλλάξει αυτή.
+          </p>
         </div>
       </section>
 
@@ -180,6 +184,38 @@ export default function OpenConversationPage() {
                   <p className="font-semibold text-gray-900 mb-1">{s.t}</p>
                   <p className="text-gray-500 leading-relaxed">{s.d}</p>
                 </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <p className="font-semibold text-gray-900 mb-1">Δεν χρειάζεται να ρωτήσεις.</p>
+            <p className="text-gray-500 leading-relaxed">
+              Μπορείς απλώς να ακούσεις. Πολλοί βρίσκουν την απάντησή τους στην ερώτηση κάποιου άλλου.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ΑΠΟΔΕΙΞΗ */}
+      <section className="py-16 md:py-20 px-6 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <img
+            src="/prokopis_audience.webp"
+            alt="Γεμάτη αίθουσα σε εκδήλωση του Προκόπη Κούκη"
+            className="w-full rounded-3xl object-cover mb-12"
+            style={{ aspectRatio: '3 / 2' }}
+          />
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι λενε οσοι δουλεψαν μαζι μου</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { t: 'Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!', n: 'Αναστασία Λεωνιδοπούλου' },
+              { t: 'Δεν είναι απλώς coach, είναι άνθρωπος που σε βλέπει, σε ακούει και σε βοηθά να θυμηθείς ποιος πραγματικά είσαι. Κάθε συζήτηση μαζί του αφήνει καθαρότητα, ηρεμία και πίστη ότι μπορείς να αλλάξεις ό,τι σε βαραίνει.', n: 'Alexandra Skouria' },
+              { t: 'Ο Προκόπης με βοήθησε πραγματικά σε μια δύσκολη περίοδο. Είναι άνθρωπος που ακούει, καταλαβαίνει και σε στηρίζει με ουσιαστικό τρόπο. Ειλικρινής, υποστηρικτικός και ανθρώπινος.', n: 'Alexandros Neofytos' },
+            ].map((r, i) => (
+              <div key={i} className="p-6 bg-white rounded-2xl border border-gray-100 flex flex-col">
+                <p className="text-gray-700 leading-relaxed text-sm flex-1">«{r.t}»</p>
+                <p className="text-sm font-medium text-gray-900 mt-4">{r.n}</p>
+                <p className="text-xs text-gray-400">Google Review</p>
               </div>
             ))}
           </div>
@@ -263,11 +299,11 @@ export default function OpenConversationPage() {
             <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-4">Ποιος θα σου απαντησει</p>
             <p className="text-2xl font-semibold mb-4" style={{ fontFamily: 'Georgia, serif' }}>Προκόπης Κούκης</p>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Ιδρυτής του WithinSuccess. Πάνω από 5 χρόνια δουλεύω με ανθρώπους που θέλουν να αλλάξουν τη ζωή τους από μέσα προς τα έξω.
+              Ιδρυτής του WithinSuccess. Πάνω από 7 χρόνια δουλεύω με ανθρώπους που θέλουν να αλλάξουν τη ζωή τους από μέσα προς τα έξω.
             </p>
             <div className="flex gap-8 text-sm">
-              <div><p className="text-2xl font-semibold" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>500+</p><p className="text-gray-500">άνθρωποι που βοήθησα</p></div>
-              <div><p className="text-2xl font-semibold" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>164k</p><p className="text-gray-500">στο Instagram</p></div>
+              <div><p className="text-2xl font-semibold" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>900+</p><p className="text-gray-500">άνθρωποι που βοήθησα</p></div>
+              <div><p className="text-2xl font-semibold" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>180k</p><p className="text-gray-500">στο Instagram</p></div>
             </div>
           </div>
         </div>
@@ -279,6 +315,7 @@ export default function OpenConversationPage() {
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Συχνες ερωτησεις</p>
           <div className="flex flex-col divide-y divide-gray-200">
             {[
+              { q: 'Πρέπει να κάνω ερώτηση;', a: 'Όχι. Μπορείς απλώς να ακούσεις. Πολλοί βρίσκουν την απάντησή τους στην ερώτηση κάποιου άλλου.' },
               { q: 'Θα απαντηθεί σίγουρα η ερώτησή μου;', a: 'Προσπαθώ να απαντήσω σε όσο περισσότερες γίνεται, και από την αίθουσα και από όσους είναι online.' },
               { q: 'Μπορώ να ρωτήσω ανώνυμα;', a: 'Ναι, με το online εισιτήριο. Στέλνεις την ερώτηση στην πληρωμή και διαλέγεις αν θα τη διαβάσω με το μικρό σου όνομα ή ανώνυμα.' },
               { q: 'Η εκδήλωση βιντεοσκοπείται;', a: 'Ναι, για περιεχόμενο του WithinSuccess. Όποιος έρχεται δια ζώσης συμφωνεί να βιντεοσκοπηθεί και να δημοσιευτεί το βίντεο. Αν δεν θέλεις να φαίνεσαι, διάλεξε το online εισιτήριο.' },

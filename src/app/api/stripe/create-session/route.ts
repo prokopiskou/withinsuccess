@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
                 type: 'dropdown',
                 dropdown: {
                   options: [
-                    { label: 'Συμφωνώ να βιντεοσκοπηθώ στην εκδήλωση και να δημοσιευτεί το βίντεο', value: 'ok' },
+                    { label: 'Συμφωνώ να βιντεοσκοπηθώ στην εκδήλωση', value: 'ok' },
                   ],
                 },
               },
