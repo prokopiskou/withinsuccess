@@ -343,7 +343,7 @@ export default function OpenConversationPage() {
           <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white" style={{ fontFamily: 'Georgia, serif' }}>
             Την ερώτηση την έχεις ήδη.
           </h2>
-          <p className="text-gray-400 mb-8">Έλα να πάρεις την απάντηση.</p>
+          <p className="text-gray-400 mb-8">Στις 15/11 θα πάρεις την απάντηση.</p>
           <button
             type="button"
             onClick={scrollToTickets}
