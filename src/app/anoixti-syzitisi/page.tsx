@@ -134,8 +134,8 @@ export default function OpenConversationPage() {
         <div className="max-w-2xl mx-auto">
           <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Τι ειναι</p>
           <div className="text-2xl md:text-3xl leading-snug text-gray-900 space-y-4" style={{ fontFamily: 'Georgia, serif' }}>
-            <p>Δεν είναι σεμινάριο όπου μιλάω εγώ δύο ώρες.</p>
-            <p>Ρωτάς εσύ. Απαντάω εγώ.</p>
+            <p>Δεν είναι ένα σεμινάριο που παρακολουθείς για δύο ώρες.</p>
+            <p>Είναι μια συζήτηση που χτίζεις εσύ.</p>
             <p className="text-gray-500">Ξεκάθαρα. Ειλικρινά. Χωρίς θεωρίες.</p>
           </div>
           <p className="text-lg text-gray-500 leading-relaxed mt-8">
