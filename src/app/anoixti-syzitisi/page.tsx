@@ -25,7 +25,13 @@ export default function OpenConversationPage() {
   const pricingRef = useViewPricing(SEMINAR.slug)
 
   useEffect(() => {
-    trackEvent('ViewContent', { content_name: SEMINAR.slug })
+    trackEvent('ViewContent', {
+      content_name: SEMINAR.title,
+      content_ids: ['seminar_live', 'seminar_online'],
+      content_type: 'product',
+      value: SEMINAR.priceEur,
+      currency: 'EUR',
+    })
     trackViewContentTikTok({ id: 'seminar_1511', name: SEMINAR.title, price: SEMINAR.priceEur })
     const paymentFailed = new URLSearchParams(window.location.search).get('error') === '1'
     fetch('/api/seminar/availability')
