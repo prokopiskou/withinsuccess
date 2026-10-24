@@ -358,8 +358,12 @@ export async function POST(req: NextRequest) {
     const product = await getProductConfig(session, amount, session.metadata as Record<string, string>)
     console.log(`Purchase: €${amount} → ${product.name} (group ${product.mailerLiteGroup})`)
 
+    // Οι αγορές του Within Path (metadata.program) στέλνονται στο Meta/TikTok από το δικό του webhook.
+    // Αν τις στέλναμε κι εδώ, κάθε αγορά θα μετρούσε διπλά στο pixel.
+    const ownedByWithinPath = Boolean(meta.program)
+
     // 1. Send Purchase event to Meta CAPI (πλήρες user_data για υψηλό Event Match Quality)
-    await sendMetaPurchaseEvent({
+    if (!ownedByWithinPath) await sendMetaPurchaseEvent({
       email,
       phone,
       firstName: capiFirstName,
@@ -384,7 +388,7 @@ export async function POST(req: NextRequest) {
 
     // 1b. TikTok Events API — Purchase (event_id = session.id, ίδιο με το browser)
     const isThirtyDays = product.name === '30 Μέρες'
-    await sendTikTokEvent({
+    if (!ownedByWithinPath) await sendTikTokEvent({
       event: 'Purchase',
       eventId: session.id,
       value: amount,
