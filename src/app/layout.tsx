@@ -234,6 +234,28 @@ export default function RootLayout({
             }}
           />
         )}
+        {/* Microsoft Clarity — χωρίς cookies μέχρι να δοθεί consent στατιστικών */}
+        <Script
+          id="ms-clarity"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "x7w2psjfl4");
+              try {
+                var cc = JSON.parse(localStorage.getItem('ws_consent') || 'null');
+                var ok = !!(cc && cc.statistics === true);
+                window.clarity('consentv2', {
+                  ad_Storage: cc && cc.marketing === true ? 'granted' : 'denied',
+                  analytics_Storage: ok ? 'granted' : 'denied'
+                });
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ConsentInitializer />

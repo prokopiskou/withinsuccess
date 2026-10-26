@@ -21,7 +21,19 @@ declare global {
     fbq?: (...args: any[]) => void
     _fbq?: any
     ttq?: any
+    clarity?: (...args: unknown[]) => void
   }
+}
+
+// ============================================================
+// MICROSOFT CLARITY — cookies μόνο με consent στατιστικών
+// ============================================================
+function updateClarity(consent: ConsentState) {
+  if (typeof window === 'undefined' || !window.clarity) return
+  window.clarity('consentv2', {
+    ad_Storage: consent.marketing ? 'granted' : 'denied',
+    analytics_Storage: consent.statistics ? 'granted' : 'denied',
+  })
 }
 
 // ============================================================
@@ -70,7 +82,10 @@ export function saveConsent(consent: Omit<ConsentState, 'necessary' | 'timestamp
   // Activate/deactivate TikTok Pixel based on marketing consent
   // (για επιστρέφοντες επισκέπτες το χειρίζεται το script του layout)
   updateTikTokPixel(fullConsent.marketing)
-  
+
+  // Microsoft Clarity
+  updateClarity(fullConsent)
+
   // Dispatch event for components to listen
   window.dispatchEvent(new CustomEvent('consent-updated', { detail: fullConsent }))
 }
