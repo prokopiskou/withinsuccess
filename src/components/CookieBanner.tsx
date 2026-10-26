@@ -13,8 +13,11 @@ export default function CookieBanner() {
 
   // Το cookie banner ΔΕΝ εμφανίζεται στο /links (Linktree-style σελίδα)
   const hideOnRoute = pathname === '/links'
-  // Στις landing του 30days: λεπτή μπάρα αντί για κάρτα (λιγότερη τριβή στο κινητό)
-  const slimBar = pathname === '/30days' || pathname === '/30days-tt'
+  // Στις landing του 30days και της Ανοιχτής Συζήτησης: λεπτή μπάρα αντί για κάρτα (λιγότερη τριβή στο κινητό)
+  const slimBar =
+    pathname === '/30days' ||
+    pathname === '/30days-tt' ||
+    pathname?.startsWith('/anoixti-syzitisi')
 
   useEffect(() => {
     setMounted(true)

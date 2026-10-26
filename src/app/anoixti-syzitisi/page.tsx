@@ -281,6 +281,7 @@ export default function OpenConversationPage() {
                   <li>Βλέπεις όλη τη συζήτηση live</li>
                   <li>Μου στέλνεις την ερώτησή σου με email και την απαντάω ζωντανά</li>
                   <li>Από το σπίτι σου, όπου κι αν είσαι</li>
+                  <li>Δεν προλαβαίνεις live; Παίρνεις τη βιντεοσκόπηση στο email σου</li>
                 </ul>
                 <p className="text-4xl font-semibold mb-6" style={{ fontFamily: 'Georgia, serif' }}>{SEMINAR.priceEur}€</p>
                 <button
