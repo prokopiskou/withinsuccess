@@ -6,6 +6,10 @@ import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
 import { SEMINAR } from '@/lib/seminar'
+import { Resend } from 'resend'
+
+// Oxygen + PDF + email μπορεί να πάρουν μερικά δευτερόλεπτα
+export const maxDuration = 60
 
 const stripe = getStripeClient()
 
@@ -231,6 +235,64 @@ async function sendMetaPurchaseEvent(params: {
 // ============================================================
 // OXYGEN INVOICING
 // ============================================================
+// Κατεβάζει το PDF της ΑΠΥ (μέχρι 3 προσπάθειες, γιατί μπορεί να αργεί λίγο μετά την έκδοση)
+async function fetchOxygenPdf(baseUrl: string, key: string, invoiceId: string): Promise<Buffer | null> {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const r = await fetch(`${baseUrl}/invoices/${invoiceId}/pdf?template=a4`, {
+        headers: { Authorization: `Bearer ${key}`, Accept: 'application/pdf' },
+      })
+      const type = r.headers.get('content-type') || ''
+      if (r.ok && type.includes('pdf')) return Buffer.from(await r.arrayBuffer())
+      console.warn(`[Oxygen] PDF attempt ${attempt} (${r.status}, ${type})`)
+    } catch (err) {
+      console.warn(`[Oxygen] PDF attempt ${attempt} error:`, err)
+    }
+    await new Promise(res => setTimeout(res, 2000))
+  }
+  return null
+}
+
+// Στέλνει την απόδειξη στον πελάτη από το hello@withinsuccess.gr (Resend)
+async function sendReceiptEmail(p: { to: string; number: string; pdf: Buffer | null; viewUrl: string }) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[Receipt] RESEND_API_KEY λείπει — δεν στάλθηκε απόδειξη')
+    return
+  }
+  if (!p.pdf && !p.viewUrl) {
+    console.error(`[Receipt] Ούτε PDF ούτε link για ${p.to} — δεν στάλθηκε απόδειξη`)
+    return
+  }
+  const where = p.pdf
+    ? 'Στο συνημμένο θα βρεις την απόδειξή σου.'
+    : `Την απόδειξή σου τη βρίσκεις εδώ: <a href="${p.viewUrl}" style="color:#8A6D2F;">προβολή απόδειξης</a>`
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    const { error } = await resend.emails.send({
+      from: 'Προκόπης από WithinSuccess <hello@withinsuccess.gr>',
+      to: p.to,
+      replyTo: 'hello@withinsuccess.gr',
+      subject: 'Η απόδειξή σου · WithinSuccess',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #0D0D0D; font-size: 16px; line-height: 1.7;">
+          <p>Σε ευχαριστώ για την αγορά σου.</p>
+          <p>${where}</p>
+          ${p.number ? `<p style="color:#6B6B6B; font-size:14px;">Απόδειξη Παροχής Υπηρεσιών ${p.number}</p>` : ''}
+          <p>Για οποιαδήποτε απορία, απάντησε σε αυτό το email.</p>
+          <p>Προκόπης</p>
+        </div>
+      `,
+      ...(p.pdf
+        ? { attachments: [{ filename: `apodeiksi-withinsuccess${p.number ? '-' + p.number.replace(/\s+/g, '-') : ''}.pdf`, content: p.pdf }] }
+        : {}),
+    })
+    if (error) console.error('[Receipt] Resend error:', error)
+    else console.log(`[Receipt] Στάλθηκε στο ${p.to}${p.pdf ? ' με PDF' : ' με link'}`)
+  } catch (err) {
+    console.error('[Receipt] Unexpected error:', err)
+  }
+}
+
 async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1, paidWithPaypal = false) {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
   if (!OXYGEN_API_KEY) {
@@ -316,6 +378,15 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     }
     const inv = invoice?.data || invoice
     console.log(`[Oxygen] ΑΠΥ ${inv?.number ?? ''} created (${inv?.id}) · myDATA mark: ${inv?.mydata?.mark ?? 'pending'}`)
+
+    if (customerEmail && inv?.id) {
+      await sendReceiptEmail({
+        to: customerEmail,
+        number: inv?.number ? `${inv?.numbering_sequence ?? ''} ${inv.number}`.trim() : '',
+        pdf: await fetchOxygenPdf(baseUrl, OXYGEN_API_KEY, inv.id),
+        viewUrl: inv?.iview_url || '',
+      })
+    }
   } catch (err) {
     console.error('[Oxygen] Unexpected error:', err)
   }
