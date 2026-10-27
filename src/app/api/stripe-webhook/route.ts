@@ -275,7 +275,7 @@ async function sendReceiptEmail(p: { to: string; number: string; pdf: Buffer | n
       subject: 'Η απόδειξή σου · WithinSuccess',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #0D0D0D; font-size: 16px; line-height: 1.7;">
-          <p>Σε ευχαριστώ για την αγορά σου.</p>
+          <p>Σε ευχαριστώ για την εμπιστοσύνη σου.</p>
           <p>${where}</p>
           ${p.number ? `<p style="color:#6B6B6B; font-size:14px;">Απόδειξη Παροχής Υπηρεσιών ${p.number}</p>` : ''}
           <p>Για οποιαδήποτε απορία, απάντησε σε αυτό το email.</p>
