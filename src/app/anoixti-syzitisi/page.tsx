@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MetaPixel, { trackEvent } from '@/components/MetaPixel'
-import { trackBeginCheckout, generateEventId, trackViewContentTikTok } from '@/lib/analytics'
+import { trackBeginCheckout, generateEventId, trackViewContentTikTok, trackEvent as trackGaEvent } from '@/lib/analytics'
+import { getConsent } from '@/lib/consent'
 import { startCheckout } from '@/lib/checkout'
 import { useViewPricing, useScrollDepth } from '@/lib/hooks/useAnalyticsHooks'
 import UTMCapture from '@/components/UTMCapture'
@@ -20,6 +21,11 @@ export default function OpenConversationPage() {
   const [avail, setAvail] = useState<Availability>({ liveLeft: null, closed: isSeminarSalesClosed() })
   const [loading, setLoading] = useState<SeminarTicket | null>(null)
   const [failed, setFailed] = useState(false)
+  // Σταθερό κουμπί κινητού: φαίνεται όταν έχει περάσει το hero και δεν φαίνονται τα εισιτήρια
+  const heroRef = useRef<HTMLElement>(null)
+  const [heroVisible, setHeroVisible] = useState(true)
+  const [ticketsVisible, setTicketsVisible] = useState(false)
+  const [consentDone, setConsentDone] = useState(false)
 
   useScrollDepth(SEMINAR.slug)
   const pricingRef = useViewPricing(SEMINAR.slug)
@@ -39,6 +45,29 @@ export default function OpenConversationPage() {
       .then((d: Availability) => setAvail({ liveLeft: d.liveLeft, closed: d.closed }))
       .catch(() => {})
       .finally(() => { if (paymentFailed) setFailed(true) })
+  }, [])
+
+  useEffect(() => {
+    const hero = heroRef.current
+    const tickets = document.getElementById('tickets')
+    if (!hero || !tickets || typeof IntersectionObserver === 'undefined') return
+    const obs = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.target === hero) setHeroVisible(e.isIntersecting)
+        if (e.target === tickets) setTicketsVisible(e.isIntersecting)
+      }
+    })
+    obs.observe(hero)
+    obs.observe(tickets)
+    return () => obs.disconnect()
+  }, [])
+
+  // Περιμένει να κλείσει η μπάρα των cookies, για να μην μπαίνουν η μία πάνω στην άλλη
+  useEffect(() => {
+    const sync = () => setConsentDone(getConsent() !== null)
+    const t = setTimeout(sync, 0)
+    window.addEventListener('consent-updated', sync)
+    return () => { clearTimeout(t); window.removeEventListener('consent-updated', sync) }
   }, [])
 
   const liveSoldOut = avail.liveLeft !== null && avail.liveLeft <= 0
@@ -96,7 +125,7 @@ export default function OpenConversationPage() {
       />
 
       {/* HERO */}
-      <section className="relative bg-black text-white overflow-hidden">
+      <section ref={heroRef} className="relative bg-black text-white overflow-hidden">
         <img
           src="/syzitisi_stage.webp"
           alt="Ο Προκόπης Κούκης μιλά σε γεμάτη αίθουσα"
@@ -363,6 +392,28 @@ export default function OpenConversationPage() {
       </section>
 
       <Footer />
+
+      {/* Σταθερό κουμπί κινητού */}
+      <div className="h-20 md:hidden" aria-hidden="true" />
+      {!avail.closed && consentDone && !heroVisible && !ticketsVisible && (
+        <div className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-black/95 backdrop-blur border-t border-white/10 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0 text-white">
+              <p className="text-sm font-medium leading-tight">Κυριακή 15/11 · 11:00</p>
+              <p className="text-xs text-gray-400 leading-tight truncate">
+                {liveLow ? `Έμειναν ${avail.liveLeft} θέσεις δια ζώσης` : 'Πλάκα ή online'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { trackGaEvent('sticky_cta_click', { page: SEMINAR.slug }); scrollToTickets() }}
+              className="shrink-0 bg-white text-black px-5 py-3 rounded-full text-sm font-medium border-0 cursor-pointer"
+            >
+              Κλείσε θέση · {SEMINAR.priceEur}€
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
