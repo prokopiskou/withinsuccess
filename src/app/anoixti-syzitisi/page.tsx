@@ -176,87 +176,17 @@ export default function OpenConversationPage() {
             <p>Είναι μια συζήτηση που χτίζεις εσύ.</p>
             <p className="text-gray-500">Ξεκάθαρα. Ειλικρινά. Χωρίς θεωρίες.</p>
           </div>
-          <p className="text-lg text-gray-500 leading-relaxed mt-8">
-            Δυόμισι ώρες ανοιχτής συζήτησης για όσα σε απασχολούν πραγματικά: το άγχος, τις σχέσεις,
-            τα όρια, την αυτοπεποίθηση, το επόμενο βήμα. Φεύγεις με απαντήσεις που ισχύουν για τη δική σου ζωή.
-          </p>
+          <p className="text-base text-gray-500 mt-8">Άγχος. Σχέσεις. Όρια. Αυτοπεποίθηση. Το επόμενο βήμα.</p>
           <p className="text-lg text-gray-900 leading-relaxed mt-6 pl-5 border-l-2" style={{ borderColor: GOLD }}>
             Κάθε απάντηση πάει σε ένα σημείο: την ιστορία που λες στον εαυτό σου.
             Γιατί η ζωή αλλάζει όταν αλλάξει αυτή.
           </p>
-        </div>
-      </section>
-
-      {/* ΓΙΑ ΠΟΙΟΝ */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Για ποιον ειναι</p>
-          <div className="flex flex-col gap-4">
-            {[
-              'Έχεις μια ερώτηση που σε βασανίζει και κανείς δεν σου έχει δώσει καθαρή απάντηση.',
-              'Νιώθεις ότι κολλάς στο ίδιο σημείο, ξανά και ξανά.',
-              'Θέλεις να ακούσεις την αλήθεια, όχι αυτό που θα σε κάνει να νιώσεις καλά για πέντε λεπτά.',
-            ].map((item, i) => (
-              <div key={i} className="flex gap-4 items-start p-6 bg-white rounded-2xl border border-gray-100">
-                <span className="font-light text-lg flex-shrink-0" style={{ color: GOLD }}>{String(i + 1).padStart(2, '0')}</span>
-                <p className="text-gray-700 leading-relaxed">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ΠΩΣ ΔΟΥΛΕΥΕΙ */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Πως δουλευει</p>
-          <div className="flex flex-col gap-8">
-            {[
-              { n: '1', t: 'Χτίζεις τη σωστή ερώτηση', d: 'Μετά την εγγραφή σου σού στέλνω έναν σύντομο οδηγό για να φτάσεις στην ερώτηση που πραγματικά σε απασχολεί. Στην αίθουσα την κάνεις ζωντανά στο μικρόφωνο. Online, μου τη στέλνεις με email, και ανώνυμα αν θέλεις.' },
-              { n: '2', t: 'Απαντάω ζωντανά', d: 'Χωρίς σενάριο. Πάμε στη ρίζα της ερώτησης, όχι στην επιφάνεια.' },
-              { n: '3', t: 'Φεύγεις με ένα βήμα', d: 'Όχι με ωραία λόγια. Με κάτι συγκεκριμένο που κάνεις από την επόμενη μέρα.' },
-            ].map(s => (
-              <div key={s.n} className="flex gap-6 items-start">
-                <span className="text-4xl font-semibold flex-shrink-0 w-10" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>{s.n}</span>
-                <div>
-                  <p className="font-semibold text-gray-900 mb-1">{s.t}</p>
-                  <p className="text-gray-500 leading-relaxed">{s.d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-10 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-            <p className="font-semibold text-gray-900 mb-1">Δεν χρειάζεται να ρωτήσεις.</p>
-            <p className="text-gray-500 leading-relaxed">
-              Μπορείς απλώς να ακούσεις. Πολλοί βρίσκουν την απάντησή τους στην ερώτηση κάποιου άλλου.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ΑΠΟΔΕΙΞΗ */}
-      <section className="py-16 md:py-20 px-6 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
           <img
             src="/prokopis_audience.webp"
             alt="Γεμάτη αίθουσα σε εκδήλωση του Προκόπη Κούκη"
-            className="w-full rounded-3xl object-cover mb-12"
+            className="w-full rounded-3xl object-cover mt-10"
             style={{ aspectRatio: '3 / 2' }}
           />
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι λενε οσοι δουλεψαν μαζι μου</p>
-          <div className="grid md:grid-cols-3 gap-4">
-            {[
-              { t: 'Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!', n: 'Αναστασία Λεωνιδοπούλου' },
-              { t: 'Δεν είναι απλώς coach, είναι άνθρωπος που σε βλέπει, σε ακούει και σε βοηθά να θυμηθείς ποιος πραγματικά είσαι. Κάθε συζήτηση μαζί του αφήνει καθαρότητα, ηρεμία και πίστη ότι μπορείς να αλλάξεις ό,τι σε βαραίνει.', n: 'Alexandra Skouria' },
-              { t: 'Ο Προκόπης με βοήθησε πραγματικά σε μια δύσκολη περίοδο. Είναι άνθρωπος που ακούει, καταλαβαίνει και σε στηρίζει με ουσιαστικό τρόπο. Ειλικρινής, υποστηρικτικός και ανθρώπινος.', n: 'Alexandros Neofytos' },
-            ].map((r, i) => (
-              <div key={i} className="p-6 bg-white rounded-2xl border border-gray-100 flex flex-col">
-                <p className="text-gray-700 leading-relaxed text-sm flex-1">«{r.t}»</p>
-                <p className="text-sm font-medium text-gray-900 mt-4">{r.n}</p>
-                <p className="text-xs text-gray-400">Google Review</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -330,6 +260,51 @@ export default function OpenConversationPage() {
         </div>
       </section>
 
+      {/* ΠΩΣ ΔΟΥΛΕΥΕΙ */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8">Πως δουλευει</p>
+          <div className="flex flex-col gap-6">
+            {[
+              { n: '1', t: 'Χτίζεις τη σωστή ερώτηση.', d: 'Μετά την εγγραφή σου στέλνω έναν σύντομο οδηγό.' },
+              { n: '2', t: 'Απαντάω ζωντανά.', d: 'Χωρίς σενάριο. Πάμε στη ρίζα, όχι στην επιφάνεια.' },
+              { n: '3', t: 'Φεύγεις με ένα βήμα.', d: 'Κάτι συγκεκριμένο που κάνεις από την επόμενη μέρα.' },
+            ].map(s => (
+              <div key={s.n} className="flex gap-6 items-start">
+                <span className="text-4xl font-semibold flex-shrink-0 w-10" style={{ fontFamily: 'Georgia, serif', color: GOLD }}>{s.n}</span>
+                <div>
+                  <p className="font-semibold text-gray-900 mb-1">{s.t}</p>
+                  <p className="text-gray-500 leading-relaxed">{s.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-gray-500 leading-relaxed mt-8">
+            Δεν χρειάζεται να ρωτήσεις. Πολλοί βρίσκουν την απάντησή τους στην ερώτηση κάποιου άλλου.
+          </p>
+        </div>
+      </section>
+
+      {/* ΚΡΙΤΙΚΕΣ */}
+      <section className="py-16 md:py-20 px-6 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι λενε οσοι δουλεψαν μαζι μου</p>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              { t: 'Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!', n: 'Αναστασία Λεωνιδοπούλου' },
+              { t: 'Δεν είναι απλώς coach, είναι άνθρωπος που σε βλέπει, σε ακούει και σε βοηθά να θυμηθείς ποιος πραγματικά είσαι. Κάθε συζήτηση μαζί του αφήνει καθαρότητα, ηρεμία και πίστη ότι μπορείς να αλλάξεις ό,τι σε βαραίνει.', n: 'Alexandra Skouria' },
+              { t: 'Ο Προκόπης με βοήθησε πραγματικά σε μια δύσκολη περίοδο. Είναι άνθρωπος που ακούει, καταλαβαίνει και σε στηρίζει με ουσιαστικό τρόπο. Ειλικρινής, υποστηρικτικός και ανθρώπινος.', n: 'Alexandros Neofytos' },
+            ].map((r, i) => (
+              <div key={i} className="p-6 bg-white rounded-2xl border border-gray-100 flex flex-col">
+                <p className="text-gray-700 leading-relaxed text-sm flex-1">«{r.t}»</p>
+                <p className="text-sm font-medium text-gray-900 mt-4">{r.n}</p>
+                <p className="text-xs text-gray-400">Google Review</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ΠΡΟΚΟΠΗΣ */}
       <section className="py-16 md:py-20 px-6 bg-white">
         <div className="max-w-2xl mx-auto grid md:grid-cols-[200px_1fr] gap-8 items-center">
@@ -358,7 +333,7 @@ export default function OpenConversationPage() {
               { q: 'Θα απαντηθεί σίγουρα η ερώτησή μου;', a: 'Προσπαθώ να απαντήσω σε όσο περισσότερες γίνεται, και από την αίθουσα και από όσους είναι online.' },
               { q: 'Μπορώ να ρωτήσω ανώνυμα;', a: 'Ναι, με το online εισιτήριο. Μετά την εγγραφή σου θα σου στείλω email για να μου στείλεις την ερώτησή σου, με το όνομά σου ή ανώνυμα.' },
               { q: 'Η εκδήλωση βιντεοσκοπείται;', a: 'Ναι, η εκδήλωση βιντεοσκοπείται.' },
-              { q: 'Πώς παίρνω τον σύνδεσμο για το online;', a: 'Με email, πριν την εκδήλωση. Αν δεν τον βρεις, έλεγξε τα spam ή γράψε μας.' },
+              { q: 'Πώς παίρνω τον σύνδεσμο για το online;', a: 'Με email, πριν την εκδήλωση, και τη βιντεοσκόπηση μετά την εκδήλωση. Αν δεν τα βρεις, έλεγξε τα spam ή γράψε μας.' },
               { q: 'Πού ακριβώς γίνεται;', a: SEMINAR.venueName ? where : 'Στην Αθήνα. Η ακριβής διεύθυνση έρχεται στο email επιβεβαίωσης.' },
             ].map((f, i) => (
               <details key={i} className="py-5 group">
