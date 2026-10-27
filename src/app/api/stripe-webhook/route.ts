@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
+import { SEMINAR } from '@/lib/seminar'
 
 const stripe = getStripeClient()
 
@@ -230,60 +231,82 @@ async function sendMetaPurchaseEvent(params: {
 // ============================================================
 // OXYGEN INVOICING
 // ============================================================
-async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string) {
+async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1) {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
-  if (!OXYGEN_API_KEY) return
-
-  const baseUrl = 'https://api.oxygen.gr/v1'
-
-  const contactRes = await fetch(`${baseUrl}/contacts`, {
-    method: 'POST',
-    headers: {
+  if (!OXYGEN_API_KEY) {
+    console.warn('[Oxygen] OXYGEN_API_KEY λείπει — δεν εκδόθηκε παραστατικό')
+    return
+  }
+  // Δεν αφήνουμε ποτέ το Oxygen να ρίξει το webhook (MailerLite/Meta έχουν ήδη γίνει)
+  try {
+    const baseUrl = 'https://api.oxygen.gr/v1'
+    const headers = {
       'Authorization': `Bearer ${OXYGEN_API_KEY}`,
       'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      name: customerName,
-      email: customerEmail,
-    }),
-  })
-  const contact = await contactRes.json()
-  const contactId = contact?.id
+      'Accept': 'application/json',
+    }
 
-  const noticeRes = await fetch(`${baseUrl}/notices`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OXYGEN_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contact_id: contactId,
-      numbering_sequence_id: "33212260-d118-11f0-8710-fa163eb3df25",
-      items: [
-        {
-          description: productName,
-          quantity: 1,
-          price: amount / 100,
-          tax_id: "331db5c0-d118-11f0-8710-fa163eb3df25"
-        }
-      ],
-    }),
-  })
-
-  const notice = await noticeRes.json()
-  const noticeId = notice?.data?.id || notice?.id
-
-  if (noticeId && customerEmail) {
-    await fetch(`${baseUrl}/notices/${noticeId}/send`, {
+    const contactRes = await fetch(`${baseUrl}/contacts`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OXYGEN_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
+      body: JSON.stringify({ name: customerName, email: customerEmail }),
+    })
+    const contact = await contactRes.json().catch(() => null)
+    const contactId = contact?.data?.id || contact?.id
+    if (!contactRes.ok || !contactId) {
+      console.error(`[Oxygen] Contact failed (${contactRes.status}):`, JSON.stringify(contact).slice(0, 800))
+      return
+    }
+
+    // ΑΠΥ (Απόδειξη Παροχής Υπηρεσιών) σε ιδιώτη, εξοφλημένη, με διαβίβαση στο myDATA.
+    // Τα IDs του λογαριασμού μπαίνουν ως env vars στο Vercel (δες /api/dashboard/oxygen-setup).
+    const paymentMethodId = process.env.OXYGEN_PAYMENT_METHOD_ID
+    const taxId = process.env.OXYGEN_TAX_ID || '331db5c0-d118-11f0-8710-fa163eb3df25' // 0% · άνευ ΦΠΑ
+    const sequenceId = process.env.OXYGEN_SEQUENCE_ID_APY
+    if (!paymentMethodId) {
+      console.warn('[Oxygen] OXYGEN_PAYMENT_METHOD_ID λείπει — δεν εκδόθηκε ΑΠΥ')
+      return
+    }
+
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Athens' }) // YYYY-MM-DD
+    const total = Math.round(amount) / 100
+    const unit = Math.round((total / quantity) * 100) / 100
+    const invoiceRes = await fetch(`${baseUrl}/invoices`, {
+      method: 'POST',
+      headers,
       body: JSON.stringify({
-        email: customerEmail,
+        contact_id: contactId,
+        document_type: 'rs',
+        mydata_document_type: '11.2',
+        issue_date: today,
+        language: 'gr',
+        payment_method_id: paymentMethodId,
+        ...(sequenceId ? { numbering_sequence_id: sequenceId } : {}),
+        is_paid: true,
+        items: [
+          {
+            description: productName,
+            quantity,
+            unit_net_value: unit,
+            net_amount_pre_discount: total,
+            net_amount: total,
+            vat_amount: 0,
+            tax_id: taxId,
+            mydata_classification_category: 'category1_3',
+            mydata_classification_type: 'E3_561_003',
+          }
+        ],
       }),
     })
+    const invoice = await invoiceRes.json().catch(() => null)
+    if (!invoiceRes.ok) {
+      console.error(`[Oxygen] ΑΠΥ failed (${invoiceRes.status}):`, JSON.stringify(invoice).slice(0, 1200))
+      return
+    }
+    const inv = invoice?.data || invoice
+    console.log(`[Oxygen] ΑΠΥ ${inv?.number ?? ''} created (${inv?.id}) · myDATA mark: ${inv?.mydata?.mark ?? 'pending'}`)
+  } catch (err) {
+    console.error('[Oxygen] Unexpected error:', err)
   }
 }
 
@@ -439,7 +462,11 @@ export async function POST(req: NextRequest) {
       rawFullName.trim(),
       customerEmail,
       session.amount_total || 0,
-      session.metadata?.product_name || product.name
+      session.metadata?.product_name || product.name,
+      // Εισιτήρια Συζήτησης: η ποσότητα βγαίνει από το ποσό (15€ το εισιτήριο)
+      isSeminarConfig(product)
+        ? Math.max(1, Math.round((session.amount_total || 0) / (SEMINAR.priceEur * 100)))
+        : 1
     )
 
     return NextResponse.json({ 

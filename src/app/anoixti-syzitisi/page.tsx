@@ -229,6 +229,11 @@ export default function OpenConversationPage() {
                   {liveSoldOut ? 'Οι θέσεις εξαντλήθηκαν' : loading === 'seminar_live' ? 'Μια στιγμή…' : 'Θέλω θέση στην αίθουσα →'}
                 </button>
                 {liveLow && <p className="text-xs text-center mt-3" style={{ color: GOLD_LIGHT }}>Έμειναν {avail.liveLeft} θέσεις</p>}
+                {!liveSoldOut && (
+                  <p className="text-xs text-center text-gray-400 mt-3 leading-relaxed">
+                    Φέρε μαζί σου κάποιον που το χρειάζεται.<br />Στην πληρωμή διαλέγεις πόσες θέσεις θες.
+                  </p>
+                )}
               </div>
 
               {/* ONLINE */}

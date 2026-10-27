@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripeClient'
+import { SEMINAR } from '@/lib/seminar'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -17,9 +18,11 @@ export async function GET() {
 
     for await (const s of stripe.checkout.sessions.list({ created: { gte: since }, status: 'complete', limit: 100 })) {
       const product = s.metadata?.product
-      if (product === 'seminar_live') { live++; continue }
+      // Πολλά εισιτήρια σε μία αγορά: θέσεις = ποσό / τιμή
+      const qty = Math.max(1, Math.round((s.amount_total || 0) / (SEMINAR.priceEur * 100)))
+      if (product === 'seminar_live') { live += qty; continue }
       if (product !== 'seminar_online') continue
-      online++
+      online += qty
 
       const fields = s.custom_fields || []
       const q = fields.find(f => f.key === 'question')?.text?.value?.trim() || ''

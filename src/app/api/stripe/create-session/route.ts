@@ -203,11 +203,15 @@ export async function POST(req: NextRequest) {
       if (isSeminarSalesClosed()) {
         return NextResponse.json({ error: 'closed', closed: true }, { status: 410 })
       }
+      // Μέχρι 5 εισιτήρια ανά αγορά· για την αίθουσα όχι περισσότερα από όσα έχουν μείνει
+      let maxQty = 5
       if (ticket === 'seminar_live') {
         try {
-          if ((await getLiveSeatsLeft()) <= 0) {
+          const left = await getLiveSeatsLeft()
+          if (left <= 0) {
             return NextResponse.json({ error: 'sold_out', soldOut: true }, { status: 410 })
           }
+          maxQty = Math.min(5, left)
         } catch (err) {
           console.error('seat check failed, allowing checkout:', err)
         }
@@ -225,6 +229,7 @@ export async function POST(req: NextRequest) {
         billing_address_collection: 'auto',
         line_items: [{
           quantity: 1,
+          ...(maxQty > 1 ? { adjustable_quantity: { enabled: true, minimum: 1, maximum: maxQty } } : {}),
           price_data: {
             currency: 'eur',
             unit_amount: SEMINAR.priceEur * 100,
