@@ -293,7 +293,7 @@ export default function OpenConversationPage() {
       {/* ΚΡΙΤΙΚΕΣ */}
       <section className="py-16 md:py-20 px-6 bg-gray-50">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι λενε οσοι δουλεψαν μαζι μου</p>
+          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-8 text-center">Τι λενε</p>
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { t: 'Ανακάλυψα τον Προκόπη μέσω Instagram και από τότε παρακολούθησα σεμινάρια και ατομικές συνεδρίες. Μεταδίδει φοβερή ενέργεια, είναι αυθεντικός και τον προτείνω ανεπιφύλακτα!', n: 'Αναστασία Λεωνιδοπούλου' },
