@@ -1,3 +1,4 @@
+import type Stripe from 'stripe'
 import { getStripeClient } from '@/lib/stripeClient'
 import { SEMINAR } from '@/lib/seminar'
 
@@ -14,11 +15,17 @@ export async function getLiveSeatsSold(): Promise<number> {
     const res = await stripe.paymentIntents.search({
       query: "status:'succeeded' AND metadata['product']:'seminar_live'",
       limit: 100,
+      expand: ['data.latest_charge'],
       ...(page ? { page } : {}),
     })
     // Ένα PaymentIntent μπορεί να έχει πολλά εισιτήρια (ποσότητα στο checkout): θέσεις = ποσό / τιμή
     for (const pi of res.data) {
-      sold += Math.max(1, Math.round((pi.amount_received || pi.amount) / (SEMINAR.priceEur * 100)))
+      // Οι επιστροφές χρημάτων ελευθερώνουν θέσεις (το PaymentIntent μένει 'succeeded')
+      const charge = pi.latest_charge as Stripe.Charge | string | null
+      const refunded = charge && typeof charge !== 'string' ? charge.amount_refunded : 0
+      const net = (pi.amount_received || pi.amount) - refunded
+      if (net <= 0) continue
+      sold += Math.max(1, Math.round(net / (SEMINAR.priceEur * 100)))
     }
     if (!res.has_more || !res.next_page) break
     page = res.next_page
