@@ -231,7 +231,7 @@ async function sendMetaPurchaseEvent(params: {
 // ============================================================
 // OXYGEN INVOICING
 // ============================================================
-async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1) {
+async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1, paidWithPaypal = false) {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
   if (!OXYGEN_API_KEY) {
     console.warn('[Oxygen] OXYGEN_API_KEY λείπει — δεν εκδόθηκε παραστατικό')
@@ -249,7 +249,19 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     const contactRes = await fetch(`${baseUrl}/contacts`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ name: customerName, email: customerEmail }),
+      // Ιδιώτης πελάτης: type 1, με όνομα και επώνυμο (υποχρεωτικά για type 1)
+      body: JSON.stringify((() => {
+        const parts = customerName.trim().split(/\s+/).filter(Boolean)
+        return {
+          type: 1,
+          is_client: true,
+          is_supplier: false,
+          country: 'GR',
+          name: parts[0] || 'Πελάτης',
+          surname: parts.slice(1).join(' ') || '-',
+          ...(customerEmail ? { email: customerEmail } : {}),
+        }
+      })()),
     })
     const contact = await contactRes.json().catch(() => null)
     const contactId = contact?.data?.id || contact?.id
@@ -260,13 +272,12 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
 
     // ΑΠΥ (Απόδειξη Παροχής Υπηρεσιών) σε ιδιώτη, εξοφλημένη, με διαβίβαση στο myDATA.
     // Τα IDs του λογαριασμού μπαίνουν ως env vars στο Vercel (δες /api/dashboard/oxygen-setup).
-    const paymentMethodId = process.env.OXYGEN_PAYMENT_METHOD_ID
-    const taxId = process.env.OXYGEN_TAX_ID || '331db5c0-d118-11f0-8710-fa163eb3df25' // 0% · άνευ ΦΠΑ
-    const sequenceId = process.env.OXYGEN_SEQUENCE_ID_APY
-    if (!paymentMethodId) {
-      console.warn('[Oxygen] OXYGEN_PAYMENT_METHOD_ID λείπει — δεν εκδόθηκε ΑΠΥ')
-      return
-    }
+    // IDs του λογαριασμού Oxygen (από /api/dashboard/oxygen-setup). Δεν είναι μυστικά.
+    const paymentMethodId = paidWithPaypal
+      ? '0eeec0c3-c9a9-4623-9d34-bc844ad55781' // PayPal
+      : '9b38257d-a4fa-4e12-9923-aa440bdbe93e' // Κάρτα μέσω POS / e-POS
+    const taxId = process.env.OXYGEN_TAX_ID || '331db5c0-d118-11f0-8710-fa163eb3df25' // 0% · άνευ ΦΠΑ (εξαίρεση 7)
+    const sequenceId = process.env.OXYGEN_SEQUENCE_ID_APY || '33212260-d118-11f0-8710-fa163eb3df25' // ΑΠΥ σειρά TAM
 
     const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Athens' }) // YYYY-MM-DD
     const total = Math.round(amount) / 100
@@ -458,6 +469,17 @@ export async function POST(req: NextRequest) {
 
     // 4. Create Oxygen invoice (use raw full name for legal/tax purposes)
     const customerEmail = session.customer_email || session.customer_details?.email || ''
+    let paidWithPaypal = false
+    try {
+      const piId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id
+      if (piId) {
+        const pi = await stripe.paymentIntents.retrieve(piId, { expand: ['latest_charge'] })
+        const charge = pi.latest_charge as Stripe.Charge | null
+        paidWithPaypal = charge?.payment_method_details?.type === 'paypal'
+      }
+    } catch (err) {
+      console.warn('[Oxygen] Δεν βρέθηκε τρόπος πληρωμής, χρησιμοποιείται κάρτα:', err)
+    }
     await createOxygenInvoice(
       rawFullName.trim(),
       customerEmail,
@@ -466,7 +488,8 @@ export async function POST(req: NextRequest) {
       // Εισιτήρια Συζήτησης: η ποσότητα βγαίνει από το ποσό (15€ το εισιτήριο)
       isSeminarConfig(product)
         ? Math.max(1, Math.round((session.amount_total || 0) / (SEMINAR.priceEur * 100)))
-        : 1
+        : 1,
+      paidWithPaypal
     )
 
     return NextResponse.json({ 
