@@ -226,6 +226,8 @@ export async function POST(req: NextRequest) {
         // Μόνο κάρτα (+ Apple Pay / Google Pay αυτόματα) και PayPal.
         // Χωρίς 'link' → δεν εμφανίζεται το «αποθήκευση στοιχείων για ταχύτερη αγορά».
         payment_method_types: ['card', 'paypal'],
+        // Χωρίς Link («αποθήκευση στοιχείων για ταχύτερη αγορά»): το Stripe το έδειχνε μαζί με την κάρτα
+        wallet_options: { link: { display: 'never' } },
         billing_address_collection: 'auto',
         line_items: [{
           quantity: 1,
