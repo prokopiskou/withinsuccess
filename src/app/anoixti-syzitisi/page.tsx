@@ -375,8 +375,9 @@ export default function OpenConversationPage() {
 
       {/* Σταθερό κουμπί κινητού */}
       <div className="h-20 md:hidden" aria-hidden="true" />
-      {!avail.closed && consentDone && !heroVisible && !ticketsVisible && (
-        <div className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-black/95 backdrop-blur border-t border-white/10 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      {!avail.closed && !heroVisible && !ticketsVisible && (
+        // Αν δεν έχει απαντηθεί ακόμα η μπάρα cookies (~1 στους 75 την απαντάει), το κουμπί κάθεται από πάνω της
+        <div className={`fixed inset-x-0 z-50 md:hidden bg-black/95 backdrop-blur border-t border-white/10 px-4 py-3 ${consentDone ? 'bottom-0 pb-[calc(0.75rem+env(safe-area-inset-bottom))]' : 'bottom-[52px]'}`}>
           <div className="flex items-center gap-3">
             <div className="flex-1 min-w-0 text-white">
               <p className="text-sm font-medium leading-tight">Κυριακή 15/11 · 11:00</p>
