@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { guardFormRequest, clip, esc } from "@/lib/guard";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
+  const blocked = guardFormRequest(req, "apply", 3);
+  if (blocked) return blocked;
   try {
     const body = await req.json();
-    const { name, email, reason, experience, goal, readiness } = body;
+    const name = clip(body.name, 120);
+    const email = clip(body.email, 200);
+    const reason = clip(body.reason, 3000);
+    const experience = clip(body.experience, 3000);
+    const goal = clip(body.goal, 3000);
+    const readiness = clip(body.readiness, 500);
 
     if (!name || !email) {
       return NextResponse.json(
@@ -76,12 +84,12 @@ export async function POST(req: Request) {
           <table style="width: 100%; margin: 20px 0;">
             <tr>
               <td style="padding: 10px 0; font-weight: bold; color: #0D0D0D; width: 140px;">Όνομα:</td>
-              <td style="padding: 10px 0; color: #0D0D0D;">${normalizedName}</td>
+              <td style="padding: 10px 0; color: #0D0D0D;">${esc(normalizedName)}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold; color: #0D0D0D;">Email:</td>
               <td style="padding: 10px 0; color: #0D0D0D;">
-                <a href="mailto:${email}" style="color: #C9A96E;">${email}</a>
+                <a href="mailto:${esc(email)}" style="color: #C9A96E;">${esc(email)}</a>
               </td>
             </tr>
             <tr>
@@ -91,19 +99,19 @@ export async function POST(req: Request) {
           </table>
           <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
             <h3 style="color: #0D0D0D; margin-top: 0;">Τι τον/την έφερε εδώ:</h3>
-            <p style="color: #0D0D0D; margin: 0;">${reason || "Δεν απάντησε"}</p>
+            <p style="color: #0D0D0D; margin: 0;">${esc(reason) || "Δεν απάντησε"}</p>
           </div>
           <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
             <h3 style="color: #0D0D0D; margin-top: 0;">Εμπειρία με coaching:</h3>
-            <p style="color: #0D0D0D; margin: 0;">${experience || "Δεν απάντησε"}</p>
+            <p style="color: #0D0D0D; margin: 0;">${esc(experience) || "Δεν απάντησε"}</p>
           </div>
           <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
             <h3 style="color: #0D0D0D; margin-top: 0;">Στόχος σε 6 μήνες:</h3>
-            <p style="color: #0D0D0D; margin: 0; white-space: pre-wrap;">${goal || "Δεν απάντησε"}</p>
+            <p style="color: #0D0D0D; margin: 0; white-space: pre-wrap;">${esc(goal) || "Δεν απάντησε"}</p>
           </div>
           <div style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-left: 3px solid #C9A96E;">
             <h3 style="color: #0D0D0D; margin-top: 0;">Ετοιμότητα:</h3>
-            <p style="color: #0D0D0D; margin: 0;">${readiness || "Δεν απάντησε"}</p>
+            <p style="color: #0D0D0D; margin: 0;">${esc(readiness) || "Δεν απάντησε"}</p>
           </div>
           <p style="margin-top: 30px; font-size: 12px; color: #888;">
             Στάλθηκε από το <a href="https://withinsuccess.gr/apply" style="color: #C9A96E;">withinsuccess.gr/apply</a>
@@ -124,7 +132,7 @@ export async function POST(req: Request) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #0D0D0D; border-bottom: 2px solid #C9A96E; padding-bottom: 10px;">
-            ${normalizedName},
+            ${esc(normalizedName)},
           </h2>
           <p style="color: #0D0D0D; font-size: 16px; line-height: 1.8;">
             Έλαβα την αίτησή σου για 1:1 coaching.

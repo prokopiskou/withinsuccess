@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { guardFormRequest, clip } from '@/lib/guard'
 
 const GROUP_PROGRAM_WAITLIST = '187457343070405693'  // 63 Days + variants
 const GROUP_SEMINAR_WAITLIST = '187522640873784777'  // Seminars
@@ -20,11 +21,13 @@ function getGroupForSource(source: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const blocked = guardFormRequest(req, 'waitlist', 5)
+  if (blocked) return blocked
   try {
     const body = await req.json()
-    const email = (body.email || '').trim().toLowerCase()
-    const name = (body.name || '').trim()
-    const source = body.source || 'unknown'
+    const email = clip(body.email, 200).trim().toLowerCase()
+    const name = clip(body.name, 120).trim()
+    const source = clip(body.source, 60) || 'unknown'
 
     if (!email || !email.includes('@')) {
       return NextResponse.json(

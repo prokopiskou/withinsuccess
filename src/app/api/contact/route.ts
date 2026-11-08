@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { guardFormRequest, clip, esc } from "@/lib/guard";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
+  const blocked = guardFormRequest(request, "contact", 3);
+  if (blocked) return blocked;
   try {
-    const { name, email, message } = await request.json();
+    const body = await request.json();
+    const name = clip(body.name, 120);
+    const email = clip(body.email, 200);
+    const message = clip(body.message, 5000);
 
     // Basic validation
     if (!name || !email || !message) {
@@ -38,19 +44,19 @@ export async function POST(request: Request) {
           <table style="width: 100%; margin: 20px 0;">
             <tr>
               <td style="padding: 10px 0; font-weight: bold; color: #0D0D0D; width: 140px;">Όνομα:</td>
-              <td style="padding: 10px 0; color: #0D0D0D;">${name}</td>
+              <td style="padding: 10px 0; color: #0D0D0D;">${esc(name)}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold; color: #0D0D0D;">Email:</td>
               <td style="padding: 10px 0; color: #0D0D0D;">
-                <a href="mailto:${email}" style="color: #C9A96E;">${email}</a>
+                <a href="mailto:${esc(email)}" style="color: #C9A96E;">${esc(email)}</a>
               </td>
             </tr>
           </table>
           <div style="margin-top: 30px;">
             <p style="font-weight: bold; color: #0D0D0D; margin-bottom: 10px;">Μήνυμα:</p>
             <div style="background: #f9f9f9; padding: 20px; border-left: 3px solid #C9A96E; color: #0D0D0D; white-space: pre-wrap;">
-${message}
+${esc(message)}
             </div>
           </div>
           <p style="margin-top: 30px; font-size: 12px; color: #888;">

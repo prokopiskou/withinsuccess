@@ -98,6 +98,23 @@ const nextConfig: NextConfig = {
   // pages only — assets under /path/_next/* keep normal immutable caching.
   async headers() {
     return [
+      // Security headers σε όλο το site.
+      // CSP: μόνο τα ασφαλή directives (clickjacking, base/object, https).
+      // Δεν περιορίζουμε script-src εδώ για να μη σπάσει tracking (Meta/GA/TikTok/Clarity).
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests",
+          },
+        ],
+      },
       {
         source: '/path',
         headers: [
