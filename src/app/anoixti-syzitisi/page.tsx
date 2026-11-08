@@ -51,15 +51,21 @@ export default function OpenConversationPage() {
     const hero = heroRef.current
     const tickets = document.getElementById('tickets')
     if (!hero || !tickets || typeof IntersectionObserver === 'undefined') return
-    const obs = new IntersectionObserver(entries => {
-      for (const e of entries) {
-        if (e.target === hero) setHeroVisible(e.isIntersecting)
-        if (e.target === tickets) setTicketsVisible(e.isIntersecting)
-      }
-    })
-    obs.observe(hero)
-    obs.observe(tickets)
-    return () => obs.disconnect()
+    // Δύο observers με διαφορετικά όρια, ώστε το κουμπί να μην αναβοσβήνει
+    // στο μικρό κομμάτι ανάμεσα σε hero και τιμές:
+    // - Hero «ορατό» μόνο όσο πιάνει το πάνω μισό της οθόνης → το κουμπί βγαίνει νωρίτερα.
+    // - Τιμές «ορατές» μόνο όταν φτάσουν στη μέση της οθόνης → το κουμπί κρύβεται αργότερα.
+    const heroObs = new IntersectionObserver(
+      ([e]) => setHeroVisible(e.isIntersecting),
+      { rootMargin: '0px 0px -50% 0px' },
+    )
+    const ticketsObs = new IntersectionObserver(
+      ([e]) => setTicketsVisible(e.isIntersecting),
+      { rootMargin: '-40% 0px -40% 0px' },
+    )
+    heroObs.observe(hero)
+    ticketsObs.observe(tickets)
+    return () => { heroObs.disconnect(); ticketsObs.disconnect() }
   }, [])
 
   // Περιμένει να κλείσει η μπάρα των cookies, για να μην μπαίνουν η μία πάνω στην άλλη

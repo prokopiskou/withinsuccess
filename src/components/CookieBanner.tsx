@@ -25,11 +25,35 @@ export default function CookieBanner() {
     
     // Show banner only if no consent saved yet
     const existing = getConsent()
-    if (!existing) {
-      // Small delay for smooth UX (let page load first)
-      const timer = setTimeout(() => setShow(true), 800)
-      return () => clearTimeout(timer)
+    if (existing) return
+
+    // Στα landing των ads: εμφάνιση αφού ο επισκέπτης κυλήσει λίγο
+    // (έχει δει ήδη την αξία της σελίδας), με fallback στα 12''.
+    // Το tracking μένει κλειστό μέχρι να απαντήσει, άρα η καθυστέρηση είναι νόμιμη.
+    if (slimBar) {
+      let done = false
+      const reveal = () => {
+        if (done) return
+        done = true
+        setShow(true)
+        window.removeEventListener('scroll', onScroll)
+        clearTimeout(fallback)
+      }
+      const onScroll = () => {
+        if (window.scrollY > window.innerHeight * 0.6) reveal()
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      const fallback = setTimeout(reveal, 12000)
+      return () => {
+        window.removeEventListener('scroll', onScroll)
+        clearTimeout(fallback)
+      }
     }
+
+    // Υπόλοιπες σελίδες: μικρή καθυστέρηση όπως πριν
+    const timer = setTimeout(() => setShow(true), 800)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Listen for "reopen preferences" event from CookieTrigger
