@@ -199,7 +199,7 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${META_PIXEL_ID}');
+              if (!window.__wsFbInit) { fbq('init', '${META_PIXEL_ID}'); window.__wsFbInit = true; }
               fbq('consent', 'revoke');
               // PageView will fire after consent is granted
             `,

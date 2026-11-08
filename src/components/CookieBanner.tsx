@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { getConsent, acceptAll, rejectAll } from '@/lib/consent'
 import CookiePreferencesModal from './CookiePreferencesModal'
@@ -9,6 +9,7 @@ export default function CookieBanner() {
   const [show, setShow] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
   // Το cookie banner ΔΕΝ εμφανίζεται στο /links (Linktree-style σελίδα)
@@ -40,6 +41,24 @@ export default function CookieBanner() {
     return () => window.removeEventListener('open-cookie-preferences', handleOpen)
   }, [])
 
+  // Ύψος της μπάρας ως CSS μεταβλητή (--cookie-h), για να κάθεται από πάνω το sticky CTA
+  useEffect(() => {
+    const root = document.documentElement
+    const el = barRef.current
+    if (!show || !slimBar || !el) {
+      root.style.setProperty('--cookie-h', '0px')
+      return
+    }
+    const set = () => root.style.setProperty('--cookie-h', `${el.offsetHeight}px`)
+    set()
+    const ro = new ResizeObserver(set)
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      root.style.setProperty('--cookie-h', '0px')
+    }
+  }, [show, slimBar])
+
   if (!mounted) return null
   if (hideOnRoute) return null
 
@@ -61,31 +80,39 @@ export default function CookieBanner() {
     <>
       {show && slimBar && (
         <div
-          className="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur border-t border-gray-200"
+          ref={barRef}
+          className="fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-gray-200 shadow-[0_-8px_24px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
           role="dialog"
-          aria-label="Cookies"
+          aria-labelledby="cookie-slim-title"
         >
-          <div className="max-w-3xl mx-auto px-4 py-2 flex items-center gap-3">
-            <p className="flex-1 text-[11px] leading-snug text-gray-500">
-              Χρησιμοποιούμε cookies.{' '}
-              <a href="/privacy" className="underline hover:text-black">Πολιτική</a>
-              {' · '}
-              <button type="button" onClick={handleManage} className="underline hover:text-black">Ρυθμίσεις</button>
-            </p>
-            <button
-              type="button"
-              onClick={handleReject}
-              className="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-300 text-gray-700 hover:border-black"
-            >
-              Απόρριψη
-            </button>
-            <button
-              type="button"
-              onClick={handleAccept}
-              className="px-3 py-1.5 rounded-full text-xs font-medium bg-black text-white hover:bg-gray-800"
-            >
-              Αποδοχή
-            </button>
+          <div className="max-w-3xl mx-auto px-4 pt-3 pb-3 md:flex md:items-center md:gap-6">
+            <div className="md:flex-1">
+              <p id="cookie-slim-title" className="text-sm font-semibold text-black">
+                Επιτρέπεις τα cookies;
+              </p>
+              <p className="text-xs leading-snug text-gray-600 mt-0.5">
+                Μας βοηθούν να βελτιώνουμε τη σελίδα και να σου δείχνουμε μόνο ό,τι σε αφορά.{' '}
+                <a href="/privacy" className="underline hover:text-black">Πολιτική</a>
+                {' · '}
+                <button type="button" onClick={handleManage} className="underline hover:text-black">Ρυθμίσεις</button>
+              </p>
+            </div>
+            <div className="mt-2.5 md:mt-0 grid grid-cols-2 gap-2 md:w-[280px]">
+              <button
+                type="button"
+                onClick={handleReject}
+                className="py-2.5 rounded-full text-sm font-medium border border-black text-black hover:bg-gray-50"
+              >
+                Απόρριψη
+              </button>
+              <button
+                type="button"
+                onClick={handleAccept}
+                className="py-2.5 rounded-full text-sm font-medium border border-black bg-black text-white hover:bg-gray-800"
+              >
+                Αποδοχή
+              </button>
+            </div>
           </div>
         </div>
       )}

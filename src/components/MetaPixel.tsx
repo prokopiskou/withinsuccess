@@ -30,8 +30,13 @@ export default function MetaPixel() {
     document.head.appendChild(script);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).fbq("init", PIXEL_ID);
+    // Σημαία ώστε το script του layout να ΜΗΝ ξανακάνει init (Duplicate Pixel ID)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__wsFbInit = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).fbq("track", "PageView");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__wsFbPv = true;
   }, []);
 
   return (

@@ -22,6 +22,8 @@ declare global {
     _fbq?: any
     ttq?: any
     clarity?: (...args: unknown[]) => void
+    __wsFbInit?: boolean
+    __wsFbPv?: boolean
   }
 }
 
@@ -131,7 +133,11 @@ function updateMetaPixel(marketingConsent: boolean) {
     // Grant consent + fire delayed PageView
     if (window.fbq) {
       window.fbq('consent', 'grant')
-      window.fbq('track', 'PageView')
+      // Μην ξαναστείλεις PageView αν έχει ήδη σταλεί σε αυτή τη σελίδα (διπλό PageView)
+      if (!window.__wsFbPv) {
+        window.fbq('track', 'PageView')
+        window.__wsFbPv = true
+      }
     }
   } else {
     // Revoke consent
