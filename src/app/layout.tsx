@@ -200,7 +200,14 @@ export default function RootLayout({
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               if (!window.__wsFbInit) { fbq('init', '${META_PIXEL_ID}'); window.__wsFbInit = true; }
-              fbq('consent', 'revoke');
+              var __wsMk = false;
+              try { var __c = JSON.parse(localStorage.getItem('ws_consent') || 'null'); __wsMk = !!(__c && __c.marketing === true && __c.version === '1.0'); } catch (e) {}
+              if (__wsMk) {
+                fbq('consent', 'grant');
+                if (!window.__wsFbPv) { fbq('track', 'PageView'); window.__wsFbPv = true; }
+              } else {
+                fbq('consent', 'revoke');
+              }
               // PageView will fire after consent is granted
             `,
           }}

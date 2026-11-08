@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { getConsent } from "@/lib/consent";
 
 const PIXEL_ID = "1653590555890252";
 
@@ -15,6 +16,10 @@ export default function MetaPixel() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((window as any).fbq) return;
+    // GDPR: το pixel ξεκινάει εδώ ΜΟΝΟ αν έχει δοθεί marketing consent.
+    // Χωρίς consent, το φορτώνει το layout σε revoked κατάσταση και
+    // ενεργοποιείται (με PageView) όταν ο χρήστης πατήσει «Αποδοχή».
+    if (getConsent()?.marketing !== true) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fbq: any = function (...args: unknown[]) {
       fbq.queue.push(args);
