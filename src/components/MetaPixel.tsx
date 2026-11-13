@@ -16,10 +16,13 @@ export default function MetaPixel() {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((window as any).fbq) return;
-    // GDPR: το pixel ξεκινάει εδώ ΜΟΝΟ αν έχει δοθεί marketing consent.
-    // Χωρίς consent, το φορτώνει το layout σε revoked κατάσταση και
-    // ενεργοποιείται (με PageView) όταν ο χρήστης πατήσει «Αποδοχή».
-    if (getConsent()?.marketing !== true) return;
+    // Μέχρι 30/11/2026 το pixel τρέχει για όλους (απόφαση ιδιοκτήτη).
+    // Από 1/12 γυρνάει αυτόματα σε λειτουργία μόνο με marketing consent.
+    // Όποιος πάτησε ρητά «Απόρριψη» ΔΕΝ παρακολουθείται.
+    const consent = getConsent();
+    const consentOnly = Date.now() >= Date.UTC(2026, 11, 1) - 2 * 3600 * 1000;
+    if (consent && consent.marketing !== true) return;
+    if (consentOnly && consent?.marketing !== true) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fbq: any = function (...args: unknown[]) {
       fbq.queue.push(args);

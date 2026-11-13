@@ -202,6 +202,9 @@ export default function RootLayout({
               if (!window.__wsFbInit) { fbq('init', '${META_PIXEL_ID}'); window.__wsFbInit = true; }
               var __wsMk = false;
               try { var __c = JSON.parse(localStorage.getItem('ws_consent') || 'null'); __wsMk = !!(__c && __c.marketing === true && __c.version === '1.0'); } catch (e) {}
+              // Μέχρι 30/11/2026 το pixel τρέχει για όλους. Από 1/12 μόνο με consent.
+              // Όποιος πάτησε ρητά «Απόρριψη» ΔΕΝ παρακολουθείται.
+              if (!__c && Date.now() < Date.UTC(2026, 11, 1) - 2 * 3600 * 1000) { __wsMk = true; }
               if (__wsMk) {
                 fbq('consent', 'grant');
                 if (!window.__wsFbPv) { fbq('track', 'PageView'); window.__wsFbPv = true; }
