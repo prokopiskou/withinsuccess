@@ -580,9 +580,22 @@ export async function POST(req: NextRequest) {
   // άρα οι πληρωμές του δεν περνάνε ποτέ από εδώ.
   // ===================================================================
   if (event.type === 'invoice.paid') {
-    const inv = event.data.object as Stripe.Invoice
-    const invId = inv.id
-    if (!invId || (inv.amount_paid || 0) <= 0) {
+    const eventInvoice = event.data.object as Stripe.Invoice
+    const invId = eventInvoice.id
+    if (!invId) {
+      return NextResponse.json({ received: true, processed: 'invoice_skipped_no_id' })
+    }
+    // Το webhook endpoint στέλνει τα events με παλιά έκδοση API (2020-03-02), όπου το
+    // τιμολόγιο έχει άλλη μορφή. Το ξαναδιαβάζουμε από το API για να έχει τη σημερινή.
+    let inv: Stripe.Invoice
+    try {
+      inv = await stripe.invoices.retrieve(invId)
+    } catch (err) {
+      console.error('[Oxygen] Δεν διαβάστηκε το τιμολόγιο από το Stripe:', invId, err)
+      // 500 → το Stripe θα ξαναστείλει το event
+      return NextResponse.json({ error: 'invoice retrieve failed' }, { status: 500 })
+    }
+    if ((inv.amount_paid || 0) <= 0) {
       return NextResponse.json({ received: true, processed: 'invoice_skipped_zero' })
     }
     // Αν το Stripe ξαναστείλει το ίδιο event, δεν κόβουμε δεύτερη απόδειξη
@@ -593,7 +606,13 @@ export async function POST(req: NextRequest) {
     // 1ο τιμολόγιο συνδρομής που ξεκίνησε από Checkout: η απόδειξη κόπηκε ήδη εκεί
     if (inv.billing_reason === 'subscription_create') {
       const sub = inv.parent?.subscription_details?.subscription
-      const subId = typeof sub === 'string' ? sub : sub?.id
+      const legacySub = (eventInvoice as unknown as { subscription?: string | { id: string } | null }).subscription
+      const subId = (typeof sub === 'string' ? sub : sub?.id) || (typeof legacySub === 'string' ? legacySub : legacySub?.id)
+      if (!subId) {
+        // Χωρίς συνδρομή δεν μπορούμε να αποκλείσουμε διπλή απόδειξη → δεν κόβουμε, το γράφουμε στα logs
+        console.error('[Oxygen] 1ο τιμολόγιο συνδρομής χωρίς subscription id — ΔΕΝ εκδόθηκε απόδειξη:', invId)
+        return NextResponse.json({ received: true, processed: 'invoice_skipped_unknown_subscription' })
+      }
       if (subId) {
         try {
           const sessions = await stripe.checkout.sessions.list({ subscription: subId, limit: 1 })
@@ -601,7 +620,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ received: true, processed: 'invoice_covered_by_checkout' })
           }
         } catch (err) {
-          console.warn('[Oxygen] Έλεγχος checkout για συνδρομή απέτυχε:', err)
+          // Αν δεν ξέρουμε, δεν ρισκάρουμε διπλή απόδειξη: 500 → το Stripe θα ξαναδοκιμάσει
+          console.error('[Oxygen] Έλεγχος checkout για συνδρομή απέτυχε:', err)
+          return NextResponse.json({ error: 'checkout lookup failed' }, { status: 500 })
         }
       }
     }
