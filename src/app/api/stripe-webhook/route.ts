@@ -293,11 +293,11 @@ async function sendReceiptEmail(p: { to: string; number: string; pdf: Buffer | n
   }
 }
 
-async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1, paidWithPaypal = false) {
+async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1, paidWithPaypal = false): Promise<boolean> {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
   if (!OXYGEN_API_KEY) {
     console.warn('[Oxygen] OXYGEN_API_KEY λείπει — δεν εκδόθηκε παραστατικό')
-    return
+    return false
   }
   // Δεν αφήνουμε ποτέ το Oxygen να ρίξει το webhook (MailerLite/Meta έχουν ήδη γίνει)
   try {
@@ -329,7 +329,7 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     const contactId = contact?.data?.id || contact?.id
     if (!contactRes.ok || !contactId) {
       console.error(`[Oxygen] Contact failed (${contactRes.status}):`, JSON.stringify(contact).slice(0, 800))
-      return
+      return false
     }
 
     // ΑΠΥ (Απόδειξη Παροχής Υπηρεσιών) σε ιδιώτη, εξοφλημένη, με διαβίβαση στο myDATA.
@@ -374,7 +374,7 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     const invoice = await invoiceRes.json().catch(() => null)
     if (!invoiceRes.ok) {
       console.error(`[Oxygen] ΑΠΥ failed (${invoiceRes.status}):`, JSON.stringify(invoice).slice(0, 1200))
-      return
+      return false
     }
     const inv = invoice?.data || invoice
     console.log(`[Oxygen] ΑΠΥ ${inv?.number ?? ''} created (${inv?.id}) · myDATA mark: ${inv?.mydata?.mark ?? 'pending'}`)
@@ -387,8 +387,10 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
         viewUrl: inv?.iview_url || '',
       })
     }
+    return true
   } catch (err) {
     console.error('[Oxygen] Unexpected error:', err)
+    return false
   }
 }
 
@@ -568,6 +570,76 @@ export async function POST(req: NextRequest) {
       processed: 'purchase',
       product: product.name 
     })
+  }
+
+  // ===================================================================
+  // INVOICE PAID — δόσεις Within Path & ανανεώσεις συνδρομών
+  // Η 1η πληρωμή βγάζει απόδειξη από το checkout.session.completed παραπάνω.
+  // Εδώ βγαίνει απόδειξη για κάθε ΕΠΟΜΕΝΗ χρέωση που γίνεται με Stripe invoice.
+  // Το Washio δεν δημιουργεί Stripe invoices (χρεώνει με σκέτα PaymentIntents),
+  // άρα οι πληρωμές του δεν περνάνε ποτέ από εδώ.
+  // ===================================================================
+  if (event.type === 'invoice.paid') {
+    const inv = event.data.object as Stripe.Invoice
+    const invId = inv.id
+    if (!invId || (inv.amount_paid || 0) <= 0) {
+      return NextResponse.json({ received: true, processed: 'invoice_skipped_zero' })
+    }
+    // Αν το Stripe ξαναστείλει το ίδιο event, δεν κόβουμε δεύτερη απόδειξη
+    if (inv.metadata?.oxygen_receipt === 'issued') {
+      return NextResponse.json({ received: true, processed: 'invoice_already_issued' })
+    }
+
+    // 1ο τιμολόγιο συνδρομής που ξεκίνησε από Checkout: η απόδειξη κόπηκε ήδη εκεί
+    if (inv.billing_reason === 'subscription_create') {
+      const sub = inv.parent?.subscription_details?.subscription
+      const subId = typeof sub === 'string' ? sub : sub?.id
+      if (subId) {
+        try {
+          const sessions = await stripe.checkout.sessions.list({ subscription: subId, limit: 1 })
+          if (sessions.data.length > 0) {
+            return NextResponse.json({ received: true, processed: 'invoice_covered_by_checkout' })
+          }
+        } catch (err) {
+          console.warn('[Oxygen] Έλεγχος checkout για συνδρομή απέτυχε:', err)
+        }
+      }
+    }
+
+    let invoicePaypal = false
+    try {
+      const pays = await stripe.invoicePayments.list({
+        invoice: invId,
+        limit: 1,
+        expand: ['data.payment.payment_intent.latest_charge'],
+      })
+      const pi = pays.data[0]?.payment?.payment_intent
+      if (pi && typeof pi !== 'string') {
+        const charge = pi.latest_charge as Stripe.Charge | string | null
+        invoicePaypal = !!charge && typeof charge !== 'string' && charge.payment_method_details?.type === 'paypal'
+      }
+    } catch (err) {
+      console.warn('[Oxygen] Δεν βρέθηκε τρόπος πληρωμής τιμολογίου, χρησιμοποιείται κάρτα:', err)
+    }
+
+    const line = inv.lines?.data?.[0]?.description || ''
+    const issued = await createOxygenInvoice(
+      (inv.customer_name || '').trim(),
+      inv.customer_email || '',
+      inv.amount_paid,
+      line || 'WithinSuccess',
+      1,
+      invoicePaypal
+    )
+    if (issued) {
+      try {
+        await stripe.invoices.update(invId, { metadata: { ...(inv.metadata || {}), oxygen_receipt: 'issued' } })
+      } catch (err) {
+        console.warn('[Oxygen] Δεν σημειώθηκε το τιμολόγιο ως εκδομένο:', err)
+      }
+    }
+    console.log(`Invoice paid: €${inv.amount_paid / 100} (${inv.billing_reason}) → απόδειξη ${issued ? 'OK' : 'ΑΠΕΤΥΧΕ'}`)
+    return NextResponse.json({ received: true, processed: 'invoice_paid', receipt: issued })
   }
 
   // ===================================================================
