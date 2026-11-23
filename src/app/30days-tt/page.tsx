@@ -15,7 +15,8 @@ import { useViewPricing, useScrollDepth } from "@/lib/hooks/useAnalyticsHooks";
 import UTMCapture from '@/components/UTMCapture';
 import Footer from "@/components/Footer";
 import ThirtyDaysWaitlist, { useThirtyDaysClosed } from '@/components/ThirtyDaysWaitlist';
-import { isThirtyDaysClosed } from '@/lib/thirtyDays';
+import { isThirtyDaysClosed, thirtyDaysPrice, THIRTY_DAYS_PROMO, THIRTY_DAYS_PRICE } from '@/lib/thirtyDays';
+import { useThirtyDaysOffer, ThirtyDaysPromoBar, ThirtyDaysCtaLabel } from '@/components/ThirtyDaysOffer';
 
 const testimonialOrder = [5, 1, 2, 3, 4];
 
@@ -24,10 +25,11 @@ export default function ThirtyDaysTT() {
   async function handleCheckout() {
     if (isThirtyDaysClosed()) { window.location.reload(); return }
     const eventId = generateEventId('checkout')
-    trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: 15 }, eventId)
+    trackBeginCheckout({ id: '30days-program', name: '30 Μέρες', price: thirtyDaysPrice() }, eventId)
     await startCheckout('30days', stripeLink, eventId)
   }
   const closed = useThirtyDaysClosed();
+  const offer = useThirtyDaysOffer();
   const [current, setCurrent] = useState(0);
   const prev = () => setCurrent((c) => (c - 1 + testimonialOrder.length) % testimonialOrder.length);
   const next = () => setCurrent((c) => (c + 1) % testimonialOrder.length);
@@ -37,11 +39,12 @@ export default function ThirtyDaysTT() {
 
   useEffect(() => {
     trackEvent("ViewContent", { content_name: "30days" });
-    trackViewContentTikTok({ id: '30days-program', name: '30 Μέρες', price: 15 });
+    trackViewContentTikTok({ id: '30days-program', name: '30 Μέρες', price: thirtyDaysPrice() });
   }, []);
 
   return (
     <main className="min-h-screen bg-white font-sans">
+      <ThirtyDaysPromoBar />
       <UTMCapture />
       <script
         type="application/ld+json"
@@ -59,7 +62,7 @@ export default function ThirtyDaysTT() {
             },
             offers: {
               "@type": "Offer",
-              price: "15",
+              price: String(thirtyDaysPrice()),
               priceCurrency: "EUR",
               availability: "https://schema.org/InStock",
             },
@@ -85,7 +88,7 @@ export default function ThirtyDaysTT() {
           <ThirtyDaysWaitlist source="30days_hero" />
         ) : (<>
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
-          Ξεκίνα τώρα 15€ →
+          <ThirtyDaysCtaLabel />
         </button>
         <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση · Ψηφιακό πρόγραμμα μέσω email · Εφάπαξ πληρωμή, χωρίς συνδρομή</p>
         </>)}
@@ -211,9 +214,9 @@ export default function ThirtyDaysTT() {
           </h2>
           <p className="text-gray-400 mb-8">30 emails. 30 ασκήσεις. Μία νέα εσωτερική ιστορία.</p>
           <button type="button" onClick={handleCheckout} className="inline-block bg-white text-black px-10 py-4 rounded-full text-base font-medium hover:bg-gray-100 transition-colors cursor-pointer border-0">
-            Ξεκίνα τώρα 15€ →
+            <ThirtyDaysCtaLabel />
           </button>
-          <p className="text-sm text-gray-300 mt-6 leading-relaxed">15€. Όχι για το περιεχόμενο.<br />Για να πεις «το εννοώ αυτή τη φορά.»</p>
+          <p className="text-sm text-gray-300 mt-6 leading-relaxed">{offer.price}€{offer.promo ? ` μέχρι ${THIRTY_DAYS_PROMO.endsLabel}` : ''}. Όχι για το περιεχόμενο.<br />Για να πεις «το εννοώ αυτή τη φορά.»</p>
           </>)}
         </div>
       </section>
@@ -222,7 +225,7 @@ export default function ThirtyDaysTT() {
       <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto flex flex-col gap-4 text-sm text-gray-500 leading-relaxed">
           <p>
-            <span className="font-semibold text-gray-700">Τι αγοράζεις:</span> ψηφιακό εκπαιδευτικό πρόγραμμα 30 ημερών μέσω email (30 emails, 30 ασκήσεις), με άμεση πρόσβαση. Τιμή 15€, εφάπαξ πληρωμή μέσω Stripe. Χωρίς συνδρομή.
+            <span className="font-semibold text-gray-700">Τι αγοράζεις:</span> ψηφιακό εκπαιδευτικό πρόγραμμα 30 ημερών μέσω email (30 emails, 30 ασκήσεις), με άμεση πρόσβαση. Τιμή {offer.price}€{offer.promo ? ` (προσφορά ${THIRTY_DAYS_PROMO.label} έως ${THIRTY_DAYS_PROMO.endsLabel}· προηγούμενη τιμή ${THIRTY_DAYS_PRICE}€)` : ''}, εφάπαξ πληρωμή μέσω Stripe. Χωρίς συνδρομή.
           </p>
           <p>
             <span className="font-semibold text-gray-700">Επιστροφή χρημάτων:</span> ακύρωση εντός 48 ωρών από την αγορά με πλήρη επιστροφή, κατόπιν αιτήματος στο{' '}

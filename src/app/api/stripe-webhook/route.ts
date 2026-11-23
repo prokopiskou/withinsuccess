@@ -488,7 +488,7 @@ export async function POST(req: NextRequest) {
       clientUserAgent: meta.client_user_agent || null,
       eventSourceUrl: isSeminarConfig(product)
         ? 'https://withinsuccess.gr/anoixti-syzitisi'
-        : amount === 15
+        : product.name === '30 Μέρες'
           ? 'https://withinsuccess.gr/30days'
           : 'https://withinsuccess.gr/63days'
     })

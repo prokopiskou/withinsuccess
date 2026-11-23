@@ -134,8 +134,8 @@ export async function GET(req: NextRequest) {
 
     // Product breakdown — match by gross amount (89€ = 63days, 15€ = 30days)
     const product63 = charges.filter((c) => c.grossAmount === 89)
-    const product30 = charges.filter((c) => c.grossAmount === 15)
-    const other = charges.filter((c) => c.grossAmount !== 89 && c.grossAmount !== 15)
+    const product30 = charges.filter((c) => c.grossAmount === 15 || c.grossAmount === 9)
+    const other = charges.filter((c) => c.grossAmount !== 89 && c.grossAmount !== 15 && c.grossAmount !== 9)
 
     // Recent purchases (last 20, newest first)
     const recent = charges
@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
         product:
           c.grossAmount === 89
             ? '63days'
-            : c.grossAmount === 15
+            : c.grossAmount === 15 || c.grossAmount === 9
               ? '30days'
               : 'other',
       }))

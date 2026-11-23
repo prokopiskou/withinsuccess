@@ -3,7 +3,9 @@ import crypto from 'crypto'
 import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
-import { isThirtyDaysClosed } from '@/lib/thirtyDays'
+import { isThirtyDaysClosed, isThirtyDaysPromo, thirtyDaysPrice, THIRTY_DAYS_PROMO } from '@/lib/thirtyDays'
+
+const THIRTY_DAYS_PRODUCT_ID = 'prod_Rxeqpm5IWwBxef'
 import { SEMINAR, SEMINAR_TICKETS, isSeminarTicket, isSeminarSalesClosed } from '@/lib/seminar'
 import { getLiveSeatsLeft } from '@/lib/seminarSeats'
 
@@ -305,7 +307,13 @@ export async function POST(req: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         payment_method_types: ['card'],
-        line_items: [{ price: priceId, quantity: 1 }],
+        // Black Friday: ίδιο Stripe Product (για αναγνώριση στο webhook), άλλη τιμή.
+        // Η απόφαση για την τιμή παίρνεται ΜΟΝΟ εδώ, στον server.
+        line_items: [
+          product === '30days' && isThirtyDaysPromo()
+            ? { price_data: { currency: 'eur', product: THIRTY_DAYS_PRODUCT_ID, unit_amount: THIRTY_DAYS_PROMO.price * 100 }, quantity: 1 }
+            : { price: priceId, quantity: 1 },
+        ],
         metadata: {
           ...webSessionMetadata(product, utm),
           fbp: clipMeta(fbp || ''),
@@ -330,7 +338,7 @@ export async function POST(req: NextRequest) {
         const isThirty = product === '30days'
         await sendMetaInitiateCheckout({
           email: null, // το email δίνεται στο Stripe, δεν το έχουμε ακόμα εδώ
-          amount: isThirty ? 15 : getCurrentAmount(),
+          amount: isThirty ? thirtyDaysPrice() : getCurrentAmount(),
           eventId: event_id,
           productName: isThirty ? '30 Μέρες' : '63 Μέρες Ζωής',
           fbp,
@@ -346,7 +354,7 @@ export async function POST(req: NextRequest) {
         await sendTikTokEvent({
           event: 'InitiateCheckout',
           eventId: event_id,
-          value: isThirty ? 15 : getCurrentAmount(),
+          value: isThirty ? thirtyDaysPrice() : getCurrentAmount(),
           contentId: isThirty ? '30days-program' : '63days-program',
           contentName: isThirty ? '30 Μέρες' : '63 Μέρες Ζωής',
           pageUrl: isThirty ? 'https://withinsuccess.gr/30days' : 'https://withinsuccess.gr/63days',

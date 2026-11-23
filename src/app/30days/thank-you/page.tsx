@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { trackPurchase } from '@/lib/analytics'
+import { thirtyDaysPrice } from '@/lib/thirtyDays'
 
 export default function ThankYouPage() {
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function ThankYouPage() {
     trackPurchase({
       id: '30days-program',
       name: '30 Μέρες',
-      price: 15
+      price: thirtyDaysPrice()
     }, sessionId || undefined)
   }, [])
 
