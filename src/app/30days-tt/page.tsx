@@ -90,7 +90,7 @@ export default function ThirtyDaysTT() {
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
           <ThirtyDaysCtaLabel />
         </button>
-        <p className="text-xs text-gray-400 mt-4">Άμεση πρόσβαση · Ψηφιακό πρόγραμμα μέσω email · Εφάπαξ πληρωμή, χωρίς συνδρομή</p>
+        <p className="text-xs text-gray-400 mt-4">{offer.promo ? THIRTY_DAYS_PROMO.cohortLabel : 'Άμεση πρόσβαση'} · Ψηφιακό πρόγραμμα μέσω email · Εφάπαξ πληρωμή, χωρίς συνδρομή</p>
         </>)}
       </section>
 
@@ -225,7 +225,7 @@ export default function ThirtyDaysTT() {
       <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-2xl mx-auto flex flex-col gap-4 text-sm text-gray-500 leading-relaxed">
           <p>
-            <span className="font-semibold text-gray-700">Τι αγοράζεις:</span> ψηφιακό εκπαιδευτικό πρόγραμμα 30 ημερών μέσω email (30 emails, 30 ασκήσεις), με άμεση πρόσβαση. Τιμή {offer.price}€{offer.promo ? ` (προσφορά ${THIRTY_DAYS_PROMO.label} έως ${THIRTY_DAYS_PROMO.endsLabel}· προηγούμενη τιμή ${THIRTY_DAYS_PRICE}€)` : ''}, εφάπαξ πληρωμή μέσω Stripe. Χωρίς συνδρομή.
+            <span className="font-semibold text-gray-700">Τι αγοράζεις:</span> ψηφιακό εκπαιδευτικό πρόγραμμα 30 ημερών μέσω email (30 emails, 30 ασκήσεις), {offer.promo ? 'με κοινή έναρξη την Τρίτη 1/12 (πρώτο email το πρωί της 1/12)' : 'με άμεση πρόσβαση'}. Τιμή {offer.price}€{offer.promo ? ` (προσφορά ${THIRTY_DAYS_PROMO.label} έως ${THIRTY_DAYS_PROMO.endsLabel}· προηγούμενη τιμή ${THIRTY_DAYS_PRICE}€)` : ''}, εφάπαξ πληρωμή μέσω Stripe. Χωρίς συνδρομή.
           </p>
           <p>
             <span className="font-semibold text-gray-700">Επιστροφή χρημάτων:</span> ακύρωση εντός 48 ωρών από την αγορά με πλήρη επιστροφή, κατόπιν αιτήματος στο{' '}

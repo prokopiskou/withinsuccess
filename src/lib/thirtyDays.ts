@@ -22,6 +22,8 @@ export const THIRTY_DAYS_PROMO = {
   startsAt: Date.parse('2026-11-23T18:00:00+02:00'),
   endsAt: Date.parse('2026-11-30T23:59:59+02:00'),
   endsLabel: 'Δευτέρα 30/11, 23:59',
+  // Όσοι αγοράζουν στην προσφορά ξεκινάνε ΟΛΟΙ ΜΑΖΙ
+  cohortLabel: 'Ξεκινάμε όλοι μαζί Τρίτη 1/12',
 } as const
 
 export function isThirtyDaysPromo(now: number = Date.now()): boolean {

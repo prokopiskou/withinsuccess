@@ -2,9 +2,12 @@
 
 import { useEffect } from 'react'
 import { trackPurchase } from '@/lib/analytics'
-import { thirtyDaysPrice } from '@/lib/thirtyDays'
+import { thirtyDaysPrice, isThirtyDaysPromo } from '@/lib/thirtyDays'
+import { useState } from 'react'
 
 export default function ThankYouPage() {
+  // Αγορά μέσα στην προσφορά → κοινή έναρξη 1/12
+  const [cohort] = useState(() => isThirtyDaysPromo())
   useEffect(() => {
     // Read session_id from URL directly (avoids useSearchParams Suspense requirement)
     const params = new URLSearchParams(window.location.search)
@@ -25,7 +28,9 @@ export default function ThankYouPage() {
           Καλωσήρθες στο πρόγραμμα.
         </h1>
         <p className="text-gray-500 text-lg mb-4">
-          Σε λίγα λεπτά θα λάβεις email με όλες τις οδηγίες για να ξεκινήσεις το 30-Day Program.
+          {cohort
+            ? 'Η θέση σου κλείστηκε. Ξεκινάμε όλοι μαζί την Τρίτη 1/12: το πρώτο email έρχεται εκείνο το πρωί.'
+            : 'Σε λίγα λεπτά θα λάβεις email με όλες τις οδηγίες για να ξεκινήσεις το 30-Day Program.'}
         </p>
         <p className="text-gray-400 text-sm mb-12">
           Αν δεν το βρεις στα εισερχόμενα, έλεγξε τα spam.

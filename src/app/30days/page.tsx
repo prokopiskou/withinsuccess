@@ -83,7 +83,7 @@ export default function ThirtyDays() {
         <button type="button" onClick={handleCheckout} className="inline-block bg-black text-white px-10 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors cursor-pointer border-0">
           <ThirtyDaysCtaLabel />
         </button>
-        <p className="text-sm text-gray-500 mt-4">Άμεση πρόσβαση</p>
+        <p className="text-sm text-gray-500 mt-4">{offer.promo ? THIRTY_DAYS_PROMO.cohortLabel : 'Άμεση πρόσβαση'}</p>
         </>)}
       </section>
 
