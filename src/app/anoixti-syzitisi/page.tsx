@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import MetaPixel, { trackEvent } from '@/components/MetaPixel'
 import { trackBeginCheckout, generateEventId, trackViewContentTikTok, trackEvent as trackGaEvent } from '@/lib/analytics'
 import { getConsent } from '@/lib/consent'
@@ -95,6 +96,32 @@ export default function OpenConversationPage() {
 
   const scrollToTickets = () =>
     document.getElementById('tickets')?.scrollIntoView({ behavior: 'smooth' })
+
+  // Μετά την έναρξη (15/11, 11:00) η σελίδα κλείνει ολόκληρη.
+  // Η σελίδα thank-you των αγοραστών δεν επηρεάζεται.
+  if (avail.closed) {
+    return (
+      <main className="min-h-screen bg-white font-sans flex flex-col">
+        <section className="flex-1 flex items-center justify-center px-6 py-24">
+          <div className="max-w-xl text-center">
+            <p className="text-xs tracking-widest uppercase mb-6" style={{ color: GOLD }}>
+              {SEMINAR.title}
+            </p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-black mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              Δυστυχώς, η εκδήλωση δεν είναι πλέον διαθέσιμη.
+            </h1>
+            <Link
+              href="/"
+              className="inline-block bg-black text-white px-8 py-4 rounded-full text-base font-medium hover:bg-gray-800 transition-colors"
+            >
+              Πίσω στην αρχική
+            </Link>
+          </div>
+        </section>
+        <Footer />
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-white font-sans">

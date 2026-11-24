@@ -9,9 +9,10 @@ type Props = {
   symbol?: string
   destination: string
   featured?: boolean
+  badge?: string
 }
 
-export default function LinkButton({ href, title, subtitle, symbol = '✦', destination, featured = false }: Props) {
+export default function LinkButton({ href, title, subtitle, symbol = '✦', destination, featured = false, badge }: Props) {
   const isExternal = href.startsWith('http://') || href.startsWith('https://')
 
   function handleClick() {
@@ -32,7 +33,7 @@ export default function LinkButton({ href, title, subtitle, symbol = '✦', dest
       onClick={handleClick}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className="group block w-full rounded-xl px-5 py-4 transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
+      className="group relative block w-full rounded-xl px-5 py-4 transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
       style={{
         backgroundColor: bg,
         border: `${borderWidth} solid ${borderColor}`,
@@ -47,6 +48,14 @@ export default function LinkButton({ href, title, subtitle, symbol = '✦', dest
         e.currentTarget.style.borderColor = borderColor
       }}
     >
+      {badge && (
+        <span
+          className="absolute -top-2.5 right-4 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
+          style={{ backgroundColor: '#1A1A1A', color: '#C9A96E' }}
+        >
+          {badge}
+        </span>
+      )}
       <div className="flex items-center gap-4">
         <div 
           className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300"

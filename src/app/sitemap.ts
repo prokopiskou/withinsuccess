@@ -1,6 +1,22 @@
 import { MetadataRoute } from 'next'
 import { articles } from './insights/articles'
 
+// Parse Greek article dates ("2 Νοεμβρίου 2026") into a real Date so the
+// sitemap reports accurate per-article freshness instead of "now" for all.
+const GREEK_MONTHS: Record<string, number> = {
+  'Ιανουαρίου': 0, 'Φεβρουαρίου': 1, 'Μαρτίου': 2, 'Απριλίου': 3,
+  'Μαΐου': 4, 'Ιουνίου': 5, 'Ιουλίου': 6, 'Αυγούστου': 7,
+  'Σεπτεμβρίου': 8, 'Οκτωβρίου': 9, 'Νοεμβρίου': 10, 'Δεκεμβρίου': 11,
+}
+
+function parseGreekDate(input: string): Date {
+  const m = input?.match(/(\d{1,2})\s+([^\s]+)\s+(\d{4})/)
+  if (m && m[2] in GREEK_MONTHS) {
+    return new Date(Number(m[3]), GREEK_MONTHS[m[2]], Number(m[1]))
+  }
+  return new Date()
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
@@ -77,7 +93,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...articles.map((article) => ({
       url: `https://withinsuccess.gr/insights/${article.slug}`,
-      lastModified: new Date(),
+      lastModified: parseGreekDate(article.date as string),
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     })),
