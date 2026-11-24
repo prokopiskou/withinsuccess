@@ -6,6 +6,7 @@ import SiteNav from "@/components/SiteNav";
 import { LazyVideo } from "@/components/LazyVideo";
 import MetaPixel from "@/components/MetaPixel";
 import UTMCapture from '@/components/UTMCapture';
+import { ThirtyDaysHomeBanner } from '@/components/ThirtyDaysOffer';
 
 const SEMINAR1 = "https://videos.withinsuccess.gr/seminar1_compressed.mp4";
 const SEMINAR2 = "https://videos.withinsuccess.gr/seminar2_compressed.mp4";
@@ -100,7 +101,7 @@ export default function Home() {
         }) }}
       />
 
-      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" />
+      <SiteNav ctaHref="/assessment" ctaLabel="Ξεκίνα εδώ →" banner={<ThirtyDaysHomeBanner />} />
 
       {/* HERO */}
       <section className="pt-32 pb-16 px-6 max-w-6xl mx-auto">

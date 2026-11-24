@@ -6,13 +6,15 @@ type Props = {
   ctaHref: string;
   ctaLabel: string;
   active?: string;
+  banner?: React.ReactNode;
 };
 
-export default function SiteNav({ ctaHref, ctaLabel, active }: Props) {
+export default function SiteNav({ ctaHref, ctaLabel, active, banner }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+      {banner}
       <div className="max-w-6xl mx-auto pl-3 pr-6 py-3">
 
         {/* MOBILE */}

@@ -48,6 +48,27 @@ export function ThirtyDaysPromoBar() {
   )
 }
 
+/** Banner για την αρχική: όλο κλικ προς /30days, μόνο όσο τρέχει η προσφορά */
+export function ThirtyDaysHomeBanner() {
+  const { promo } = useThirtyDaysOffer()
+  if (!promo) return null
+  return (
+    <a
+      href="/30days"
+      className="block bg-black text-white text-center text-xs md:text-sm px-4 py-2.5 tracking-wide hover:bg-neutral-900 transition-colors"
+    >
+      <span className="font-semibold" style={{ color: '#C9A96E' }}>BLACK FRIDAY −40%</span>
+      <span className="mx-2 text-gray-500">·</span>
+      <span>30 Μέρες Μεταμόρφωσης</span>
+      <span className="hidden sm:inline">
+        <span className="mx-2 text-gray-500">·</span>
+        <span className="text-gray-300">Έναρξη 1/12</span>
+      </span>
+      <span className="ml-2 underline underline-offset-4">Δες το →</span>
+    </a>
+  )
+}
+
 /** Κείμενο κουμπιού: «Ξεκίνα τώρα ~~15€~~ 9€ →» στην προσφορά */
 export function ThirtyDaysCtaLabel() {
   const { promo, price, regular } = useThirtyDaysOffer()
