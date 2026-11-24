@@ -3,6 +3,10 @@
     {
       "path": "/api/manychat/cron",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/ig/cron",
+      "schedule": "0 5 * * 1"
     }
   ]
 }

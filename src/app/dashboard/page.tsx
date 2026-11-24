@@ -291,6 +291,12 @@ export default function DashboardPage() {
             >
               Leads →
             </Link>
+            <Link
+              href="/dashboard/dm"
+              className="text-xs text-gray-600 hover:text-black transition-colors px-3 py-1 border border-gray-200 rounded-full hover:border-black"
+            >
+              DM →
+            </Link>
             <button
               onClick={async () => {
                 await fetch('/api/dashboard/auth/logout', { method: 'POST' })

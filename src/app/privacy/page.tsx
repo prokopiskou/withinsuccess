@@ -15,6 +15,8 @@ export default function Privacy() {
             <p>Συλλέγουμε ονοματεπώνυμο, email, τηλέφωνο και πόλη μέσω φορμών εγγραφής, Facebook Lead Ads και ManyChat (Messenger/Instagram bot).</p>
             <h2 className="text-xl font-semibold text-black mt-4">2. Πού αποθηκεύονται</h2>
             <p>Τα δεδομένα αποθηκεύονται σε MailerLite, Meta Platforms και ManyChat, όλες GDPR-compliant πλατφόρμες. Χρησιμοποιούνται αποκλειστικά για επικοινωνία και ενημέρωση.</p>
+            <h2 className="text-xl font-semibold text-black mt-4">Μηνύματα Instagram</h2>
+            <p>Όταν σχολιάζετε λέξη-κλειδί σε δημοσίευσή μας ή μας στέλνετε μήνυμα στο Instagram, η εφαρμογή μας λαμβάνει από τη Meta το όνομα χρήστη σας, ένα αναγνωριστικό Instagram, το κείμενο του σχολίου ή του μηνύματος, το αν μας ακολουθείτε και το αν πατήσατε τον σύνδεσμο που σας στείλαμε. Τα χρησιμοποιούμε μόνο για να σας στείλουμε αυτό που ζητήσατε και για στατιστικά. Δεν τα πωλούμε ούτε τα μοιραζόμαστε. Διατηρούνται έως 12 μήνες. Για διαγραφή: <a href="/data-deletion" className="underline">withinsuccess.gr/data-deletion</a>.</p>
             <h2 className="text-xl font-semibold text-black mt-4">3. Νομική βάση</h2>
             <p>Η επεξεργασία βασίζεται στη ρητή συγκατάθεσή σας. Μπορείτε να την ανακαλέσετε ανά πάσα στιγμή μέσω "unsubscribe" ή με email.</p>
             <h2 className="text-xl font-semibold text-black mt-4">4. Cookies</h2>
