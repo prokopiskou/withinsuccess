@@ -2,14 +2,19 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 import { supabaseAdmin } from '@/lib/manychat-utils'
 
 /**
- * Within DM — Instagram API with Instagram Login (graph.instagram.com).
- * Env (μόνο στο Vercel, ποτέ στον κώδικα): IG_ACCESS_TOKEN, IG_APP_SECRET, IG_VERIFY_TOKEN, προαιρετικά IG_USER_ID.
- * Το token ανανεώνεται κάθε εβδομάδα από το /api/ig/cron και αποθηκεύεται στο ig_settings.
+ * Within DM — Instagram API with Unified Login (graph.facebook.com).
+ * Τα νέα Meta apps δεν έχουν πια «Instagram Login»: παίρνουν System-user token που δεν λήγει.
+ * Env (μόνο στο Vercel, ποτέ στον κώδικα): IG_ACCESS_TOKEN, IG_APP_SECRET, IG_VERIFY_TOKEN, IG_USER_ID.
+ * Αν το token είναι παλιού τύπου (Instagram Login, ξεκινά με «IG»), γυρνάμε αυτόματα στο graph.instagram.com.
  *
  * Dry-run: όσο δεν υπάρχει token ή είναι ανοιχτό το «Dry-run» στο dashboard, δεν φεύγει τίποτα.
  */
 const API_VERSION = process.env.IG_API_VERSION || 'v24.0'
-const BASE = `https://graph.instagram.com/${API_VERSION}`
+const hostFor = (token: string) => (token.startsWith('IG') ? 'https://graph.instagram.com' : 'https://graph.facebook.com')
+async function base() {
+  const t = await tokenOrNull()
+  return `${t ? hostFor(t) : 'https://graph.facebook.com'}/${API_VERSION}`
+}
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://withinsuccess.gr'
 
@@ -75,24 +80,43 @@ export async function getIgUserId(): Promise<string> {
   if (cachedUserId) return cachedUserId
   const stored = await getSetting('ig_user_id')
   if (stored) return (cachedUserId = stored)
-  const me = await getAccount()
+  const token = await getToken()
+  if (!token.startsWith('IG')) throw new Error('Λείπει το IG_USER_ID (ID του Instagram λογαριασμού)')
+  const res = await fetch(`${await base()}/me?fields=user_id,username`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' })
+  if (!res.ok) throw new Error(`IG /me ${res.status}: ${await res.text()}`)
+  const me = await res.json()
   await setSetting('ig_user_id', me.user_id)
   return (cachedUserId = me.user_id)
 }
 
 export async function getAccount(): Promise<{ user_id: string; username: string }> {
   const token = await getToken()
-  const res = await fetch(`${BASE}/me?fields=user_id,username`, {
+  const id = await getIgUserId()
+  const res = await fetch(`${await base()}/${id}?fields=id,username`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store',
   })
-  if (!res.ok) throw new Error(`IG /me ${res.status}: ${await res.text()}`)
-  return res.json()
+  if (!res.ok) throw new Error(`IG account ${res.status}: ${await res.text()}`)
+  const j = await res.json()
+  return { user_id: j.id || id, username: j.username }
+}
+
+/** Γράφει τον λογαριασμό στα webhooks (comments, messages, postbacks). Μία φορά μετά το token. */
+export async function subscribeWebhooks(): Promise<{ ok: boolean; text: string }> {
+  const token = await getToken()
+  const id = await getIgUserId()
+  const fields = 'comments,messages,messaging_postbacks'
+  const res = await fetch(`${await base()}/${id}/subscribed_apps?subscribed_fields=${fields}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return { ok: res.ok, text: (await res.text()).slice(0, 300) }
 }
 
 export async function refreshToken(): Promise<{ ok: boolean; expiresInDays?: number; error?: string }> {
   const token = await tokenOrNull()
   if (!token) return { ok: true, error: 'no token yet' }
+  if (!token.startsWith('IG')) return { ok: true, error: 'system-user token: δεν λήγει' }
   const url = `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(token)}`
   const res = await fetch(url, { cache: 'no-store' })
   const json = await res.json().catch(() => ({}))
@@ -127,7 +151,7 @@ async function igPost(path: string, body: unknown, describe: Outgoing): Promise<
     return { ok: true, status: 200, text: 'dry-run' }
   }
   const token = await getToken()
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(`${await base()}${path}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -191,7 +215,7 @@ export async function followsMe(igsid: string): Promise<boolean | null> {
   if (await isDryRun()) return true
   try {
     const token = await getToken()
-    const res = await fetch(`${BASE}/${igsid}?fields=is_user_follow_business`, {
+    const res = await fetch(`${await base()}/${igsid}?fields=is_user_follow_business`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     })
@@ -220,7 +244,7 @@ export type IgMedia = {
 export async function listMedia(limit = 24): Promise<IgMedia[]> {
   const token = await getToken()
   const fields = 'id,caption,media_type,media_product_type,thumbnail_url,media_url,permalink,timestamp'
-  const res = await fetch(`${BASE}/me/media?fields=${fields}&limit=${limit}`, {
+  const res = await fetch(`${await base()}/${await getIgUserId()}/media?fields=${fields}&limit=${limit}`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store',
   })

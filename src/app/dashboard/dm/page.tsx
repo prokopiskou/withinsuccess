@@ -104,6 +104,8 @@ export default function DmPage() {
   const [mediaError, setMediaError] = useState<string | null>(null)
   const [mediaOpen, setMediaOpen] = useState(false)
   const [sim, setSim] = useState<{ name: string; messages: Outgoing[] | null } | null>(null)
+  const [igId, setIgId] = useState('')
+  const [connectMsg, setConnectMsg] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const res = await fetch('/api/dashboard/dm', { cache: 'no-store' })
@@ -196,6 +198,28 @@ export default function DmPage() {
     load()
   }
 
+  async function saveIgId() {
+    const res = await fetch('/api/dashboard/dm/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ig_user_id: igId }),
+    })
+    const json = await res.json()
+    setConnectMsg(res.ok ? 'Αποθηκεύτηκε.' : json.error || 'Σφάλμα')
+    load()
+  }
+
+  async function subscribe() {
+    setConnectMsg('Σύνδεση…')
+    const res = await fetch('/api/dashboard/dm/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'subscribe' }),
+    })
+    const json = await res.json()
+    setConnectMsg(res.ok ? 'Τα webhooks συνδέθηκαν.' : `Αποτυχία: ${json.text || ''}`)
+  }
+
   const funnelFor = (id: string) => data?.funnel.find(s => s.automation_id === id)
   const nameFor = (id: string) => data?.automations.find(a => a.id === id)?.name || ''
   const set = <K extends keyof Form>(k: K, v: Form[K]) => form && setForm({ ...form, [k]: v })
@@ -236,6 +260,20 @@ export default function DmPage() {
         </div>
 
         {error && <div className="mb-6 p-4 rounded-xl bg-red-50 text-red-700 text-sm">{error}</div>}
+
+        {/* Σύνδεση: ID λογαριασμού + webhooks */}
+        {data && data.tokenSet && !form && (
+          <details className="mb-6 bg-white rounded-2xl border border-gray-200 px-5 py-3 text-sm" open={!data.account.ok}>
+            <summary className="cursor-pointer text-gray-600">Σύνδεση Instagram</summary>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <input className={`${inp} max-w-xs`} placeholder="Instagram account ID (αριθμός)" value={igId} onChange={e => setIgId(e.target.value)} />
+              <button onClick={saveIgId} className="text-xs border border-gray-300 rounded-full px-3 py-1.5 hover:border-black">Αποθήκευση ID</button>
+              <button onClick={subscribe} className="text-xs bg-black text-white rounded-full px-3 py-1.5">Σύνδεση webhooks</button>
+              {connectMsg && <span className="text-xs text-gray-500">{connectMsg}</span>}
+            </div>
+            {!data.account.ok && <p className="mt-2 text-xs text-red-600">{data.account.error}</p>}
+          </details>
+        )}
 
         {/* Form */}
         {form && (

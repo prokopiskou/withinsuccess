@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { processFollowups } from '@/lib/igFlow'
 
 export const dynamic = 'force-dynamic'
 
-/** Κάθε λεπτό (από Supabase pg_cron): στέλνει τα follow-up που έχουν έρθει η ώρα τους */
-export async function GET(req: NextRequest) {
-  if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+/**
+ * Κάθε λεπτό (από Supabase pg_cron): στέλνει τα follow-up που έχουν έρθει η ώρα τους.
+ * Χωρίς κλειδί: είναι ασφαλές να κληθεί από οποιονδήποτε, γιατί στέλνει μόνο ό,τι είναι ήδη
+ * προγραμματισμένο και κάθε follow-up «κλειδώνεται» ώστε να φύγει μία φορά.
+ */
+export async function GET() {
   const r = await processFollowups()
   return NextResponse.json(r)
 }
