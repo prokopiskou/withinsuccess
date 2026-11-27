@@ -33,7 +33,15 @@ export function mydataConfig() {
     creditSeries: process.env.MYDATA_CREDIT_SERIES || 'WEBC',
     vatExemption: process.env.MYDATA_VAT_EXEMPTION || '7',
     configured: !!(process.env.MYDATA_USER && process.env.MYDATA_KEY),
+    // Πραγματική έκδοση από το ταμείο του dashboard μόνο αν ανοίξει ρητά (μετά την έγκριση του λογιστή)
+    live: process.env.MYDATA_LIVE === '1',
   }
+}
+
+/** Επιτρέπεται έκδοση από το dashboard; Σε dev πάντα, σε παραγωγή μόνο με MYDATA_LIVE=1 */
+export function canIssueFromDashboard() {
+  const c = mydataConfig()
+  return c.env === 'dev' || c.live
 }
 
 /** Τρόποι πληρωμής myDATA */
@@ -53,6 +61,11 @@ export type ReceiptInput = {
   externalRef?: string | null // π.χ. Stripe payment intent / invoice id
   issueDate?: Date
   correlatedMark?: string | null // μόνο για πιστωτικό 11.4
+  customerName?: string | null
+  product?: string | null
+  quantity?: number
+  unitPrice?: number
+  source?: 'manual' | 'stripe' | 'viva'
 }
 
 export type MyDataDoc = {
@@ -71,6 +84,11 @@ export type MyDataDoc = {
   uid: string | null
   qr_url: string | null
   correlated_mark: string | null
+  customer_name: string | null
+  product: string | null
+  quantity: number
+  unit_price: number | null
+  source: string
   status: 'pending' | 'sent' | 'failed' | 'cancelled'
   error: string | null
   created_at: string
@@ -157,7 +175,7 @@ export function parseResponse(xml: string) {
     status,
     mark: tag(xml, 'invoiceMark'),
     uid: tag(xml, 'invoiceUid'),
-    qrUrl: tag(xml, 'qrUrl'),
+    qrUrl: tag(xml, 'qrUrl') || tag(xml, 'qrCodeUrl'),
     cancellationMark: tag(xml, 'cancellationMark'),
     errors,
   }
@@ -208,6 +226,11 @@ export async function issueReceipt(input: ReceiptInput): Promise<MyDataDoc> {
       customer_email: input.customerEmail || null,
       external_ref: input.externalRef || null,
       correlated_mark: input.correlatedMark || null,
+      customer_name: input.customerName || null,
+      product: input.product || null,
+      quantity: input.quantity || 1,
+      unit_price: input.unitPrice ?? null,
+      source: input.source || 'manual',
       status: 'pending',
     })
     .select('*')
