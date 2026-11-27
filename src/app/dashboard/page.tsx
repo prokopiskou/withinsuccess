@@ -297,6 +297,12 @@ export default function DashboardPage() {
             >
               DM →
             </Link>
+            <Link
+              href="/dashboard/mydata"
+              className="text-xs text-gray-600 hover:text-black transition-colors px-3 py-1 border border-gray-200 rounded-full hover:border-black"
+            >
+              myDATA →
+            </Link>
             <button
               onClick={async () => {
                 await fetch('/api/dashboard/auth/logout', { method: 'POST' })
