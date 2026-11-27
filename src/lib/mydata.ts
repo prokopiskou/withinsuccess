@@ -116,6 +116,8 @@ export function buildInvoiceXml(p: {
   correlatedMark?: string | null
 }) {
   const amt = money(p.amount)
+  // Σημ.: το myDATA ΔΕΝ δέχεται correlatedInvoices στο 11.4 (σφάλμα 205).
+  // Η σύνδεση με την αρχική απόδειξη κρατιέται στη βάση μας (correlated_mark) και τυπώνεται στο παραστατικό.
   const cls = `<icls:classificationType>E3_561_003</icls:classificationType><icls:classificationCategory>category1_3</icls:classificationCategory><icls:amount>${amt}</icls:amount>`
   return `<?xml version="1.0" encoding="UTF-8"?>
 <InvoicesDoc xmlns="http://www.aade.gr/myDATA/invoice/v1.0" xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0" xmlns:ecls="https://www.aade.gr/myDATA/expensesClassificaton/v1.0">
@@ -130,8 +132,7 @@ export function buildInvoiceXml(p: {
       <aa>${p.aa}</aa>
       <issueDate>${day(p.issueDate)}</issueDate>
       <invoiceType>${p.type}</invoiceType>
-      <currency>EUR</currency>${p.correlatedMark ? `
-      <correlatedInvoices>${esc(p.correlatedMark)}</correlatedInvoices>` : ''}
+      <currency>EUR</currency>
     </invoiceHeader>
     <paymentMethods>
       <paymentMethodDetails>
