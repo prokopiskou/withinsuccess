@@ -6,7 +6,8 @@ import { supabaseAdmin, setManyChatField } from '@/lib/manychat-utils'
 import { getStripeClient } from '@/lib/stripeClient'
 import { sendTikTokEvent } from '@/lib/tiktokEvents'
 import { SEMINAR } from '@/lib/seminar'
-import { Resend } from 'resend'
+import { sendReceiptEmail } from '@/lib/receiptEmail'
+import { issueStripeReceipt, mydataShadow, receiptsProvider } from '@/lib/receipts'
 
 // Oxygen + PDF + email μπορεί να πάρουν μερικά δευτερόλεπτα
 export const maxDuration = 60
@@ -253,46 +254,6 @@ async function fetchOxygenPdf(baseUrl: string, key: string, invoiceId: string): 
   return null
 }
 
-// Στέλνει την απόδειξη στον πελάτη από το hello@withinsuccess.gr (Resend)
-async function sendReceiptEmail(p: { to: string; number: string; pdf: Buffer | null; viewUrl: string }) {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('[Receipt] RESEND_API_KEY λείπει — δεν στάλθηκε απόδειξη')
-    return
-  }
-  if (!p.pdf && !p.viewUrl) {
-    console.error(`[Receipt] Ούτε PDF ούτε link για ${p.to} — δεν στάλθηκε απόδειξη`)
-    return
-  }
-  const where = p.pdf
-    ? 'Στο συνημμένο θα βρεις την απόδειξή σου.'
-    : `Την απόδειξή σου τη βρίσκεις εδώ: <a href="${p.viewUrl}" style="color:#8A6D2F;">προβολή απόδειξης</a>`
-  try {
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const { error } = await resend.emails.send({
-      from: 'Προκόπης από WithinSuccess <hello@withinsuccess.gr>',
-      to: p.to,
-      replyTo: 'hello@withinsuccess.gr',
-      subject: 'Η απόδειξή σου · WithinSuccess',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #0D0D0D; font-size: 16px; line-height: 1.7;">
-          <p>Σε ευχαριστώ για την εμπιστοσύνη σου.</p>
-          <p>${where}</p>
-          ${p.number ? `<p style="color:#6B6B6B; font-size:14px;">Απόδειξη Παροχής Υπηρεσιών ${p.number}</p>` : ''}
-          <p>Για οποιαδήποτε απορία, απάντησε σε αυτό το email.</p>
-          <p>Προκόπης</p>
-        </div>
-      `,
-      ...(p.pdf
-        ? { attachments: [{ filename: `apodeiksi-withinsuccess${p.number ? '-' + p.number.replace(/\s+/g, '-') : ''}.pdf`, content: p.pdf }] }
-        : {}),
-    })
-    if (error) console.error('[Receipt] Resend error:', error)
-    else console.log(`[Receipt] Στάλθηκε στο ${p.to}${p.pdf ? ' με PDF' : ' με link'}`)
-  } catch (err) {
-    console.error('[Receipt] Unexpected error:', err)
-  }
-}
-
 async function createOxygenInvoice(customerName: string, customerEmail: string, amount: number, productName: string, quantity = 1, paidWithPaypal = false): Promise<boolean> {
   const OXYGEN_API_KEY = process.env.OXYGEN_API_KEY
   if (!OXYGEN_API_KEY) {
@@ -392,6 +353,28 @@ async function createOxygenInvoice(customerName: string, customerEmail: string, 
     console.error('[Oxygen] Unexpected error:', err)
     return false
   }
+}
+
+// ============================================================
+// ΑΠΟΔΕΙΞΗ ΑΓΟΡΑΣ — Oxygen ή απευθείας myDATA (διακόπτης RECEIPTS_PROVIDER, βλ. src/lib/receipts.ts)
+// ============================================================
+async function issuePurchaseReceipt(p: {
+  customerName: string
+  customerEmail: string
+  amountCents: number
+  product: string
+  quantity: number
+  paypal: boolean
+  externalRef: string
+}): Promise<boolean> {
+  if (receiptsProvider() === 'mydata') {
+    console.log(`[Receipts] myDATA · ${p.externalRef}`)
+    return issueStripeReceipt(p)
+  }
+  const ok = await createOxygenInvoice(p.customerName, p.customerEmail, p.amountCents, p.product, p.quantity, p.paypal)
+  // Παράλληλη δοκιμή στο dev myDATA (μόνο με MYDATA_SHADOW=1) — δεν επηρεάζει ποτέ την αγορά
+  if (mydataShadow()) await issueStripeReceipt({ ...p, shadow: true }).catch(err => console.warn('[myDATA shadow]', err))
+  return ok
 }
 
 // ============================================================
@@ -553,17 +536,18 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       console.warn('[Oxygen] Δεν βρέθηκε τρόπος πληρωμής, χρησιμοποιείται κάρτα:', err)
     }
-    await createOxygenInvoice(
-      rawFullName.trim(),
+    await issuePurchaseReceipt({
+      customerName: rawFullName.trim(),
       customerEmail,
-      session.amount_total || 0,
-      session.metadata?.product_name || product.name,
+      amountCents: session.amount_total || 0,
+      product: session.metadata?.product_name || product.name,
       // Εισιτήρια Συζήτησης: η ποσότητα βγαίνει από το ποσό (15€ το εισιτήριο)
-      isSeminarConfig(product)
+      quantity: isSeminarConfig(product)
         ? Math.max(1, Math.round((session.amount_total || 0) / (SEMINAR.priceEur * 100)))
         : 1,
-      paidWithPaypal
-    )
+      paypal: paidWithPaypal,
+      externalRef: `stripe_cs_${session.id}`,
+    })
 
     return NextResponse.json({ 
       received: true, 
@@ -644,14 +628,15 @@ export async function POST(req: NextRequest) {
     }
 
     const line = inv.lines?.data?.[0]?.description || ''
-    const issued = await createOxygenInvoice(
-      (inv.customer_name || '').trim(),
-      inv.customer_email || '',
-      inv.amount_paid,
-      line || 'WithinSuccess',
-      1,
-      invoicePaypal
-    )
+    const issued = await issuePurchaseReceipt({
+      customerName: (inv.customer_name || '').trim(),
+      customerEmail: inv.customer_email || '',
+      amountCents: inv.amount_paid,
+      product: line || 'WithinSuccess',
+      quantity: 1,
+      paypal: invoicePaypal,
+      externalRef: `stripe_in_${invId}`,
+    })
     if (issued) {
       try {
         await stripe.invoices.update(invId, { metadata: { ...(inv.metadata || {}), oxygen_receipt: 'issued' } })

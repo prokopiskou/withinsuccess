@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import QRCode from 'qrcode'
 import { supabaseAdmin } from '@/lib/manychat-utils'
+import { emailReceipt, receiptsProvider } from '@/lib/receipts'
 import { canIssueFromDashboard, cancelDoc, issueReceipt, mydataConfig, retryDoc, toVatRate } from '@/lib/mydata'
 
 export const dynamic = 'force-dynamic'
@@ -10,7 +12,8 @@ export async function GET(req: NextRequest) {
   const p = req.nextUrl.searchParams
   if (p.get('id')) {
     const { data: doc } = await supabaseAdmin.from('mydata_docs').select('*').eq('id', p.get('id')!).maybeSingle()
-    return NextResponse.json({ doc, config: { env: c.env, vat: c.vat } })
+    const qrSvg = doc?.qr_url ? await QRCode.toString(doc.qr_url, { type: 'svg', margin: 0, width: 112 }) : null
+    return NextResponse.json({ doc, qrSvg, config: { env: c.env, vat: c.vat } })
   }
   let q = supabaseAdmin.from('mydata_docs').select('*').eq('env', c.env).order('created_at', { ascending: false }).limit(1000)
   if (p.get('from')) q = q.gte('issue_date', p.get('from')!)
@@ -21,6 +24,7 @@ export async function GET(req: NextRequest) {
       env: c.env,
       configured: c.configured,
       live: c.live,
+      receiptsProvider: receiptsProvider(),
       canIssue: canIssueFromDashboard(),
       vat: c.vat,
       series: c.series,
@@ -38,6 +42,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Η έκδοση από το dashboard είναι κλειστή (παραγωγή χωρίς MYDATA_LIVE=1)' }, { status: 403 })
   }
   const body = await req.json().catch(() => ({}))
+  const c = mydataConfig()
   try {
     switch (body.action) {
       case 'issue': {
@@ -58,6 +63,8 @@ export async function POST(req: NextRequest) {
           source: 'manual',
           vatRate: toVatRate(body.vatRate),
         })
+        // Σε παραγωγή: αν έδωσες email, ο πελάτης παίρνει την απόδειξη αυτόματα
+        if (c.env === 'prod') await emailReceipt(doc)
         return NextResponse.json({ doc })
       }
       case 'credit': {
@@ -80,8 +87,12 @@ export async function POST(req: NextRequest) {
         })
         return NextResponse.json({ doc })
       }
-      case 'retry':
-        return NextResponse.json({ doc: await retryDoc(String(body.id)) })
+      case 'retry': {
+        const doc = await retryDoc(String(body.id))
+        // Αγορά από Stripe που απέτυχε και τώρα πέρασε → ο πελάτης παίρνει το email του
+        if (doc?.env === 'prod') await emailReceipt(doc)
+        return NextResponse.json({ doc })
+      }
       case 'cancel': {
         const { data: d } = await supabaseAdmin.from('mydata_docs').select('mark').eq('id', body.id).single()
         if (!d?.mark) return NextResponse.json({ error: 'Χωρίς MARK' }, { status: 400 })
