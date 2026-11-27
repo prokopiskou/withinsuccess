@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/manychat-utils'
-import { mydataConfig } from '@/lib/mydata'
+import { mydataConfig, splitVat, toVatRate } from '@/lib/mydata'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,9 +14,12 @@ export async function GET(req: NextRequest) {
   if (p.get('from')) q = q.gte('issue_date', p.get('from')!)
   if (p.get('to')) q = q.lte('issue_date', p.get('to')!)
   const { data } = await q
-  const head = ['Ημερομηνία', 'Τύπος', 'Σειρά', 'Αριθμός', 'Πελάτης', 'Email', 'Περιγραφή', 'Ποσότητα', 'Τιμή', 'Σύνολο', 'Πληρωμή', 'Κατάσταση', 'MARK', 'Σχετικό MARK']
+  const head = ['Ημερομηνία', 'Τύπος', 'Σειρά', 'Αριθμός', 'Πελάτης', 'Email', 'Περιγραφή', 'Ποσότητα', 'Τιμή', 'ΦΠΑ %', 'Καθαρό', 'ΦΠΑ', 'Σύνολο', 'Πληρωμή', 'Κατάσταση', 'MARK', 'Σχετικό MARK']
   const cell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
-  const rows = (data || []).map(d => [
+  const rows = (data || []).map(d => {
+    const sign = d.doc_type === '11.4' ? -1 : 1
+    const s = splitVat(Number(d.amount), toVatRate(d.vat_rate))
+    return [
     d.issue_date,
     d.doc_type === '11.4' ? 'Πιστωτικό 11.4' : 'ΑΠΥ 11.2',
     d.series,
@@ -26,12 +29,16 @@ export async function GET(req: NextRequest) {
     d.product || d.description,
     d.quantity,
     d.unit_price ?? d.amount,
-    (d.doc_type === '11.4' ? -1 : 1) * Number(d.amount),
+    toVatRate(d.vat_rate),
+    sign * s.net,
+    sign * s.vat,
+    sign * s.gross,
     PAY[d.payment_type] || d.payment_type,
     d.status,
     d.mark,
     d.correlated_mark,
-  ].map(cell).join(';'))
+  ].map(cell).join(';')
+  })
   const csv = '﻿' + [head.map(cell).join(';'), ...rows].join('\r\n')
   return new NextResponse(csv, {
     headers: {

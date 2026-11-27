@@ -20,6 +20,7 @@ type Doc = {
   qr_url: string | null
   correlated_mark: string | null
   status: string
+  vat_rate?: number
 }
 
 const PAY: Record<number, string> = { 7: 'Κάρτα μέσω POS / e-POS', 8: 'IRIS', 6: 'Web banking', 3: 'Μετρητά', 1: 'Κατάθεση σε λογαριασμό' }
@@ -36,6 +37,10 @@ export default function ReceiptView({ params }: { params: Promise<{ id: string }
   if (!doc) return <main className="p-10 text-sm text-gray-400">Φόρτωση…</main>
   const credit = doc.doc_type === '11.4'
   const unit = Number(doc.unit_price ?? doc.amount)
+  const rate = Number(doc.vat_rate) === 24 ? 24 : 0
+  const gross = Number(doc.amount)
+  const net = rate ? Math.round((gross / 1.24) * 100) / 100 : gross
+  const vatAmt = Math.round((gross - net) * 100) / 100
   return (
     <main className="min-h-screen bg-gray-100 print:bg-white py-10 print:py-0">
       <div className="max-w-2xl mx-auto bg-white p-10 text-sm text-[#171717] shadow print:shadow-none">
@@ -74,7 +79,7 @@ export default function ReceiptView({ params }: { params: Promise<{ id: string }
               <td className="py-2">{doc.product || doc.description}</td>
               <td>{doc.quantity}</td>
               <td>{eur(unit)}</td>
-              <td>0%</td>
+              <td>{rate}%</td>
               <td className="text-right">{eur(Number(doc.amount))}</td>
             </tr>
           </tbody>
@@ -82,14 +87,14 @@ export default function ReceiptView({ params }: { params: Promise<{ id: string }
 
         <div className="mt-4 flex justify-end">
           <div className="w-60 space-y-1">
-            <p className="flex justify-between"><span>Καθαρή αξία</span><span>{eur(Number(doc.amount))}</span></p>
-            <p className="flex justify-between"><span>ΦΠΑ</span><span>0,00 €</span></p>
+            <p className="flex justify-between"><span>Καθαρή αξία</span><span>{eur(net)}</span></p>
+            <p className="flex justify-between"><span>ΦΠΑ {rate}%</span><span>{eur(vatAmt)}</span></p>
             <p className="flex justify-between font-semibold border-t pt-1"><span>Πληρωτέο</span><span>{eur(Number(doc.amount))}</span></p>
           </div>
         </div>
 
         <p className="mt-4 text-gray-600">Τρόπος πληρωμής: {PAY[doc.payment_type] || doc.payment_type}</p>
-        <p className="text-gray-600">Απαλλαγή ΦΠΑ βάσει άρθρου 22 – Εκπαιδευτικές υπηρεσίες</p>
+        {!rate && <p className="text-gray-600">Απαλλαγή ΦΠΑ βάσει άρθρου 22 – Εκπαιδευτικές υπηρεσίες</p>}
 
         <div className="mt-6 border-t pt-3 text-xs text-gray-600 space-y-1">
           <p>MARK: <span className="font-mono">{doc.mark || '—'}</span></p>

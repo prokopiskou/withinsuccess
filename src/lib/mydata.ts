@@ -66,6 +66,18 @@ export type ReceiptInput = {
   quantity?: number
   unitPrice?: number
   source?: 'manual' | 'stripe' | 'viva'
+  vatRate?: VatRate // 0 = απαλλαγή (άρθρο 22) · 24 = κανονική με ΦΠΑ
+}
+
+export type VatRate = 0 | 24
+export const toVatRate = (v: unknown): VatRate => (Number(v) === 24 ? 24 : 0)
+
+/** Ανάλυση μικτού ποσού σε καθαρό + ΦΠΑ */
+export function splitVat(gross: number, rate: VatRate) {
+  const g = Math.round(gross * 100) / 100
+  if (!rate) return { net: g, vat: 0, gross: g }
+  const net = Math.round((g / (1 + rate / 100)) * 100) / 100
+  return { net, vat: Math.round((g - net) * 100) / 100, gross: g }
 }
 
 export type MyDataDoc = {
@@ -89,6 +101,7 @@ export type MyDataDoc = {
   quantity: number
   unit_price: number | null
   source: string
+  vat_rate: number
   status: 'pending' | 'sent' | 'failed' | 'cancelled'
   error: string | null
   created_at: string
@@ -114,11 +127,23 @@ export function buildInvoiceXml(p: {
   paymentType: number
   vatExemption: string
   correlatedMark?: string | null
+  vatRate?: VatRate
 }) {
-  const amt = money(p.amount)
+  const rate = p.vatRate || 0
+  const s = splitVat(p.amount, rate)
+  const amt = money(s.gross)
+  const net = money(s.net)
+  const vatAmt = money(s.vat)
+  // 24% → vatCategory 1 χωρίς εξαίρεση · 0% → vatCategory 7 + κατηγορία εξαίρεσης
+  const vatLine = rate === 24
+    ? `<vatCategory>1</vatCategory>
+      <vatAmount>${vatAmt}</vatAmount>`
+    : `<vatCategory>7</vatCategory>
+      <vatAmount>0.00</vatAmount>
+      <vatExemptionCategory>${esc(p.vatExemption)}</vatExemptionCategory>`
   // Σημ.: το myDATA ΔΕΝ δέχεται correlatedInvoices στο 11.4 (σφάλμα 205).
   // Η σύνδεση με την αρχική απόδειξη κρατιέται στη βάση μας (correlated_mark) και τυπώνεται στο παραστατικό.
-  const cls = `<icls:classificationType>E3_561_003</icls:classificationType><icls:classificationCategory>category1_3</icls:classificationCategory><icls:amount>${amt}</icls:amount>`
+  const cls = `<icls:classificationType>E3_561_003</icls:classificationType><icls:classificationCategory>category1_3</icls:classificationCategory><icls:amount>${net}</icls:amount>`
   return `<?xml version="1.0" encoding="UTF-8"?>
 <InvoicesDoc xmlns="http://www.aade.gr/myDATA/invoice/v1.0" xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0" xmlns:ecls="https://www.aade.gr/myDATA/expensesClassificaton/v1.0">
   <invoice>
@@ -142,15 +167,13 @@ export function buildInvoiceXml(p: {
     </paymentMethods>
     <invoiceDetails>
       <lineNumber>1</lineNumber>
-      <netValue>${amt}</netValue>
-      <vatCategory>7</vatCategory>
-      <vatAmount>0.00</vatAmount>
-      <vatExemptionCategory>${esc(p.vatExemption)}</vatExemptionCategory>
+      <netValue>${net}</netValue>
+      ${vatLine}
       <incomeClassification>${cls}</incomeClassification>
     </invoiceDetails>
     <invoiceSummary>
-      <totalNetValue>${amt}</totalNetValue>
-      <totalVatAmount>0.00</totalVatAmount>
+      <totalNetValue>${net}</totalNetValue>
+      <totalVatAmount>${vatAmt}</totalVatAmount>
       <totalWithheldAmount>0.00</totalWithheldAmount>
       <totalFeesAmount>0.00</totalFeesAmount>
       <totalStampDutyAmount>0.00</totalStampDutyAmount>
@@ -232,6 +255,7 @@ export async function issueReceipt(input: ReceiptInput): Promise<MyDataDoc> {
       quantity: input.quantity || 1,
       unit_price: input.unitPrice ?? null,
       source: input.source || 'manual',
+      vat_rate: input.vatRate || 0,
       status: 'pending',
     })
     .select('*')
@@ -248,6 +272,7 @@ export async function issueReceipt(input: ReceiptInput): Promise<MyDataDoc> {
     paymentType: input.paymentType,
     vatExemption: c.vatExemption,
     correlatedMark: input.correlatedMark,
+    vatRate: input.vatRate || 0,
   })
 
   let patch: Partial<MyDataDoc>
@@ -282,6 +307,7 @@ export async function retryDoc(id: string): Promise<MyDataDoc> {
     paymentType: doc.payment_type,
     vatExemption: c.vatExemption,
     correlatedMark: doc.correlated_mark,
+    vatRate: toVatRate(doc.vat_rate),
   })
   const r = await post('/SendInvoices', xml)
   const parsed = parseResponse(r.text)

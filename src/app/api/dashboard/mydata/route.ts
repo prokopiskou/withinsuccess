@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/manychat-utils'
-import { canIssueFromDashboard, cancelDoc, issueReceipt, mydataConfig, retryDoc } from '@/lib/mydata'
+import { canIssueFromDashboard, cancelDoc, issueReceipt, mydataConfig, retryDoc, toVatRate } from '@/lib/mydata'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
           customerEmail: body.customerEmail ? String(body.customerEmail).slice(0, 200) : null,
           externalRef: `manual_${Date.now()}`,
           source: 'manual',
+          vatRate: toVatRate(body.vatRate),
         })
         return NextResponse.json({ doc })
       }
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
           externalRef: `credit_${orig.id}`,
           correlatedMark: orig.mark,
           source: 'manual',
+          vatRate: toVatRate(orig.vat_rate),
         })
         return NextResponse.json({ doc })
       }

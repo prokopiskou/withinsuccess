@@ -20,6 +20,7 @@ type Doc = {
   customer_name: string | null
   customer_email: string | null
   source: string
+  vat_rate?: number
   mark: string | null
   qr_url: string | null
   correlated_mark: string | null
@@ -183,11 +184,15 @@ function NewReceipt({ products, canIssue, busy, onIssue }: { products: Product[]
   const [pay, setPay] = useState('7')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [vatRate, setVatRate] = useState<0 | 24>(0)
   const [last, setLast] = useState<Doc | null>(null)
-  const total = (Number(price) || 0) * (Number(qty) || 0)
+  const total = Math.round((Number(price) || 0) * (Number(qty) || 0) * 100) / 100
+  const net = vatRate ? Math.round((total / 1.24) * 100) / 100 : total
+  const vatAmt = Math.round((total - net) * 100) / 100
 
   async function submit() {
-    const j = await onIssue({ action: 'issue', product, unitPrice: price, quantity: qty, paymentType: pay, customerName: name, customerEmail: email })
+    if (vatRate === 24 && !confirm(`Κανονική απόδειξη με ΦΠΑ 24%.\nΚαθαρό ${eur(net)} + ΦΠΑ ${eur(vatAmt)} = ${eur(total)}\n\nΣυνέχεια;`)) return
+    const j = await onIssue({ action: 'issue', product, unitPrice: price, quantity: qty, paymentType: pay, customerName: name, customerEmail: email, vatRate })
     if (j.doc) setLast(j.doc)
     if (j.doc?.status === 'sent') { setName(''); setEmail('') }
   }
@@ -209,6 +214,13 @@ function NewReceipt({ products, canIssue, busy, onIssue }: { products: Product[]
           <F label="Τιμή €"><input className={inp} value={price} onChange={e => setPrice(e.target.value)} inputMode="decimal" /></F>
           <F label="Ποσότητα"><input className={inp} value={qty} onChange={e => setQty(e.target.value)} inputMode="numeric" /></F>
         </div>
+        <F label="Τύπος απόδειξης">
+          <div className="flex flex-wrap gap-2">
+            {([[0, 'Απαλλαγή ΦΠΑ · άρθρο 22'], [24, 'Κανονική · ΦΠΑ 24%']] as const).map(([k, v]) => (
+              <button key={k} onClick={() => setVatRate(k)} className={`text-xs px-3 py-1.5 rounded-full border ${vatRate === k ? 'border-black bg-black text-white' : 'border-gray-200'}`}>{v}</button>
+            ))}
+          </div>
+        </F>
         <F label="Τρόπος πληρωμής">
           <div className="flex flex-wrap gap-2">
             {Object.entries(PAY).map(([k, v]) => (
@@ -221,14 +233,17 @@ function NewReceipt({ products, canIssue, busy, onIssue }: { products: Product[]
           <F label="Email (προαιρετικό)"><input className={inp} value={email} onChange={e => setEmail(e.target.value)} /></F>
         </div>
         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <p className="text-lg font-semibold">Σύνολο {eur(total)}</p>
+          <div>
+            <p className="text-lg font-semibold">Σύνολο {eur(total)}</p>
+            {vatRate === 24 && <p className="text-xs text-gray-500">Καθαρό {eur(net)} · ΦΠΑ 24% {eur(vatAmt)}</p>}
+          </div>
           <button disabled={!canIssue || busy || !product || !(total > 0)} onClick={submit}
             className="bg-black text-white text-sm px-6 py-2.5 rounded-full disabled:opacity-40">
             {busy ? 'Έκδοση…' : 'Έκδοση & διαβίβαση'}
           </button>
         </div>
         {!canIssue && <p className="text-xs text-red-600">Η έκδοση είναι κλειστή (λείπουν κλειδιά ή παραγωγή χωρίς MYDATA_LIVE=1).</p>}
-        <p className="text-xs text-gray-400">ΦΠΑ 0% · απαλλαγή άρθρο 22 (εκπαιδευτικές υπηρεσίες)</p>
+        <p className="text-xs text-gray-400">{vatRate === 24 ? 'Η τιμή που γράφεις είναι τελική (με ΦΠΑ). Το καθαρό και ο ΦΠΑ βγαίνουν αυτόματα.' : 'ΦΠΑ 0% · απαλλαγή άρθρο 22 (εκπαιδευτικές υπηρεσίες)'}</p>
       </div>
       <div>
         <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Τελευταία έκδοση</p>
@@ -244,7 +259,7 @@ function ReceiptCard({ d }: { d: Doc }) {
       <p className="font-semibold">{d.doc_type === '11.4' ? 'Πιστωτικό στοιχείο λιανικής' : 'Απόδειξη Παροχής Υπηρεσιών'}</p>
       <p className="text-gray-500">{d.series} {d.aa} · {d.issue_date}</p>
       <p>{d.product || d.description} × {d.quantity}</p>
-      <p className="text-lg font-semibold">{eur(Number(d.amount))}</p>
+      <p className="text-lg font-semibold">{eur(Number(d.amount))}{Number(d.vat_rate) === 24 && <span className="text-xs font-normal text-gray-500"> · με ΦΠΑ 24%</span>}</p>
       <p className={d.status === 'sent' ? 'text-green-700' : 'text-red-600'}>{STATUS[d.status]}{d.mark ? ` · MARK ${d.mark}` : ''}</p>
       {d.error && <p className="text-xs text-red-600 break-words">{d.error}</p>}
       <Link href={`/dashboard/mydata/${d.id}`} target="_blank" className="inline-block mt-2 text-xs underline">Προβολή / εκτύπωση</Link>
