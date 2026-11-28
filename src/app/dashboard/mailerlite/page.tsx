@@ -18,6 +18,15 @@ export default function MailerLiteFix() {
   const [since, setSince] = useState('2026-11-20')
   const [plan, setPlan] = useState<Plan | null>(null)
   const [busy, setBusy] = useState(false)
+  const [rt, setRt] = useState<{ automations?: { name: string }[]; buyers?: number; missing?: { email: string }[]; retriggered?: string[]; failed?: string[]; error?: string } | null>(null)
+
+  async function retrigger(method: 'GET' | 'POST') {
+    if (method === 'POST' && !confirm(`Βγάζω και ξαναβάζω ${rt?.missing?.length ?? 0} άτομα στο group 30 Μέρες για να ξεκινήσει ο αυτοματισμός. Συνέχεια;`)) return
+    setBusy(true)
+    const r = await fetch(`/api/dashboard/mailerlite-retrigger?since=${since}`, { method, cache: 'no-store' })
+    setRt(await r.json())
+    setBusy(false)
+  }
 
   async function call(method: 'GET' | 'POST') {
     if (method === 'POST' && !confirm(`Resubscribe ${plan?.resubscribe?.length ?? 0} αγοραστών;`)) return
@@ -66,6 +75,21 @@ export default function MailerLiteFix() {
             )}
           </div>
         )}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 text-sm space-y-3">
+          <p className="font-medium">Αυτοματισμός που δεν ξεκίνησε</p>
+          <p className="text-gray-500">Αγοραστές που είναι στο group αλλά δεν μπήκαν ποτέ στον αυτοματισμό (π.χ. ήταν unsubscribed όταν μπήκαν). Τους βγάζει και τους ξαναβάζει στο group, ώστε να ξεκινήσει.</p>
+          <div className="flex gap-3">
+            <button onClick={() => retrigger('GET')} disabled={busy} className="text-sm px-5 py-2.5 rounded-full border border-gray-300 bg-white disabled:opacity-40">Έλεγχος</button>
+            <button onClick={() => retrigger('POST')} disabled={busy || !rt?.missing?.length} className="text-sm px-5 py-2.5 rounded-full bg-black text-white disabled:opacity-40">Ξεκίνα τον αυτοματισμό</button>
+          </div>
+          {rt?.error && <p className="text-red-600">{rt.error}</p>}
+          {rt?.automations && <p className="text-gray-500">Αυτοματισμός: {rt.automations.map(a => a.name).join(', ')}{rt.buyers != null ? ` · αγοραστές από ${since}: ${rt.buyers}` : ''}</p>}
+          {rt?.missing && <>
+            <p>Λείπουν από τον αυτοματισμό: <b>{rt.missing.length}</b></p>
+            {rt.missing.map(m => <p key={m.email} className="text-gray-600">{m.email}</p>)}
+          </>}
+          {rt?.retriggered && <p className="font-medium text-green-700">✓ Ξεκίνησαν: {rt.retriggered.length}{rt.failed?.length ? ` · απέτυχαν: ${rt.failed.join(', ')}` : ''}</p>}
+        </div>
       </div>
     </main>
   )
