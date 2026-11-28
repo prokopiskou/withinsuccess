@@ -399,7 +399,10 @@ async function addToMailerLite(email: string, firstName: string, lastName: strin
           last_name: lastName
         },
         groups: [groupId],
-        status: 'active'
+        status: 'active',
+        // Αγοραστής που είχε κάνει παλιότερα unsubscribe: χωρίς αυτό μένει unsubscribed
+        // και δεν παίρνει ποτέ τα emails του προγράμματος που πλήρωσε.
+        resubscribe: true,
       })
     })
     
